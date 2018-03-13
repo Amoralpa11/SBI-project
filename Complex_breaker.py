@@ -2,11 +2,14 @@ from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB import NeighborSearch
 from Bio.PDB import PDBIO
 from Bio.PDB import Select
+from Bio.PDB.Polypeptide import PPBuilder
+from Bio import pairwise2
 import re
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import os
+
 
 sns.set()
 
@@ -45,6 +48,27 @@ class ChainSelect(Select):
         else:
             return False
 
+def compare_chains(chain1, chain2):
+    ppb = PPBuilder()
+    pp1 = ppb.build_peptides(chain1)
+
+    pp2 = ppb.build_peptides(chain2)
+
+    try:
+        seq1 = pp1[0].get_sequence()
+        seq2 = pp2[0].get_sequence()
+    except IndexError:
+        return False
+
+    alignment = pairwise2.align.globalxx(seq1, seq2)
+    score = alignment[0][2]
+    ident_perc = score / len(seq1)
+
+    if ident_perc > 0.95:
+        return True
+    else:
+        return False
+
 
 def get_interaction_pairs (pdb_filename):
 
@@ -64,6 +88,53 @@ def get_interaction_pairs (pdb_filename):
            for chain2 in ns.search(atom.get_coord(),5,level='C'):
                if chain2 != chain and chain2 not in neighbor_chains.keys():
                    neighbor_chains[chain].add(chain2)
+    print(neighbor_chains)
+
+    similar_sequences = {}
+    chain_list2 = list(structure.get_chains())
+    for chain in structure.get_chains():
+        if chain not in similar_sequences:
+            similar_sequences[chain] = chain
+        chain_list2.remove(chain)
+        for chain2 in chain_list2:
+            cmp = compare_chains(chain,chain2)
+
+            if cmp:
+
+                similar_sequences[chain2] = similar_sequences[chain]
+    print(similar_sequences)
+
+
+    interaction_dict = {}
+
+    for chain1 in neighbor_chains:
+        for chain2 in neighbor_chains[chain1]:
+            nr_interaction = tuple(sorted([similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()]))
+            if tuple(sorted([similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()])) not in interaction_dict:
+                interaction_dict[nr_interaction] = []
+
+            interaction_dict[nr_interaction].append([chain1,chain2])
+
+
+    for pair in interaction_dict:
+        interaction_list1 = interaction_dict[pair]
+        interaction_list2 = interaction_dict[pair]
+        for interaction1 in interaction_list1:
+            interaction_list2.remove(interaction1)
+            for interaction2 in interaction_list2:
+
+                if compare_interactions(interaction1,interaction2):
+                    interaction_list1.remove(interaction2)
+                    interaction_list2.remove(interaction2)
+
+
+
+    for pair in interaction_dict:
+        print(pair)
+        print(interaction_dict[pair])
+
+
+
 
     if not os.path.exists(structure_id):
         os.makedirs(structure_id)
@@ -77,7 +148,7 @@ def get_interaction_pairs (pdb_filename):
         for chain2 in neighbor_chains[chain1]:
                 io = PDBIO()
                 io.set_structure(structure)
-                io.save('%s/%s_%s%s.pdb' % (structure_id,structure_id,chain1.get_id(),chain2.get_id()),ChainSelect(chain1.get_id(),chain2.get_id()))
+                io.save('%s/%s_%s%s.pdb' % (structure_id,structure_id,similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()),ChainSelect(similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()))
 
 
     # distance_matrix  = np.array([[distance_matrix[chain1][chain2] for chain2 in sorted(distance_matrix[chain1].keys())] for chain1 in sorted(distance_matrix.keys())])

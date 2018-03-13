@@ -1,4 +1,5 @@
 from Bio.PDB import *
+from Bio import pairwise2
 import numpy
 import gzip
 import os
@@ -8,7 +9,7 @@ import sys
 fasta_p = re.compile(".pdb")
 
 # Creating a list with the file/s passed:
-if options.infile:
+if d.infile:
     if os.path.isfile(options.infile):
         pdb_files.append(options.infile)
     else:

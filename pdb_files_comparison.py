@@ -1,4 +1,5 @@
 from Bio.PDB import *
+from Bio import pairwise2
 import numpy
 import gzip
 import os
@@ -8,22 +9,25 @@ import sys
 fasta_p = re.compile(".pdb")
 
 # Creating a list with the file/s passed:
-if options.infile:
-    if os.path.isfile(options.infile):
-        pdb_files.append(options.infile)
-    else:
-        files = filter(fasta_p.search, os.listdir(options.infile))
-        for i in files:
-            pdb_files.append(''.join([options.infile, i]))
-else:
-    pdb_files = filter(fasta_only.search, os.listdir(os.getcwd()))
+# if options.infile:
+#     if os.path.isfile(options.infile):
+#         pdb_files.append(options.infile)
+#     else:
+#         files = filter(fasta_p.search, os.listdir(options.infile))
+#         for i in files:
+#             pdb_files.append(''.join([options.infile, i]))
+# else:
+#     pdb_files = filter(fasta_only.search, os.listdir(os.getcwd()))
 
+pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb", "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb",
+             "PAIR_LG.pdb", "PAIR_LK.pdb"]
 pairwise_interact = {}
 
 
-def str_comparison(str1, str2):
+def str_comparison_list(str1, str2):
     ls = 0
     ppb = PPBuilder()
+    ls_count = [[0, 0], [0, 0]]
     for pp1 in ppb.build_peptides(str1):
         seq1 = pp1.get_sequence()
 
@@ -31,14 +35,13 @@ def str_comparison(str1, str2):
             ls += 1
         else:
             ls = 0
-            ls_count = [[0, 0], [0, 0]]
-
+        print(ls)
         ls2 = 0
         for pp2 in ppb.build_peptides(str2):
             seq2 = pp2.get_sequence()
             alignment = pairwise2.align.globalxx(seq1, seq2)
             score = alignment[0][2]
-            ident_perc = score / len(seq1) #### to look at, choose longest one?
+            ident_perc = score/len(seq1)  # to look at, choose longest one?
 
             if ident_perc > 0.95:
                 ls_count[ls][ls2] = 1
@@ -49,26 +52,69 @@ def str_comparison(str1, str2):
     return ls_count
 
 
-def dict_filler(pdb_list, pdb_interact_dict):
-    for i in pdb_list:
-        name = i.split('.')
-        structure = parser.get_structure(name, i)
+def str_comparison_superimpose(str1, str2):
+    res = 0
+    sup = Superimposer()
+    print(list(str1.get_atoms()))
+    print(list(str2.get_atoms()))
+    print("superimposition")
+    sup.set_atoms(list(str1.get_atoms()), list(str2.get_atoms()))
+    print(str1)
+    print(str2)
+    print(numpy.abs(sup.rms))
+    if numpy.abs(sup.rms) > 2.5:
+        res += 1
+    return res
 
+
+def dict_filler(pdb_list, pdb_interact_dict):
+    for pdb_file in pdb_list:
+        pdb_id, ext = pdb_file.split('.')
+        structure = PDBParser().get_structure(pdb_id, pdb_file)
+        count_ls = []
+        counter = 0
         if pdb_interact_dict:
             count_ls = 0
-            for pdb_struct in pdb_interact_dict:
-                res_ls = str_comparison(pdb_struct, structure)
 
+            for pdb_struct in pdb_interact_dict.values():
+                res_ls = str_comparison_list(pdb_struct, structure)
+                print(res_ls)
                 if 1 in res_ls[0] and 1 in res_ls[1]:
-                    sup = Superimposer()
-                    if sup.set_atoms(pdb_struct.get_atoms(), structure.get_atoms()) < 5:
-                        break
+                    counter += str_comparison_superimpose(pdb_struct, structure)
 
-                    else:
-                        count_ls += 1 ## finish the counter to save the str to the dict
+                else:
+                    counter += 1
 
         else:
-            pdb_interact_dict[i] = structure
+            pdb_interact_dict[pdb_file] = structure
 
-    if count_ls == 0:
-        pdb_interact_dict[i] = structure
+        if counter == len(pdb_interact_dict):
+            pdb_interact_dict[pdb_file] = structure
+
+dict_filler(pdb_files, pairwise_interact)
+
+print(pairwise_interact)
+
+
+
+
+
+
+# def str_comparison_superimpose(comparison_ls, str1, str2):
+#     res = 0
+#     if 1 in comparison_ls[0] and 1 in comparison_ls[1]:
+#         sup = Superimposer()
+#         print(list(str1.get_atoms()))
+#         print(list(str2.get_atoms()))
+#         print("superimposition")
+#         sup.set_atoms(list(str1.get_atoms()), list(str2.get_atoms()))
+#         print(str1)
+#         print(str2)
+#         print(numpy.abs(sup.rms))
+#         if numpy.abs(sup.rms) > 5:
+#             res += 1
+#
+#     else:
+#         res += 1
+#
+#     return res

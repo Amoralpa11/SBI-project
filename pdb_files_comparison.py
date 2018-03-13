@@ -94,27 +94,3 @@ def dict_filler(pdb_list, pdb_interact_dict):
 dict_filler(pdb_files, pairwise_interact)
 
 print(pairwise_interact)
-
-
-
-
-
-
-# def str_comparison_superimpose(comparison_ls, str1, str2):
-#     res = 0
-#     if 1 in comparison_ls[0] and 1 in comparison_ls[1]:
-#         sup = Superimposer()
-#         print(list(str1.get_atoms()))
-#         print(list(str2.get_atoms()))
-#         print("superimposition")
-#         sup.set_atoms(list(str1.get_atoms()), list(str2.get_atoms()))
-#         print(str1)
-#         print(str2)
-#         print(numpy.abs(sup.rms))
-#         if numpy.abs(sup.rms) > 5:
-#             res += 1
-#
-#     else:
-#         res += 1
-#
-#     return res

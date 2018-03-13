@@ -23,6 +23,10 @@ fasta_p = re.compile(".pdb")
 
 
 def str_comparison_list(str1, str2):
+    '''This function returns a list indicating which chains
+    from str1 are the same in str2 based on % of identity.
+    It requires 2 arguments, which are the 2 srtuctures we
+    want to compare.'''
     ls = 0
     ppb = PPBuilder()
     ls_count = [[0, 0], [0, 0]]
@@ -51,6 +55,11 @@ def str_comparison_list(str1, str2):
 
 
 def str_comparison_superimpose(str1, str2):
+    '''
+    This function compares if 2 structures are structurally similar
+    and returns a 0 if they are the same or 1 if they are different.
+    It requires 2 arguments, the 2 structures we want to compare.
+    '''
     res = 0
     sup = Superimposer()
     print(list(str1.get_atoms()))
@@ -66,6 +75,12 @@ def str_comparison_superimpose(str1, str2):
 
 
 def dict_filler(pdb_list, pdb_interact_dict):
+    '''
+    This functions fills a dictionary which may be empty or not with
+    pdb structures which have not yet been saved in the dictionary.
+    :param pdb_list: list of pdb files we want to add to the dictionary.
+    :param pdb_interact_dict: dictionary which we want to fill with or add structures.
+    '''
     for pdb_file in pdb_list:
         pdb_id, ext = pdb_file.split('.')
         structure = PDBParser().get_structure(pdb_id, pdb_file)

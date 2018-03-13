@@ -12,6 +12,7 @@ import seaborn as sns
 import numpy as np
 import os
 from pdb_files_comparison import str_comparison_superimpose
+import copy
 
 sns.set()
 
@@ -124,6 +125,7 @@ def get_interaction_pairs (pdb_filename):
 
     interaction_dict = {}
 
+
     for chain1 in neighbor_chains:
         for chain2 in neighbor_chains[chain1]:
             nr_interaction = tuple(sorted([similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()]))
@@ -134,15 +136,16 @@ def get_interaction_pairs (pdb_filename):
 
 
     for pair in interaction_dict:
-        interaction_list1 = interaction_dict[pair]
-        interaction_list2 = interaction_dict[pair]
+        interaction_list1 = copy.copy(interaction_dict[pair])
+        interaction_list2 = copy.copy(interaction_dict[pair])
         for interaction1 in interaction_list1:
             interaction_list2.remove(interaction1)
             for interaction2 in interaction_list2:
 
-                if compare_interactions(interaction1,interaction2):
+                if not compare_interactions(interaction1,interaction2):
                     interaction_list1.remove(interaction2)
                     interaction_list2.remove(interaction2)
+        interaction_dict[pair] = interaction_list1
 
 
     if not os.path.exists(structure_id):
@@ -153,11 +156,12 @@ def get_interaction_pairs (pdb_filename):
             if os.path.isfile(file_path):
                 os.unlink(file_path)
 
+    io = PDBIO()
+    io.set_structure(structure)
+
     for pair in interaction_dict:
         for interaction in interaction_dict[pair]:
-                io = PDBIO()
-                io.set_structure(structure)
-                io.save('%s/%s_%s%s.pdb' % (structure_id,structure_id,similar_sequences[interaction[1]].get_id(),similar_sequences[interaction[2]].get_id()),ChainSelect(interaction[1].get_id(),interaction[2].get_id()))
+                io.save('%s/%s_%s%s.pdb' % (structure_id,structure_id,interaction[0].get_id(),interaction[1].get_id()),ChainSelect(interaction[0].get_id(),interaction[1].get_id()))
 
 
     # distance_matrix  = np.array([[distance_matrix[chain1][chain2] for chain2 in sorted(distance_matrix[chain1].keys())] for chain1 in sorted(distance_matrix.keys())])
@@ -177,4 +181,4 @@ def get_interaction_pairs (pdb_filename):
 
 if __name__ == '__main__':
 
-    get_interaction_pairs('2f1d.pdb')
+    get_interaction_pairs('5vox.pdb')

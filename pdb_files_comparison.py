@@ -37,13 +37,13 @@ def str_comparison_list(str1, str2):
             ls += 1
         else:
             ls = 0
-        print(ls)
         ls2 = 0
         for pp2 in ppb.build_peptides(str2):
             seq2 = pp2.get_sequence()
             alignment = pairwise2.align.globalxx(seq1, seq2)
             score = alignment[0][2]
-            ident_perc = score/len(seq1)  # to look at, choose longest one?
+            length = max(len(seq1), len(seq2))
+            ident_perc = score/length  # to look at, choose longest one?
 
             if ident_perc > 0.95:
                 ls_count[ls][ls2] = 1
@@ -65,6 +65,7 @@ def str_comparison_superimpose(str1, str2):
     # print(list(str1.get_atoms()))
     # print(list(str2.get_atoms()))
     # print("superimposition")
+
     sup.set_atoms(list(str1.get_atoms()), list(str2.get_atoms()))
     # print(str1)
     # print(str2)
@@ -91,7 +92,6 @@ def dict_filler(pdb_list, pdb_interact_dict):
 
             for pdb_struct in pdb_interact_dict.values():
                 res_ls = str_comparison_list(pdb_struct, structure)
-                print(res_ls)
                 if 1 in res_ls[0] and 1 in res_ls[1]:
                     counter += str_comparison_superimpose(pdb_struct, structure)
 

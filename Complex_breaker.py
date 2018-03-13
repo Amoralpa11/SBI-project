@@ -1,5 +1,6 @@
 from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB import Structure
+from Bio.PDB import Model
 from Bio.PDB import NeighborSearch
 from Bio.PDB import PDBIO
 from Bio.PDB import Select
@@ -75,11 +76,14 @@ def compare_interactions(interaction1, interaction2):
     structure1 = Structure.Structure('1')
     structure2 = Structure.Structure('2')
 
+    structure1.add(Model.Model(0))
+    structure2.add(Model.Model(0))
+
     for chain in interaction1:
-        structure1.add(chain)
+        structure1[0].add(chain)
 
     for chain in interaction2:
-        structure2.add(chain)
+        structure2[0].add(chain)
 
     return str_comparison_superimpose(structure1,structure2)
 

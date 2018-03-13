@@ -53,13 +53,13 @@ def str_comparison_list(str1, str2):
 def str_comparison_superimpose(str1, str2):
     res = 0
     sup = Superimposer()
-    print(list(str1.get_atoms()))
-    print(list(str2.get_atoms()))
-    print("superimposition")
+    # print(list(str1.get_atoms()))
+    # print(list(str2.get_atoms()))
+    # print("superimposition")
     sup.set_atoms(list(str1.get_atoms()), list(str2.get_atoms()))
-    print(str1)
-    print(str2)
-    print(numpy.abs(sup.rms))
+    # print(str1)
+    # print(str2)
+    # print(numpy.abs(sup.rms))
     if numpy.abs(sup.rms) > 2.5:
         res += 1
     return res

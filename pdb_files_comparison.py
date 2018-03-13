@@ -19,9 +19,7 @@ fasta_p = re.compile(".pdb")
 # else:
 #     pdb_files = filter(fasta_only.search, os.listdir(os.getcwd()))
 
-pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb", "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb",
-             "PAIR_LG.pdb", "PAIR_LK.pdb"]
-pairwise_interact = {}
+
 
 
 def str_comparison_list(str1, str2):
@@ -91,6 +89,13 @@ def dict_filler(pdb_list, pdb_interact_dict):
         if counter == len(pdb_interact_dict):
             pdb_interact_dict[pdb_file] = structure
 
-dict_filler(pdb_files, pairwise_interact)
+if __name__ == '__main__':
 
-print(pairwise_interact)
+    pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb", "PAIR_JI.pdb",
+                 "PAIR_KH.pdb", "PAIR_LE.pdb",
+                 "PAIR_LG.pdb", "PAIR_LK.pdb"]
+    pairwise_interact = {}
+
+    dict_filler(pdb_files, pairwise_interact)
+
+    print(pairwise_interact)

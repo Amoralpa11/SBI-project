@@ -1,4 +1,5 @@
 from Bio.PDB.PDBParser import PDBParser
+from Bio.PDB import Structure
 from Bio.PDB import NeighborSearch
 from Bio.PDB import PDBIO
 from Bio.PDB import Select
@@ -9,7 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import os
-
+from pdb_files_comparison import str_comparison_superimpose
 
 sns.set()
 
@@ -70,6 +71,18 @@ def compare_chains(chain1, chain2):
         return False
 
 
+def compare_interactions(interaction1, interaction2):
+    structure1 = Structure.Structure('1')
+    structure2 = Structure.Structure('2')
+
+    for chain in interaction1:
+        structure1.add(chain)
+
+    for chain in interaction2:
+        structure2.add(chain)
+
+    return str_comparison_superimpose(structure1,structure2)
+
 def get_interaction_pairs (pdb_filename):
 
     parser = PDBParser(PERMISSIVE=1)
@@ -128,14 +141,6 @@ def get_interaction_pairs (pdb_filename):
                     interaction_list2.remove(interaction2)
 
 
-
-    for pair in interaction_dict:
-        print(pair)
-        print(interaction_dict[pair])
-
-
-
-
     if not os.path.exists(structure_id):
         os.makedirs(structure_id)
     else:
@@ -144,11 +149,11 @@ def get_interaction_pairs (pdb_filename):
             if os.path.isfile(file_path):
                 os.unlink(file_path)
 
-    for chain1 in neighbor_chains.keys():
-        for chain2 in neighbor_chains[chain1]:
+    for pair in interaction_dict:
+        for interaction in interaction_dict[pair]:
                 io = PDBIO()
                 io.set_structure(structure)
-                io.save('%s/%s_%s%s.pdb' % (structure_id,structure_id,similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()),ChainSelect(similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()))
+                io.save('%s/%s_%s%s.pdb' % (structure_id,structure_id,similar_sequences[interaction[1]].get_id(),similar_sequences[interaction[2]].get_id()),ChainSelect(interaction[1].get_id(),interaction[2].get_id()))
 
 
     # distance_matrix  = np.array([[distance_matrix[chain1][chain2] for chain2 in sorted(distance_matrix[chain1].keys())] for chain1 in sorted(distance_matrix.keys())])
@@ -168,4 +173,4 @@ def get_interaction_pairs (pdb_filename):
 
 if __name__ == '__main__':
 
-    get_interaction_pairs('5vox.pdb')
+    get_interaction_pairs('2f1d.pdb')

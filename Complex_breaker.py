@@ -1,6 +1,8 @@
 from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB import Structure
 from Bio.PDB import Model
+from Bio.PDB import Chain
+from Bio.PDB import Residue
 from Bio.PDB import NeighborSearch
 from Bio.PDB import PDBIO
 from Bio.PDB import Select
@@ -51,26 +53,97 @@ class ChainSelect(Select):
         else:
             return False
 
-def compare_chains(chain1, chain2):
-    ppb = PPBuilder()
-    pp1 = ppb.build_peptides(chain1)
 
-    pp2 = ppb.build_peptides(chain2)
 
-    try:
-        seq1 = pp1[0].get_sequence()
-        seq2 = pp2[0].get_sequence()
-    except IndexError:
+def compare_chains(chain1, chain2,seq_dict):
+
+    if chain1.get_id() not in seq_dict or chain2.get_id() not in seq_dict:
         return False
+
+    seq1 = seq_dict[chain1.get_id()]
+    seq2 = seq_dict[chain2.get_id()]
+
 
     alignment = pairwise2.align.globalxx(seq1, seq2)
     score = alignment[0][2]
     ident_perc = score / len(seq1)
 
     if ident_perc > 0.95:
+        # print(alignment)
         return True
     else:
         return False
+
+
+def get_numeric_array(seq_aln):
+    numeric_array = []
+    n=0
+    for character in seq_aln:
+        if character == "-":
+            numeric_array.append("-")
+        else:
+            numeric_array.append(n)
+        n+=1
+    return numeric_array
+
+def get_sequence_from_chain(chain):
+    res_list = [x.get_resname() for x in chain.get_residues()]
+    d = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+         'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+         'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+
+    res_short_list = []
+
+    for res in res_list:
+        res_short_list.append(d[res])
+    return "".join(res_short_list)
+
+def trim_to_superimpose(chain1, chain2):
+
+
+    seq1 = get_sequence_from_chain(chain1)
+    seq2 = get_sequence_from_chain(chain2)
+
+
+    alignment = pairwise2.align.globalxx(seq1, seq2)
+
+    score = alignment[0][2]
+    ident_perc = score / len(seq1)
+
+    print("%s-%s" % (chain1.get_id(),chain2.get_id()))
+
+    print(alignment[0][0])
+    print(alignment[0][1])
+
+    if ident_perc > 0.95:
+        seq1_array = list(alignment[0][0])
+        seq2_array = list(alignment[0][1])
+        seq1_numeric = get_numeric_array(alignment[0][0])
+        seq2_numeric = get_numeric_array(alignment[0][1])
+        to_delete_from_1 = []
+        to_delete_from_2 = []
+        pairs1 = zip(seq1_array,seq2_numeric)
+        for pair in pairs1:
+            if pair[0] == '-':
+                to_delete_from_2.append(list(chain2.get_residues())[pair[1]].get_id())
+
+        pairs2 = zip(seq2_array, seq1_numeric)
+        for pair in pairs2:
+            if pair[0] == '-':
+                to_delete_from_1.append(list(chain1.get_residues())[pair[1]].get_id())
+
+        print(list(chain1.get_residues())[0])
+        print(list(chain2.get_residues())[0])
+
+        for residue_to_delete in to_delete_from_1:
+            chain1.__delitem__(residue_to_delete)
+
+        for residue_to_delete in to_delete_from_2:
+            chain2.__delitem__(residue_to_delete)
+
+        print(list(chain1.get_residues())[0])
+        print(list(chain2.get_residues())[0])
 
 
 def compare_interactions(interaction1, interaction2):
@@ -81,12 +154,60 @@ def compare_interactions(interaction1, interaction2):
     structure2.add(Model.Model(0))
 
     for chain in interaction1:
-        structure1[0].add(chain)
+        structure1[0].add(Chain.Chain(chain.get_id()))
+        for residue in chain:
+            if 'CA' in [x.get_id() for x in residue.get_atoms()]:
+                structure1[0][chain.get_id()].add(Residue.Residue(residue.get_id(),residue.get_resname(),residue.get_segid()))
+                structure1[0][chain.get_id()][residue.get_id()].add(residue['CA'])
 
     for chain in interaction2:
-        structure2[0].add(chain)
+        structure2[0].add(Chain.Chain(chain.get_id()))
+        for residue in chain:
+            if 'CA' in [x.get_id() for x in residue.get_atoms()]:
+                structure2[0][chain.get_id()].add(Residue.Residue(residue.get_id(),residue.get_resname(),residue.get_segid()))
+                structure2[0][chain.get_id()][residue.get_id()].add(residue['CA'])
 
-    return str_comparison_superimpose(structure1,structure2)
+    len1 = len(list(structure1.get_residues()))
+    len2 = len(list(structure2.get_residues()))
+    if len1 != len2:
+
+        for chain1 in structure1[0]:
+            for chain2 in structure2[0]:
+
+                len1 = len(list(structure1.get_residues()))
+                len2 = len(list(structure2.get_residues()))
+                if len1 == len2:
+                    break
+
+                trim_to_superimpose(chain1,chain2)
+
+                print(list(chain1.get_residues())[0])
+                print(list(chain2.get_residues())[0])
+
+
+
+
+    # print(list(structure1.get_chains()))
+    # print(list(structure2.get_chains()))
+    result = str_comparison_superimpose(structure1,structure2)
+    if not result:
+        print("")
+    return result
+
+
+def get_seq_dict(structure):
+    ppb = PPBuilder()
+    seq_dict = {}
+    for chain in structure.get_chains():
+
+        pp = ppb.build_peptides(chain)
+
+        try:
+            seq = pp[0].get_sequence()
+            seq_dict[chain.get_id()] = seq
+        except IndexError:
+            continue
+    return seq_dict
 
 def get_interaction_pairs (pdb_filename):
 
@@ -109,13 +230,15 @@ def get_interaction_pairs (pdb_filename):
     print(neighbor_chains)
 
     similar_sequences = {}
+    seq_dict = get_seq_dict(structure)
+
     chain_list2 = list(structure.get_chains())
     for chain in structure.get_chains():
         if chain not in similar_sequences:
             similar_sequences[chain] = chain
         chain_list2.remove(chain)
         for chain2 in chain_list2:
-            cmp = compare_chains(chain,chain2)
+            cmp = compare_chains(chain,chain2,seq_dict)
 
             if cmp:
 
@@ -135,7 +258,10 @@ def get_interaction_pairs (pdb_filename):
             interaction_dict[nr_interaction].append([chain1,chain2])
 
 
+
     for pair in interaction_dict:
+        if pair == ('T','T'):
+            pass
         interaction_list1 = copy.copy(interaction_dict[pair])
         interaction_list2 = copy.copy(interaction_dict[pair])
         for interaction1 in interaction_list1:
@@ -180,5 +306,7 @@ def get_interaction_pairs (pdb_filename):
 #         io.save('5vox_%s.pdb' % chain.get_id(),ChainSelect(chain.get_id()))
 
 if __name__ == '__main__':
+
+
 
     get_interaction_pairs('5vox.pdb')

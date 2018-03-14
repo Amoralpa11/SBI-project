@@ -60,7 +60,7 @@ def str_comparison_superimpose(str1, str2):
     # print(str1)
     # print(str2)
     # print(numpy.abs(sup.rms))
-    if numpy.abs(sup.rms) > 2.5:
+    if numpy.abs(sup.rms) > 5:
         res += 1
     return res
 

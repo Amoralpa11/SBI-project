@@ -127,7 +127,7 @@ def get_interaction_pairs (pdb_filename):
     for chain1 in neighbor_chains:
         for chain2 in neighbor_chains[chain1]:
             nr_interaction = tuple(sorted([similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()]))
-            if tuple(sorted([similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()])) not in interaction_dict:
+            if tuple(sorted([similar_sequences[chain1].get_id(), similar_sequences[chain2].get_id()])) not in interaction_dict:
                 interaction_dict[nr_interaction] = []
 
             interaction_dict[nr_interaction].append([chain1,chain2])

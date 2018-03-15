@@ -1,4 +1,9 @@
 from Bio.PDB import *
+from Bio.PDB import Structure
+from Bio.PDB import Model
+from Bio.PDB import Chain
+from Bio.PDB import Residue
+from Bio.PDB import Atom
 from Bio import pairwise2
 import numpy as np
 import string
@@ -6,6 +11,7 @@ import gzip
 import os
 import re
 import sys
+import argparse
 
 
 def get_structure_name(filename):
@@ -210,16 +216,7 @@ fasta_p = re.compile(".pdb")
 alphabet = list(string.ascii_uppercase) + list(string.ascii_lowercase)
 
 
-# Creating a list with the file/s passed:
-# if options.infile:
-#     if os.path.isfile(options.infile):
-#         pdb_files.append(options.infile)
-#     else:
-#         files = filter(fasta_p.search, os.listdir(options.infile))
-#         for i in files:
-#             pdb_files.append(''.join([options.infile, i]))
-# else:
-#     pdb_files = filter(fasta_only.search, os.listdir(os.getcwd()))
+
 
 
 def str_comparison_list(str1, str2):
@@ -316,7 +313,8 @@ def dict_filler(pdb_list, pdb_interact_dict):
         m = 0
         n = 0
         pdb_id, ext = pdb_file.split('.')
-        structure = PDBParser().get_structure(pdb_id, pdb_file)
+        parser = PDBParser(PERMISSIVE=1)
+        structure = parser.get_structure(pdb_id, pdb_file)
         counter = 0
 
         if pdb_interact_dict:
@@ -354,6 +352,12 @@ def dict_filler(pdb_list, pdb_interact_dict):
                     counter += 1
 
         else:
+<<<<<<< HEAD
+=======
+
+            ppb = PPBuilder()
+            i = 1
+>>>>>>> 48ec5da9d384245f30214c03276a8d9bc85df76e
             seq = []
             for chain1 in structure.get_chains():
                 seq.append(get_sequence_from_chain(chain1))
@@ -364,6 +368,7 @@ def dict_filler(pdb_list, pdb_interact_dict):
             if score < 0.95:
                 m += 1
                 chain_tup = (alphabet[n], alphabet[m], 0)
+
             else:
                 chain_tup = (alphabet[n], alphabet[m], 0)
             pdb_interact_dict[chain_tup] = structure
@@ -414,9 +419,25 @@ def dict_filler(pdb_list, pdb_interact_dict):
 
 if __name__ == '__main__':
 
-    pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb",
-                 "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb", "PAIR_LG.pdb", "PAIR_LK.pdb"]
+
+    # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb",
+    #              "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb", "PAIR_LG.pdb", "PAIR_LK.pdb"]
     # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_KH.pdb"]
+
+    pdb_files = []
+    fasta_p = re.compile(".pdb")
+
+    # Creating a list with the file/s passed:
+    folder = '2f1d_all_interactions'
+
+    if os.path.isfile(folder):
+        pdb_files.append(folder)
+    else:
+        files = filter(fasta_p.search, os.listdir(folder))
+        for i in files:
+            pdb_files.append('%s/%s' % (folder, i))
+
+
     pairwise_interact = {}
     similar_chains = {}
 

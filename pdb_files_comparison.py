@@ -7,6 +7,7 @@ import os
 import re
 import sys
 
+
 fasta_p = re.compile(".pdb")
 alphabet = list(string.ascii_uppercase) + list(string.ascii_lowercase)
 
@@ -62,16 +63,23 @@ def str_comparison_superimpose(str1, str2):
     and returns a 0 if they are the same or 1 if they are different.
     It requires 2 arguments, the 2 structures we want to compare.
     '''
+
+    chains_list = [x.get_id() for x in str1.get_chains()]
     res = 0
     sup = Superimposer()
-    # print(list(str1.get_atoms()))
-    # print(list(str2.get_atoms()))
-    # print("superimposition")
+    for chain_id1 in chains_list:
+        for chain_id2 in chains_list:
+            if chain_id1.upper() != chain_id2.upper():
+                continue
+            for round in range(100):
+                sup.set_atoms(list(str1[0][chain_id1].get_atoms()), list(str2[0][chain_id2].get_atoms()))
+                sup.apply(str2)
 
-    sup.set_atoms(list(str1.get_atoms()), list(str2.get_atoms()))
     # print(str1)
     # print(str2)
-    if numpy.abs(sup.rms) > 2.5:
+
+    # print('\t%s' % numpy.abs(sup.rms))
+    if numpy.abs(sup.rms) > 5:
         res += 1
     return res
 

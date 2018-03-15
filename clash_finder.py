@@ -35,4 +35,8 @@ def add_chain(fixed_struct, mobile_struct, chain):
     :param mobile_struct: structure with the chain we want to add to the model.
     :return: returns a structure with the new chain.
     """
-    sup = sup.set_atoms(list(str1.get_atoms()), list(str2.get_atoms()))
+    for round in range(100):
+        sup.set_atoms(list(fixed_struct[0][chain].get_atoms()), list(mobile_struct[0][chain].get_atoms()))
+        sup.apply(str2)
+
+

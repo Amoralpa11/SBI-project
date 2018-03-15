@@ -154,20 +154,26 @@ def compare_interactions(interaction1, interaction2,similar_sequences):
     structure1.add(Model.Model(0))
     structure2.add(Model.Model(0))
 
+    homodimer = False
+
     for chain in interaction1:
         chain_id = similar_sequences[chain].get_id()
         if chain_id in [x.get_id() for x in structure1.get_chains()]:
+            homodimer = True
             if chain_id.upper() == chain_id:
                 chain_id = chain_id.lower()
             else:
                 chain_id = chain_id.upper
 
         structure1[0].add(Chain.Chain(chain_id))
+        res_counter = 0
         for residue in chain:
             if 'CA' in [x.get_id() for x in residue.get_atoms()]:
                 atom = residue['CA']
-                structure1[0][chain_id].add(Residue.Residue(residue.get_id(),residue.get_resname(),residue.get_segid()))
-                structure1[0][chain_id][residue.get_id()].add(atom.copy())
+                structure1[0][chain_id].add(Residue.Residue(('',res_counter,''),residue.get_resname(),residue.get_segid()))
+
+                structure1[0][chain_id][('',res_counter,'')].add(atom.copy())
+                res_counter += 1
 
     for chain in interaction2:
 
@@ -178,26 +184,25 @@ def compare_interactions(interaction1, interaction2,similar_sequences):
             else:
                 chain_id = chain_id.upper
 
-        structure2[0].add(Chain.Chain(chain.get_id()))
+        structure2[0].add(Chain.Chain(chain_id))
+        res_counter = 0
         for residue in chain:
             if 'CA' in [x.get_id() for x in residue.get_atoms()]:
                 atom = residue['CA']
-                structure2[0][chain_id].add(Residue.Residue(residue.get_id(),residue.get_resname(),residue.get_segid()))
-                structure2[0][chain_id][residue.get_id()].add(atom.copy())
+                structure2[0][chain_id].add(Residue.Residue(('',res_counter,''),residue.get_resname(),residue.get_segid()))
 
-    len1 = len(list(structure1.get_residues()))
-    len2 = len(list(structure2.get_residues()))
-    if len1 != len2:
+                structure2[0][chain_id][('',res_counter,'')].add(atom.copy())
+                res_counter += 1
 
-        for chain1 in structure1[0]:
-            for chain2 in structure2[0]:
+    if homodimer:
+        for int in [structure1[0],structure2[0]]:
+            trim_to_superimpose(list(int.get_chains())[0],list(int.get_chains())[1])
 
-                len1 = len(list(structure1.get_residues()))
-                len2 = len(list(structure2.get_residues()))
-                if len1 == len2:
-                    break
-
-                trim_to_superimpose(chain1,chain2)
+    for chain1 in structure1[0]:
+        for chain2 in structure2[0]:
+            if chain1.get_id() != chain2.get_id():
+                continue
+            trim_to_superimpose(chain1,chain2)
 
                 # print(list(chain1.get_residues())[0])
                 # print(list(chain2.get_residues())[0])
@@ -260,7 +265,7 @@ def get_interaction_pairs (pdb_filename):
             if cmp:
 
                 similar_sequences[chain2] = similar_sequences[chain]
-    # print(similar_sequences)
+    print(similar_sequences)
 
 
     interaction_dict = {}

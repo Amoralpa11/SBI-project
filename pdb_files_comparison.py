@@ -71,12 +71,28 @@ def str_comparison_superimpose(str1, str2):
         for chain_id2 in chains_list:
             if chain_id1.upper() != chain_id2.upper():
                 continue
-            for round in range(100):
+            for round in range(10):
                 sup.set_atoms(list(str1[0][chain_id1].get_atoms()), list(str2[0][chain_id2].get_atoms()))
                 sup.apply(str2)
 
-    # print(str1)
-    # print(str2)
+            distance_array = []
+            other_chain1 = [x for x in chains_list if x != chain_id1][0]
+            other_chain2 = [x for x in chains_list if x != chain_id2][0]
+            CA_other1 = [x['CA'] for x in str1[0][other_chain1].get_residues() if
+                        'CA' in [y.get_id() for y in x.get_atoms()]]
+            CA_other2 = [x['CA'] for x in str2[0][other_chain2].get_residues() if
+                        'CA' in [y.get_id() for y in x.get_atoms()]]
+            for pair in zip(CA_other1,CA_other2):
+
+                distance_array.append(pair[0]-pair[1])
+
+            mean_distances.append(sum(distance_array)/len(distance_array))
+
+            if min(mean_distances) < 9:
+                print('\t%s' % min(mean_distances))
+                return 0
+    print('\t%s' % min(mean_distances))
+    return 1
 
     # print('\t%s' % numpy.abs(sup.rms))
     if numpy.abs(sup.rms) > 5:

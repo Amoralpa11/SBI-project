@@ -67,6 +67,7 @@ def compare_chains(chain1, chain2):
         alignment = pairwise2.align.globalxx(seq1, seq2)
         score = alignment[0][2]
         ident_perc = score / len(seq1)
+        print(ident_perc)
 
         if ident_perc > 0.95:
             # print(alignment)

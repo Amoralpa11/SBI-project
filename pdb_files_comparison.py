@@ -33,16 +33,18 @@ def str_comparison_list(str1, str2):
     ls = 0
     ppb = PPBuilder()
     ls_count = [[0, 0], [0, 0]]
-    for pp1 in ppb.build_peptides(str1):
-        seq1 = pp1.get_sequence()
+    for chain1 in str1.get_chains():
+        seq1 = get_sequence_from_chain(chain1)
 
         if ls == 0:
             ls += 1
         else:
             ls = 0
         ls2 = 0
-        for pp2 in ppb.build_peptides(str2):
-            seq2 = pp2.get_sequence()
+        print(list(ppb.build_peptides(str2)))
+        print(list(str2.get_chains()))
+        for chain2 in str2.get_chains():
+            seq2 = get_sequence_from_chain(chain2)
             alignment = pairwise2.align.globalxx(seq1, seq2)
             score = alignment[0][2]
             length = max(len(seq1), len(seq2))
@@ -70,7 +72,10 @@ def str_comparison_superimpose(str1, str2):
 
     for chain_id1 in chains_list:
         for chain_id2 in chains_list:
-            if not compare_chains(str1[0][chain_id1],str2[0][chain_id2]):
+            print(compare_chains(str1[0][chain_id1], str2[0][chain_id2]))
+            print(chain_id1)
+            print(chain_id2)
+            if not compare_chains(str1[0][chain_id1], str2[0][chain_id2]):
                 continue
             for round in range(10):
                 sup.set_atoms(list(str1[0][chain_id1].get_atoms()), list(str2[0][chain_id2].get_atoms()))
@@ -92,7 +97,7 @@ def str_comparison_superimpose(str1, str2):
             if min(mean_distances) < 9:
                 print('\t%s' % min(mean_distances))
                 return 0
-    print('\t%s' % min(mean_distances))
+    # print('\t%s' % min(mean_distances))
     return 1
 
     if numpy.abs(sup.rms) > 5:
@@ -120,7 +125,7 @@ def dict_filler(pdb_list, pdb_interact_dict):
                 res_ls = str_comparison_list(pdb_interact_dict[pdb_struct], structure)
                 if 1 in res_ls[0] and 1 in res_ls[1]:
 
-                    str_comp = str_comparison_superimpose(pdb_interact_dict[pdb_struct], structure)# 1=diferentes 0=iguales
+                    str_comp = str_comparison_superimpose(pdb_interact_dict[pdb_struct], structure) # 1=diferentes 0=iguales
                     counter += str_comp
 
                     if str_comp == 1:
@@ -196,21 +201,20 @@ def dict_filler(pdb_list, pdb_interact_dict):
 
             pdb_interact_dict[chain_tup] = structure
 
-            if tmp_chain_tup[0] in alphabet:
+            if tmp_chain_tup and tmp_chain_tup[0] in alphabet:
                 alphabet.remove(tmp_chain_tup[0])
-            if tmp_chain_tup[1] in alphabet:
+            if tmp_chain_tup and tmp_chain_tup[1] in alphabet:
                 alphabet.remove(tmp_chain_tup[1])
 
 
 if __name__ == '__main__':
-    pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb", "PAIR_JI.pdb",
-                 "PAIR_KH.pdb", "PAIR_LE.pdb",
-                 "PAIR_LG.pdb", "PAIR_LK.pdb"]
+    pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb",
+                 "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb", "PAIR_LG.pdb", "PAIR_LK.pdb"]
     # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_KH.pdb"]
     pairwise_interact = {}
     similar_chains = {}
 
-    dict_filler(pdb_files, pairwise_interact,similar_chains)
+    dict_filler(pdb_files, pairwise_interact)
 
     print(pairwise_interact)
 

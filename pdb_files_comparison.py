@@ -329,11 +329,16 @@ def dict_filler(pdb_list, pdb_interact_dict):
 
                     if str_comp == 1:
                         num = []
-                        for key in pdb_interact_dict.keys():
-                            if [pdb_struct[0], pdb_struct[1]] == list(key[:2]):
-                                num.append(key[2])
-                        tmp_chain_tup = [pdb_struct[0], pdb_struct[1], max(num)+1]
-                        counter = len(pdb_interact_dict)
+                        repeat_comp = []
+                        for key in [id for id in pdb_interact_dict if list(id[:2]) == [pdb_struct[0], pdb_struct[1]]]:
+                            repeat_comp.append(str_comparison_superimpose(pdb_interact_dict[key], structure))
+                            num.append(key[2])
+                        if sum(repeat_comp) == len(pdb_interact_dict):
+                            tmp_chain_tup = [pdb_struct[0], pdb_struct[1], max(num) + 1]
+                            counter = len(pdb_interact_dict)
+                            break
+                        else:
+                            counter = 0
                         break
                     else:
                         break
@@ -352,12 +357,6 @@ def dict_filler(pdb_list, pdb_interact_dict):
                     counter += 1
 
         else:
-<<<<<<< HEAD
-=======
-
-            ppb = PPBuilder()
-            i = 1
->>>>>>> 48ec5da9d384245f30214c03276a8d9bc85df76e
             seq = []
             for chain1 in structure.get_chains():
                 seq.append(get_sequence_from_chain(chain1))

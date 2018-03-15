@@ -6,7 +6,7 @@ import gzip
 import os
 import re
 import sys
-
+from Complex_breaker import *
 
 fasta_p = re.compile(".pdb")
 alphabet = list(string.ascii_uppercase) + list(string.ascii_lowercase)
@@ -70,7 +70,7 @@ def str_comparison_superimpose(str1, str2):
 
     for chain_id1 in chains_list:
         for chain_id2 in chains_list:
-            if chain_id1.upper() != chain_id2.upper():
+            if not compare_chains(str1[0][chain_id1],str2[0][chain_id2]):
                 continue
             for round in range(10):
                 sup.set_atoms(list(str1[0][chain_id1].get_atoms()), list(str2[0][chain_id2].get_atoms()))
@@ -111,7 +111,6 @@ def dict_filler(pdb_list, pdb_interact_dict):
         n = 0
         pdb_id, ext = pdb_file.split('.')
         structure = PDBParser().get_structure(pdb_id, pdb_file)
-        print(help(structure))
         counter = 0
 
         if pdb_interact_dict:
@@ -120,8 +119,10 @@ def dict_filler(pdb_list, pdb_interact_dict):
                 tmp_chain_tup = []
                 res_ls = str_comparison_list(pdb_interact_dict[pdb_struct], structure)
                 if 1 in res_ls[0] and 1 in res_ls[1]:
-                    str_comp = str_comparison_superimpose(pdb_interact_dict[pdb_struct], structure)
+
+                    str_comp = str_comparison_superimpose(pdb_interact_dict[pdb_struct], structure)# 1=diferentes 0=iguales
                     counter += str_comp
+
                     if str_comp == 1:
                         chain_tup = ([pdb_struct[0], pdb_struct[1], pdb_struct[2]+1])
                         counter = len(pdb_interact_dict)
@@ -155,10 +156,8 @@ def dict_filler(pdb_list, pdb_interact_dict):
             if score < 0.95:
                 m += 1
                 chain_tup = (alphabet[n], alphabet[m], 0)
-
             else:
                 chain_tup = (alphabet[n], alphabet[m], 0)
-
             pdb_interact_dict[chain_tup] = structure
 
             if chain_tup[0] in alphabet:
@@ -211,7 +210,7 @@ if __name__ == '__main__':
     pairwise_interact = {}
     similar_chains = {}
 
-    dict_filler(pdb_files, pairwise_interact)
+    dict_filler(pdb_files, pairwise_interact,similar_chains)
 
     print(pairwise_interact)
 

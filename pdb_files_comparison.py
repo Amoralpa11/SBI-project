@@ -67,6 +67,8 @@ def str_comparison_superimpose(str1, str2):
     chains_list = [x.get_id() for x in str1.get_chains()]
     res = 0
     sup = Superimposer()
+    mean_distances = []
+
     for chain_id1 in chains_list:
         for chain_id2 in chains_list:
             if chain_id1.upper() != chain_id2.upper():
@@ -94,11 +96,9 @@ def str_comparison_superimpose(str1, str2):
     print('\t%s' % min(mean_distances))
     return 1
 
-    # print('\t%s' % numpy.abs(sup.rms))
     if numpy.abs(sup.rms) > 5:
         res += 1
     return res
-
 
 def dict_filler(pdb_list, pdb_interact_dict):
     '''

@@ -85,7 +85,7 @@ def str_comparison_superimpose(str1, str2):
             CA_other2 = [x['CA'] for x in str2[0][other_chain2].get_residues() if
                         'CA' in [y.get_id() for y in x.get_atoms()]]
             for pair in zip(CA_other1,CA_other2):
-
+                
                 distance_array.append(pair[0]-pair[1])
 
             mean_distances.append(sum(distance_array)/len(distance_array))

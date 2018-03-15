@@ -65,7 +65,6 @@ def str_comparison_superimpose(str1, str2):
     '''
 
     chains_list = [x.get_id() for x in str1.get_chains()]
-    res = 0
     sup = Superimposer()
     mean_distances = []
 
@@ -112,8 +111,8 @@ def dict_filler(pdb_list, pdb_interact_dict):
         n = 0
         pdb_id, ext = pdb_file.split('.')
         structure = PDBParser().get_structure(pdb_id, pdb_file)
-        print(dir(structure))
         counter = 0
+
         if pdb_interact_dict:
 
             for pdb_struct in pdb_interact_dict:
@@ -152,11 +151,17 @@ def dict_filler(pdb_list, pdb_interact_dict):
             # print("aln_score: " + str(score))
             if score < 0.95:
                 m += 1
-                tmp_chain_tup = (alphabet[n], alphabet[m], 0)
-            chain_tup = tuple(tmp_chain_tup)
+                chain_tup = (alphabet[n], alphabet[m], 0)
+            else:
+                chain_tup = (alphabet[n], alphabet[m], 0)
+            
             pdb_interact_dict[chain_tup] = structure
-            alphabet.remove(tmp_chain_tup[0])
-            alphabet.remove(tmp_chain_tup[1])
+
+            if chain_tup[0] in alphabet:
+                alphabet.remove(chain_tup[0])
+
+            if chain_tup[1] in alphabet:
+                alphabet.remove(chain_tup[1])
 
         if counter == len(pdb_interact_dict):
             ppb = PPBuilder()

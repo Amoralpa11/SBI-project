@@ -289,8 +289,14 @@ def str_comparison_superimpose(str1, str2):
             CA_other2 = [x['CA'] for x in str2[0][other_chain2].get_residues() if
                         'CA' in [y.get_id() for y in x.get_atoms()]]
             for pair in zip(CA_other1, CA_other2):
-
-                distance_array.append(np.abs(pair[0]-pair[1]))
+                pair1 = pair[0].get_coord()
+                pair2 = pair[1].get_coord()
+                resta = pair1 - pair2
+                squares=list(map(lambda x: pow(x, 2), resta))
+                dist = np.sqrt(sum(squares))
+                # dis2 = pair[0] - pair[1]
+                # distance_array.append(pair[0] - pair[1])
+                distance_array.append(dist)
 
             mean_distances.append(sum(distance_array)/len(distance_array))
 
@@ -324,7 +330,11 @@ def dict_filler(pdb_list, pdb_interact_dict):
                     counter += str_comp
 
                     if str_comp == 1:
-                        chain_tup = ([pdb_struct[0], pdb_struct[1], pdb_struct[2]+1])
+                        num = []
+                        for key in pdb_interact_dict.keys():
+                            if [pdb_struct[0], pdb_struct[1]] == list(key[:2]):
+                                num.append(key[2])
+                        tmp_chain_tup = [pdb_struct[0], pdb_struct[1], max(num)+1]
                         counter = len(pdb_interact_dict)
                         break
                     else:
@@ -344,12 +354,10 @@ def dict_filler(pdb_list, pdb_interact_dict):
                     counter += 1
 
         else:
-            ppb = PPBuilder()
-            i = 1
             seq = []
-            for pp in ppb.build_peptides(structure):
-                seq.append(pp.get_sequence())
-                i += 1
+            for chain1 in structure.get_chains():
+                seq.append(get_sequence_from_chain(chain1))
+
             align = pairwise2.align.globalxx(seq[0], seq[1])
             score = align[0][2] / max([len(seq[0]), len(seq[1])])
 
@@ -367,13 +375,11 @@ def dict_filler(pdb_list, pdb_interact_dict):
                 alphabet.remove(chain_tup[1])
 
         if counter == len(pdb_interact_dict):
-            ppb = PPBuilder()
-            i = 1
             seq = []
 
-            for pp in ppb.build_peptides(structure):
-                seq.append(pp.get_sequence())
-                i += 1
+            for pp in structure.get_chains():
+                seq.append(get_sequence_from_chain(pp))
+
             align = pairwise2.align.globalxx(seq[0], seq[1])
             score = align[0][2] / max([len(seq[0]), len(seq[1])])
 
@@ -394,6 +400,10 @@ def dict_filler(pdb_list, pdb_interact_dict):
                 tmp_chain_tup.append(0)
                 chain_tup = tuple(tmp_chain_tup)
 
+            if len(tmp_chain_tup) == 3:
+                chain_tup = tuple(tmp_chain_tup)
+
+
             pdb_interact_dict[chain_tup] = structure
 
             if tmp_chain_tup and tmp_chain_tup[0] in alphabet:
@@ -404,52 +414,8 @@ def dict_filler(pdb_list, pdb_interact_dict):
 
 if __name__ == '__main__':
 
-    if __name__ == "__main__":
-        parser = argparse.ArgumentParser(
-            description="This program receives fasta files and returns an ordered list by sequence length of "
-                        "id+length+molecular weight")
-
-        parser.add_argument('-i', '--input',
-                            dest="infile",
-                            action="store",
-                            default=None,
-                            help="Input FASTA formatted file or a directory containing fasta files")
-
-        parser.add_argument('-o', '--output',
-                            dest="outfile",
-                            action="store",
-                            default=None,
-                            help="outputfile")
-
-        parser.add_argument('-v', "--verbose",
-                            dest="verbose",
-                            help="increase output verbosity",
-                            action="store_true")
-
-        parser.add_argument('-p', '--pattern',
-                            dest="regex",
-                            action="store",
-                            help="regex to be searched for in the sequence"
-                            )
-
-        parser.add_argument('-r', '--random',
-                            dest="rand",
-                            action="store",
-                            help="integer defining the number of sequences to be printed in the output"
-                            )
-
-        options = parser.parse_args()
-
-    # Regex definition
-    fasta_p = re.compile(".fa|.fasta")
-    fasta_only = re.compile(".fa$|.fasta$")
-    # noinspection PyUnboundLocalVariable
-    pattern = re.compile(options.regex)
-
-    file_input = []
-    #
-    # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb",
-    #              "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb", "PAIR_LG.pdb", "PAIR_LK.pdb"]
+    pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb",
+                 "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb", "PAIR_LG.pdb", "PAIR_LK.pdb"]
     # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_KH.pdb"]
     pairwise_interact = {}
     similar_chains = {}

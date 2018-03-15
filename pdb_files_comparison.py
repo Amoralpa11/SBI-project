@@ -1,6 +1,11 @@
 from Bio.PDB import *
+from Bio.PDB import Structure
+from Bio.PDB import Model
+from Bio.PDB import Chain
+from Bio.PDB import Residue
+from Bio.PDB import Atom
 from Bio import pairwise2
-import numpy
+import numpy as np
 import string
 import gzip
 import os
@@ -282,7 +287,7 @@ def str_comparison_superimpose(str1, str2):
                         'CA' in [y.get_id() for y in x.get_atoms()]]
             for pair in zip(CA_other1, CA_other2):
 
-                distance_array.append(pair[0]-pair[1])
+                distance_array.append(np.abs(pair[0]-pair[1]))
 
             mean_distances.append(sum(distance_array)/len(distance_array))
 
@@ -302,7 +307,8 @@ def dict_filler(pdb_list, pdb_interact_dict):
         m = 0
         n = 0
         pdb_id, ext = pdb_file.split('.')
-        structure = PDBParser().get_structure(pdb_id, pdb_file)
+        parser = PDBParser(PERMISSIVE=1)
+        structure = parser.get_structure(pdb_id, pdb_file)
         counter = 0
 
         if pdb_interact_dict:
@@ -336,6 +342,7 @@ def dict_filler(pdb_list, pdb_interact_dict):
                     counter += 1
 
         else:
+
             ppb = PPBuilder()
             i = 1
             seq = []
@@ -348,6 +355,7 @@ def dict_filler(pdb_list, pdb_interact_dict):
             if score < 0.95:
                 m += 1
                 chain_tup = (alphabet[n], alphabet[m], 0)
+
             else:
                 chain_tup = (alphabet[n], alphabet[m], 0)
             pdb_interact_dict[chain_tup] = structure
@@ -396,20 +404,20 @@ def dict_filler(pdb_list, pdb_interact_dict):
 
 if __name__ == '__main__':
 
-    # Creating a list with the file/s passed:
-    if options.infile:
-        if os.path.isfile(options.infile):
-            pdb_files.append(options.infile)
-        else:
-            files = filter(fasta_p.search, os.listdir(options.infile))
-            for i in files:
-                pdb_files.append(''.join([options.infile, i]))
-    else:
-        pdb_files = filter(fasta_only.search, os.listdir(os.getcwd()))
+    pdb_files = []
+    fasta_p = re.compile(".pdb")
 
-    # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb",
-    #              "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb", "PAIR_LG.pdb", "PAIR_LK.pdb"]
-    # # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_KH.pdb"]
+    # Creating a list with the file/s passed:
+    folder = '2f1d_all_interactions'
+
+    if os.path.isfile(folder):
+        pdb_files.append(folder)
+    else:
+        files = filter(fasta_p.search, os.listdir(folder))
+        for i in files:
+            pdb_files.append('%s/%s' % (folder, i))
+
+
     pairwise_interact = {}
     similar_chains = {}
 

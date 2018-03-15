@@ -56,22 +56,23 @@ class ChainSelect(Select):
 
 
 
-def compare_chains(chain1, chain2,seq_dict):
+def compare_chains(chain1, chain2):
 
-    if chain1.get_id() not in seq_dict or chain2.get_id() not in seq_dict:
-        return False
-
-    seq1 = seq_dict[chain1.get_id()]
-    seq2 = seq_dict[chain2.get_id()]
+    seq1 = get_sequence_from_chain(chain1)
+    seq2 = get_sequence_from_chain(chain2)
 
 
-    alignment = pairwise2.align.globalxx(seq1, seq2)
-    score = alignment[0][2]
-    ident_perc = score / len(seq1)
+    if seq1 and seq2:
 
-    if ident_perc > 0.95:
-        # print(alignment)
-        return True
+        alignment = pairwise2.align.globalxx(seq1, seq2)
+        score = alignment[0][2]
+        ident_perc = score / len(seq1)
+
+        if ident_perc > 0.95:
+            # print(alignment)
+            return True
+        else:
+            return False
     else:
         return False
 
@@ -97,7 +98,11 @@ def get_sequence_from_chain(chain):
     res_short_list = []
 
     for res in res_list:
-        res_short_list.append(d[res])
+        try:
+            res_short_list.append(d[res])
+        except KeyError:
+            return False
+
     return "".join(res_short_list)
 
 def trim_to_superimpose(chain1, chain2):
@@ -147,7 +152,7 @@ def trim_to_superimpose(chain1, chain2):
         # print(list(chain2.get_residues())[0])
 
 
-def compare_interactions(interaction1, interaction2,similar_sequences):
+def compare_interactions(interaction1, interaction2):
     structure1 = Structure.Structure('1')
     structure2 = Structure.Structure('2')
 
@@ -157,41 +162,29 @@ def compare_interactions(interaction1, interaction2,similar_sequences):
     homodimer = False
 
     for chain in interaction1:
-        chain_id = similar_sequences[chain].get_id()
-        if chain_id in [x.get_id() for x in structure1.get_chains()]:
+        if len(list(structure1[0].get_chains())) == 1 and compare_chains(chain,list(structure1[0].get_chains())[0] ):
             homodimer = True
-            if chain_id.upper() == chain_id:
-                chain_id = chain_id.lower()
-            else:
-                chain_id = chain_id.upper
 
-        structure1[0].add(Chain.Chain(chain_id))
+        structure1[0].add(Chain.Chain(chain.get_id()))
         res_counter = 0
         for residue in chain:
             if 'CA' in [x.get_id() for x in residue.get_atoms()]:
                 atom = residue['CA']
-                structure1[0][chain_id].add(Residue.Residue(('',res_counter,''),residue.get_resname(),residue.get_segid()))
+                structure1[0][chain.get_id()].add(Residue.Residue(('',res_counter,''),residue.get_resname(),residue.get_segid()))
 
-                structure1[0][chain_id][('',res_counter,'')].add(atom.copy())
+                structure1[0][chain.get_id()][('',res_counter,'')].add(atom.copy())
                 res_counter += 1
 
     for chain in interaction2:
 
-        chain_id = similar_sequences[chain].get_id()
-        if chain_id in [x.get_id() for x in structure2.get_chains()]:
-            if chain_id.upper() == chain_id:
-                chain_id = chain_id.lower()
-            else:
-                chain_id = chain_id.upper
-
-        structure2[0].add(Chain.Chain(chain_id))
+        structure2[0].add(Chain.Chain(chain.get_id()))
         res_counter = 0
         for residue in chain:
             if 'CA' in [x.get_id() for x in residue.get_atoms()]:
                 atom = residue['CA']
-                structure2[0][chain_id].add(Residue.Residue(('',res_counter,''),residue.get_resname(),residue.get_segid()))
+                structure2[0][chain.get_id()].add(Residue.Residue(('',res_counter,''),residue.get_resname(),residue.get_segid()))
 
-                structure2[0][chain_id][('',res_counter,'')].add(atom.copy())
+                structure2[0][chain.get_id()][('',res_counter,'')].add(atom.copy())
                 res_counter += 1
 
     if homodimer:
@@ -339,4 +332,4 @@ if __name__ == '__main__':
 
 
 
-    get_interaction_pairs('5vox.pdb')
+    get_interaction_pairs('2f1d.pdb')

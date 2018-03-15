@@ -6,7 +6,7 @@ import gzip
 import os
 import re
 import sys
-
+from Complex_breaker import *
 
 fasta_p = re.compile(".pdb")
 alphabet = list(string.ascii_uppercase) + list(string.ascii_lowercase)
@@ -65,13 +65,12 @@ def str_comparison_superimpose(str1, str2):
     '''
 
     chains_list = [x.get_id() for x in str1.get_chains()]
-    res = 0
     sup = Superimposer()
     mean_distances = []
 
     for chain_id1 in chains_list:
         for chain_id2 in chains_list:
-            if chain_id1.upper() != chain_id2.upper():
+            if not compare_chains(str1[0][chain_id1],str2[0][chain_id2]):
                 continue
             for round in range(10):
                 sup.set_atoms(list(str1[0][chain_id1].get_atoms()), list(str2[0][chain_id2].get_atoms()))
@@ -112,7 +111,6 @@ def dict_filler(pdb_list, pdb_interact_dict):
         n = 0
         pdb_id, ext = pdb_file.split('.')
         structure = PDBParser().get_structure(pdb_id, pdb_file)
-        print(dir(structure))
         counter = 0
         if pdb_interact_dict:
 
@@ -120,9 +118,10 @@ def dict_filler(pdb_list, pdb_interact_dict):
                 tmp_chain_tup = []
                 res_ls = str_comparison_list(pdb_interact_dict[pdb_struct], structure)
                 if 1 in res_ls[0] and 1 in res_ls[1]:
-                    str_comp = str_comparison_superimpose(pdb_interact_dict[pdb_struct], structure)
+
+                    str_comp = str_comparison_superimpose(pdb_interact_dict[pdb_struct], structure)# 1=diferentes 0=iguales
                     counter += str_comp
-                    if str_comp == 1:
+                    if str_comp == 0:
                         tmp_chain_tup.append(pdb_struct[0])
                         tmp_chain_tup.append(pdb_struct[1])
                         tmp_chain_tup.append(pdb_struct[2]+1)
@@ -152,8 +151,8 @@ def dict_filler(pdb_list, pdb_interact_dict):
             # print("aln_score: " + str(score))
             if score < 0.95:
                 m += 1
-                tmp_chain_tup = (alphabet[n], alphabet[m], 0)
-            chain_tup = tuple(tmp_chain_tup)
+                chain_tup = (alphabet[n], alphabet[m], 0)
+
             pdb_interact_dict[chain_tup] = structure
             alphabet.remove(tmp_chain_tup[0])
             alphabet.remove(tmp_chain_tup[1])
@@ -183,8 +182,9 @@ if __name__ == '__main__':
                  "PAIR_LG.pdb", "PAIR_LK.pdb"]
     # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_KH.pdb"]
     pairwise_interact = {}
+    similar_chains = {}
 
-    dict_filler(pdb_files, pairwise_interact)
+    dict_filler(pdb_files, pairwise_interact,similar_chains)
 
     print(pairwise_interact)
 

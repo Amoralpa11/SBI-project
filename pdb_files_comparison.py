@@ -111,6 +111,7 @@ def dict_filler(pdb_list, pdb_interact_dict):
         n = 0
         pdb_id, ext = pdb_file.split('.')
         structure = PDBParser().get_structure(pdb_id, pdb_file)
+        print(help(structure))
         counter = 0
 
         if pdb_interact_dict:
@@ -122,9 +123,11 @@ def dict_filler(pdb_list, pdb_interact_dict):
                     str_comp = str_comparison_superimpose(pdb_interact_dict[pdb_struct], structure)
                     counter += str_comp
                     if str_comp == 1:
-                        tmp_chain_tup.append(pdb_struct[0])
-                        tmp_chain_tup.append(pdb_struct[1])
-                        tmp_chain_tup.append(pdb_struct[2]+1)
+                        chain_tup = ([pdb_struct[0], pdb_struct[1], pdb_struct[2]+1])
+                        counter = len(pdb_interact_dict)
+                        break
+                    else:
+                        break
 
                 elif 1 in res_ls[0]:
                     if pdb_struct[0] not in tmp_chain_tup:
@@ -148,13 +151,14 @@ def dict_filler(pdb_list, pdb_interact_dict):
                 i += 1
             align = pairwise2.align.globalxx(seq[0], seq[1])
             score = align[0][2] / max([len(seq[0]), len(seq[1])])
-            # print("aln_score: " + str(score))
+
             if score < 0.95:
                 m += 1
                 chain_tup = (alphabet[n], alphabet[m], 0)
+
             else:
                 chain_tup = (alphabet[n], alphabet[m], 0)
-            
+
             pdb_interact_dict[chain_tup] = structure
 
             if chain_tup[0] in alphabet:
@@ -167,15 +171,32 @@ def dict_filler(pdb_list, pdb_interact_dict):
             ppb = PPBuilder()
             i = 1
             seq = []
+
             for pp in ppb.build_peptides(structure):
                 seq.append(pp.get_sequence())
                 i += 1
             align = pairwise2.align.globalxx(seq[0], seq[1])
             score = align[0][2] / max([len(seq[0]), len(seq[1])])
-            if score < 0.95:
-                m += 1
+
+            if len(tmp_chain_tup) == 0:
+                if score < 0.95:
+                    m += 1
+                    chain_tup = (alphabet[n], alphabet[m], 0)
+                else:
+                    chain_tup = (alphabet[n], alphabet[m], 0)
+
+            if len(tmp_chain_tup) == 1:
+                if score < 0.95:
+                    chain_tup = tuple([tmp_chain_tup[0], alphabet[n], 0])
+                else:
+                    chain_tup = tuple([tmp_chain_tup[0], tmp_chain_tup[0], 0])
+
+            if len(tmp_chain_tup) == 2:
+                tmp_chain_tup.append(0)
                 chain_tup = tuple(tmp_chain_tup)
+
             pdb_interact_dict[chain_tup] = structure
+
             if tmp_chain_tup[0] in alphabet:
                 alphabet.remove(tmp_chain_tup[0])
             if tmp_chain_tup[1] in alphabet:
@@ -188,6 +209,7 @@ if __name__ == '__main__':
                  "PAIR_LG.pdb", "PAIR_LK.pdb"]
     # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_KH.pdb"]
     pairwise_interact = {}
+    similar_chains = {}
 
     dict_filler(pdb_files, pairwise_interact)
 

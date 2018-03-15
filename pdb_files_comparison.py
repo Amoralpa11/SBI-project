@@ -6,6 +6,7 @@ import gzip
 import os
 import re
 import sys
+import argparse
 
 
 def get_structure_name(filename):
@@ -210,16 +211,7 @@ fasta_p = re.compile(".pdb")
 alphabet = list(string.ascii_uppercase) + list(string.ascii_lowercase)
 
 
-# Creating a list with the file/s passed:
-# if options.infile:
-#     if os.path.isfile(options.infile):
-#         pdb_files.append(options.infile)
-#     else:
-#         files = filter(fasta_p.search, os.listdir(options.infile))
-#         for i in files:
-#             pdb_files.append(''.join([options.infile, i]))
-# else:
-#     pdb_files = filter(fasta_only.search, os.listdir(os.getcwd()))
+
 
 
 def str_comparison_list(str1, str2):
@@ -403,9 +395,21 @@ def dict_filler(pdb_list, pdb_interact_dict):
 
 
 if __name__ == '__main__':
-    pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb",
-                 "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb", "PAIR_LG.pdb", "PAIR_LK.pdb"]
-    # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_KH.pdb"]
+
+    # Creating a list with the file/s passed:
+    if options.infile:
+        if os.path.isfile(options.infile):
+            pdb_files.append(options.infile)
+        else:
+            files = filter(fasta_p.search, os.listdir(options.infile))
+            for i in files:
+                pdb_files.append(''.join([options.infile, i]))
+    else:
+        pdb_files = filter(fasta_only.search, os.listdir(os.getcwd()))
+
+    # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb",
+    #              "PAIR_JI.pdb", "PAIR_KH.pdb", "PAIR_LE.pdb", "PAIR_LG.pdb", "PAIR_LK.pdb"]
+    # # pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_KH.pdb"]
     pairwise_interact = {}
     similar_chains = {}
 

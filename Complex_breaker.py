@@ -169,4 +169,4 @@ if __name__ == '__main__':
 
 
 
-    get_all_interaction_pairs('2f1d.pdb')
+    get_all_interaction_pairs('5vox.pdb')

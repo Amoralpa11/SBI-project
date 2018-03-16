@@ -270,8 +270,8 @@ def str_comparison_superimpose(str1, str2):
     for chain_id1 in chains_list1:
         for chain_id2 in chains_list2:
             # print(compare_chains(str1[0][chain_id1], str2[0][chain_id2]))
-            print(chain_id1)
-            print(chain_id2)
+            # print(chain_id1)
+            # print(chain_id2)
             if not compare_chains(str1[0][chain_id1], str2[0][chain_id2]):
                 continue
             for round in range(10):
@@ -300,6 +300,7 @@ def str_comparison_superimpose(str1, str2):
             if min(mean_distances) < 9:
                 print('\t%s' % min(mean_distances))
                 return 0
+
     return 1
 
 def dict_filler(pdb_list, pdb_interact_dict):
@@ -352,12 +353,7 @@ def dict_filler(pdb_list, pdb_interact_dict):
                     counter += 1
 
         else:
-<<<<<<< HEAD
-=======
 
-            ppb = PPBuilder()
-            i = 1
->>>>>>> 48ec5da9d384245f30214c03276a8d9bc85df76e
             seq = []
             for chain1 in structure.get_chains():
                 seq.append(get_sequence_from_chain(chain1))

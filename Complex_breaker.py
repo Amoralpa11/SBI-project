@@ -56,7 +56,7 @@ def get_interaction_pairs (pdb_filename):
             similar_sequences[chain] = chain
         chain_list2.remove(chain)
         for chain2 in chain_list2:
-            cmp = compare_chains(chain,chain2,seq_dict)
+            cmp = compare_chains(chain,chain2)
 
             if cmp:
 
@@ -93,7 +93,7 @@ def get_interaction_pairs (pdb_filename):
                 if interaction2 in list_to_remove:
                     continue
                 print('\t%s' % interaction2)
-                if not compare_interactions(interaction1,interaction2,similar_sequences):
+                if not compare_interactions(interaction1,interaction2):
                     list_to_remove.append(interaction2)
         for interaction in list_to_remove:
             interaction_list1.remove(interaction)

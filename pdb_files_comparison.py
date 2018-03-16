@@ -427,7 +427,7 @@ if __name__ == '__main__':
     fasta_p = re.compile(".pdb")
 
     # Creating a list with the file/s passed:
-    folder = '2f1d_all_interactions'
+    folder = ''
 
     if os.path.isfile(folder):
         pdb_files.append(folder)

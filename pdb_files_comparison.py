@@ -300,6 +300,7 @@ def str_comparison_superimpose(str1, str2):
             if min(mean_distances) < 9:
                 print('\t%s' % min(mean_distances))
                 return 0
+
     return 1
 
 def dict_filler(pdb_list, pdb_interact_dict):
@@ -357,6 +358,7 @@ def dict_filler(pdb_list, pdb_interact_dict):
                     counter += 1
 
         else:
+
             seq = []
             for chain1 in structure.get_chains():
                 seq.append(get_sequence_from_chain(chain1))

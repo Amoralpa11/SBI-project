@@ -330,11 +330,16 @@ def dict_filler(pdb_list, pdb_interact_dict):
 
                     if str_comp == 1:
                         num = []
-                        for key in pdb_interact_dict.keys():
-                            if [pdb_struct[0], pdb_struct[1]] == list(key[:2]):
-                                num.append(key[2])
-                        tmp_chain_tup = [pdb_struct[0], pdb_struct[1], max(num)+1]
-                        counter = len(pdb_interact_dict)
+                        repeat_comp = []
+                        for key in [id for id in pdb_interact_dict if list(id[:2]) == [pdb_struct[0], pdb_struct[1]]]:
+                            repeat_comp.append(str_comparison_superimpose(pdb_interact_dict[key], structure))
+                            num.append(key[2])
+                        if sum(repeat_comp) == len(pdb_interact_dict):
+                            tmp_chain_tup = [pdb_struct[0], pdb_struct[1], max(num) + 1]
+                            counter = len(pdb_interact_dict)
+                            break
+                        else:
+                            counter = 0
                         break
                     else:
                         break
@@ -424,7 +429,7 @@ if __name__ == '__main__':
     fasta_p = re.compile(".pdb")
 
     # Creating a list with the file/s passed:
-    folder = '2f1d_all_interactions'
+    folder = ''
 
     if os.path.isfile(folder):
         pdb_files.append(folder)
@@ -440,4 +445,5 @@ if __name__ == '__main__':
     dict_filler(pdb_files, pairwise_interact)
 
     print(pairwise_interact)
+
 

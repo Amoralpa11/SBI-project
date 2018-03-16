@@ -235,14 +235,14 @@ def str_comparison_list(str1, str2):
         else:
             ls = 0
         ls2 = 0
-        print(seq1)
-        print(list(str2.get_chains()))
+        # print(seq1)
+        # print(list(str2.get_chains()))
         for chain2 in str2.get_chains():
             seq2 = get_sequence_from_chain(chain2)
-            print(seq2)
+            # print(seq2)
             alignment = pairwise2.align.globalxx(seq1, seq2)
             score = alignment[0][2]
-            print(alignment)
+            # print(alignment)
             length = max(len(seq1), len(seq2))
             ident_perc = score / length  # to look at, choose longest one?
 
@@ -270,8 +270,8 @@ def str_comparison_superimpose(str1, str2):
     for chain_id1 in chains_list1:
         for chain_id2 in chains_list2:
             # print(compare_chains(str1[0][chain_id1], str2[0][chain_id2]))
-            print(chain_id1)
-            print(chain_id2)
+            # print(chain_id1)
+            # print(chain_id2)
             if not compare_chains(str1[0][chain_id1], str2[0][chain_id2]):
                 continue
             for round in range(10):
@@ -427,7 +427,7 @@ if __name__ == '__main__':
     fasta_p = re.compile(".pdb")
 
     # Creating a list with the file/s passed:
-    folder = ''
+    folder = '2f1d_all_interactions'
 
     if os.path.isfile(folder):
         pdb_files.append(folder)

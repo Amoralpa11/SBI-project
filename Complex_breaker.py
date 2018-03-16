@@ -25,15 +25,15 @@ parser = PDBParser(PERMISSIVE=1)
 
 structure_id = '5vox'
 filename = '5vox.pdb'
-structure = parser.get_structure(structure_id,filename)
+structure = parser.get_structure(structure_id, filename)
 
-def get_interaction_pairs (pdb_filename):
 
+def get_interaction_pairs(pdb_filename):
     parser = PDBParser(PERMISSIVE=1)
 
     structure_id = get_structure_name(pdb_filename)
     filename = pdb_filename
-    structure = parser.get_structure(structure_id,filename)
+    structure = parser.get_structure(structure_id, filename)
 
     neighbor_chains = {}
 
@@ -42,9 +42,9 @@ def get_interaction_pairs (pdb_filename):
     for chain in structure.get_chains():
         neighbor_chains[chain] = set([])
         for atom in chain.get_atoms():
-           for chain2 in ns.search(atom.get_coord(),5,level='C'):
-               if chain2 != chain and chain2 not in neighbor_chains.keys():
-                   neighbor_chains[chain].add(chain2)
+            for chain2 in ns.search(atom.get_coord(), 5, level='C'):
+                if chain2 != chain and chain2 not in neighbor_chains.keys():
+                    neighbor_chains[chain].add(chain2)
     # print(neighbor_chains)
 
     similar_sequences = {}
@@ -56,26 +56,22 @@ def get_interaction_pairs (pdb_filename):
             similar_sequences[chain] = chain
         chain_list2.remove(chain)
         for chain2 in chain_list2:
-            cmp = compare_chains(chain,chain2,seq_dict)
+            cmp = compare_chains(chain, chain2, seq_dict)
 
             if cmp:
-
                 similar_sequences[chain2] = similar_sequences[chain]
     print(similar_sequences)
 
-
     interaction_dict = {}
-
 
     for chain1 in neighbor_chains:
         for chain2 in neighbor_chains[chain1]:
-            nr_interaction = tuple(sorted([similar_sequences[chain1].get_id(),similar_sequences[chain2].get_id()]))
-            if tuple(sorted([similar_sequences[chain1].get_id(), similar_sequences[chain2].get_id()])) not in interaction_dict:
+            nr_interaction = tuple(sorted([similar_sequences[chain1].get_id(), similar_sequences[chain2].get_id()]))
+            if tuple(sorted(
+                    [similar_sequences[chain1].get_id(), similar_sequences[chain2].get_id()])) not in interaction_dict:
                 interaction_dict[nr_interaction] = []
 
-            interaction_dict[nr_interaction].append([chain1,chain2])
-
-
+            interaction_dict[nr_interaction].append([chain1, chain2])
 
     for pair in interaction_dict:
         list_to_remove = []
@@ -93,12 +89,11 @@ def get_interaction_pairs (pdb_filename):
                 if interaction2 in list_to_remove:
                     continue
                 print('\t%s' % interaction2)
-                if not compare_interactions(interaction1,interaction2,similar_sequences):
+                if not compare_interactions(interaction1, interaction2, similar_sequences):
                     list_to_remove.append(interaction2)
         for interaction in list_to_remove:
             interaction_list1.remove(interaction)
         interaction_dict[pair] = interaction_list1
-
 
     if not os.path.exists(structure_id):
         os.makedirs(structure_id)
@@ -113,8 +108,8 @@ def get_interaction_pairs (pdb_filename):
 
     for pair in interaction_dict:
         for interaction in interaction_dict[pair]:
-                io.save('%s/%s_%s%s.pdb' % (structure_id,structure_id,interaction[0].get_id(),interaction[1].get_id()),ChainSelect(interaction[0].get_id(),interaction[1].get_id()))
-
+            io.save('%s/%s_%s%s.pdb' % (structure_id, structure_id, interaction[0].get_id(), interaction[1].get_id()),
+                    ChainSelect(interaction[0].get_id(), interaction[1].get_id()))
 
     # distance_matrix  = np.array([[distance_matrix[chain1][chain2] for chain2 in sorted(distance_matrix[chain1].keys())] for chain1 in sorted(distance_matrix.keys())])
     #
@@ -122,13 +117,13 @@ def get_interaction_pairs (pdb_filename):
     # # sns.heatmap(distance_matrix,annot=True)
     # sns.distplot(distance_matrix)
 
-def get_all_interaction_pairs (pdb_filename):
 
+def get_all_interaction_pairs(pdb_filename):
     parser = PDBParser(PERMISSIVE=1)
 
     structure_id = get_structure_name(pdb_filename)
     filename = pdb_filename
-    structure = parser.get_structure(structure_id,filename)
+    structure = parser.get_structure(structure_id, filename)
 
     neighbor_chains = {}
 
@@ -137,9 +132,9 @@ def get_all_interaction_pairs (pdb_filename):
     for chain in structure.get_chains():
         neighbor_chains[chain] = []
         for atom in chain.get_atoms():
-           for chain2 in ns.search(atom.get_coord(),5,level='C'):
-               if chain2 != chain and chain2 not in neighbor_chains.keys():
-                   neighbor_chains[chain].append(chain2)
+            for chain2 in ns.search(atom.get_coord(), 5, level='C'):
+                if chain2 != chain and chain2 not in neighbor_chains.keys():
+                    neighbor_chains[chain].append(chain2)
     # print(neighbor_chains)
 
     if not os.path.exists('%s_all_interactions' % structure_id):
@@ -155,8 +150,9 @@ def get_all_interaction_pairs (pdb_filename):
 
     for chain in neighbor_chains:
         for other_chain in neighbor_chains[chain]:
-                io.save('%s_all_interactions/%s_%s%s.pdb' % (structure_id,structure_id,chain.get_id(),other_chain.get_id()),ChainSelect(chain.get_id(),other_chain.get_id()))
-
+            io.save(
+                '%s_all_interactions/%s_%s%s.pdb' % (structure_id, structure_id, chain.get_id(), other_chain.get_id()),
+                ChainSelect(chain.get_id(), other_chain.get_id()))
 
 
 # for model in structure.get_list():
@@ -166,7 +162,4 @@ def get_all_interaction_pairs (pdb_filename):
 #         io.save('5vox_%s.pdb' % chain.get_id(),ChainSelect(chain.get_id()))
 
 if __name__ == '__main__':
-
-
-
-    get_all_interaction_pairs('2f1d.pdb')
+    get_all_interaction_pairs('5vox.pdb')

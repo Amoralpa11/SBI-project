@@ -245,9 +245,11 @@ def get_neighbor_chains(structure):
     for chain in structure.get_chains():
         neighbor_chains[chain] = set([])
         for atom in [atom for atom in chain.get_atoms() if atom.get_id() == 'CA']:
-            for chain2 in ns.search(atom.get_coord(), 5, level='C'):
-                if chain2 != chain and chain2 not in neighbor_chains.keys():
-                    neighbor_chains[chain].add(chain2)
+            for atom2 in ns.search(atom.get_coord(), 8, level='A'):
+                if atom2.get_id() == 'CA':
+                    chain2 = atom2.get_parent().get_parent()
+                    if chain2 != chain and chain2 not in neighbor_chains.keys():
+                        neighbor_chains[chain].add(chain2)
     # print(neighbor_chains)
     return neighbor_chains
 
@@ -309,6 +311,14 @@ def get_interaction_pairs(pdb_filename):
             interaction_list1.remove(interaction)
         interaction_dict[pair] = interaction_list1
 
+    counter = 0
+    for pair in interaction_dict:
+        print(pair)
+        for int in interaction_dict[pair]:
+            print("\t%s" % int)
+            counter+=1
+    print(counter)
+
     if not os.path.exists(structure_id):
         os.makedirs(structure_id)
     else:
@@ -324,10 +334,6 @@ def get_interaction_pairs(pdb_filename):
         for interaction in interaction_dict[pair]:
             io.save('%s/%s_%s%s.pdb' % (structure_id, structure_id, interaction[0].get_id(), interaction[1].get_id()),
                     ChainSelect(interaction[0].get_id(), interaction[1].get_id()))
-
-
-
-
 
 def get_all_interaction_pairs(pdb_filename):
     parser = PDBParser(PERMISSIVE=1)
@@ -487,9 +493,9 @@ if __name__ == '__main__':
     # result = pickle.load( open( "result.p", "rb" ) )
     #pdb_filename = '5vox.pdb'
 
-    get_interaction_pairs('1gzx.pdb')
-
-    exit(0)
+    # get_all_interaction_pairs('1gzx.pdb')
+    #
+    # exit(0)
 
     result = get_interaction_pairs_from_input('1gzx_all_interactions')
 
@@ -503,4 +509,10 @@ if __name__ == '__main__':
     structure.add(Model.Model(0))
     complex_id = complex_id.ComplexId(structure,result[0],result[1],result[2])
 
-    print('hey')
+    chain = list(result[2].keys())[0]
+    structure[0].add(chain)
+    complex_id.add_node(chain)
+
+    for pair in [pair for pair in result[0] if result[1][result[2][chain]] in pair]:
+        print(pair)
+

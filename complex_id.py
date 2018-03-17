@@ -6,8 +6,8 @@ class Node(object):
 
     def __init__(self, chain_type, chain, complex_id, pos):
         self.chain = chain
-        self.interaction_list = complex_id.get_all_interactions_of_chain(self.chain_type)
         self.chain_type = chain_type
+        self.interaction_list = complex_id.get_all_interactions_of_chain(self.chain_type)
         self.pos = pos
 
     def add_interaction(self, node, interaction):
@@ -36,7 +36,8 @@ class ComplexId(object):
         self.id_dict = id_dict
         self.interaction_dict = interaction_dict
         self.similar_sequences = similar_sequences
-        self.nodes = get_nodes_from_structure(self, structure)
+        self.nodes = []
+        get_nodes_from_structure(self, structure)
 
     def get_all_interactions_of_chain(self, chain_type):
 
@@ -44,7 +45,7 @@ class ComplexId(object):
 
         for pair in [pair for pair in self.interaction_dict if chain_type in pair]:
             for interaction in self.interaction_dict[pair]:
-                interaction_list[interaction] = None
+                interaction_list[tuple(interaction)] = None
 
         return interaction_list
 
@@ -56,10 +57,11 @@ class ComplexId(object):
 
         if interaction and node:
             new_node.add_interaction(node, interaction)
+            node.add_interaction(new_node, interaction)
 
         self.nodes.append(new_node)
 
-        node.add_interaction(new_node, interaction)
+
 
     def get_nodes(self):
         return self.nodes

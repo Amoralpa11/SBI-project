@@ -69,6 +69,11 @@ def compare_chains(chain1, chain2):
     if seq1 and seq2:
 
         alignment = pairwise2.align.globalxx(seq1, seq2)
+        # if 'X' in seq1+seq2:
+        #     print('%s,%s' % ([chain1],[chain2]))
+        #
+        #     print(alignment[0])
+        #     print(alignment[1])
         score = alignment[0][2]
         ident_perc = score / len(seq1)
 
@@ -98,11 +103,13 @@ def get_sequence_from_chain(chain):
     d = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
          'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
          'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
-         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','UNK': 'X'}
 
     res_short_list = []
-
+    # if 'UNK' in res_list:
+    #     print('############################## Hey la cadena %s tenia un unk y te la estabas dejando' % (chain.get_id()))
     for res in res_list:
+
         try:
             res_short_list.append(d[res])
         except KeyError:
@@ -253,6 +260,28 @@ def get_neighbor_chains(structure):
     # print(neighbor_chains)
     return neighbor_chains
 
+def get_similar_sequences(chain_list):
+
+    similar_sequences = {}
+    chain_list2 = copy.copy(chain_list)
+    for chain in chain_list:
+        if chain in similar_sequences:
+            continue
+        if chain not in similar_sequences:
+            similar_sequences[chain] = chain
+        chain_list2.remove(chain)
+        remove_list = []
+        for chain2 in chain_list2:
+
+            cmp = compare_chains(chain, chain2)
+            # TODO: recuperar el seq_dict en la función de arriba, la hace mas eficiente
+
+            if cmp:
+                similar_sequences[chain2] = similar_sequences[chain]
+                remove_list.append(chain2)
+        for chain in remove_list:
+            chain_list2.remove(chain)
+    return similar_sequences
 
 def get_interaction_pairs(pdb_filename):
     parser = PDBParser(PERMISSIVE=1)
@@ -263,19 +292,8 @@ def get_interaction_pairs(pdb_filename):
 
     neighbor_chains = get_neighbor_chains(structure)
 
-    similar_sequences = {}
-    seq_dict = get_seq_dict(structure)
+    similar_sequences = get_similar_sequences(list(structure.get_chains()))
 
-    chain_list2 = list(structure.get_chains())
-    for chain in structure.get_chains():
-        if chain not in similar_sequences:
-            similar_sequences[chain] = chain
-        chain_list2.remove(chain)
-        for chain2 in chain_list2:
-            cmp = compare_chains(chain, chain2)
-
-            if cmp:
-                similar_sequences[chain2] = similar_sequences[chain]
     print(similar_sequences)
 
     interaction_dict = {}
@@ -334,6 +352,10 @@ def get_interaction_pairs(pdb_filename):
         for interaction in interaction_dict[pair]:
             io.save('%s/%s_%s%s.pdb' % (structure_id, structure_id, interaction[0].get_id(), interaction[1].get_id()),
                     ChainSelect(interaction[0].get_id(), interaction[1].get_id()))
+
+
+
+
 
 def get_all_interaction_pairs(pdb_filename):
     parser = PDBParser(PERMISSIVE=1)
@@ -421,22 +443,12 @@ def get_interaction_pairs_from_input(directory):
     #                neighbor_chains[chain].add(chain2)
     # print(neighbor_chains)
 
-    similar_sequences = {}
 
     chain_list = []
     for structure in structure_list:
         chain_list += list(structure.get_chains())
 
-    for chain in copy.copy(chain_list):
-        if chain not in similar_sequences:
-            similar_sequences[chain] = chain
-        chain_list.remove(chain)
-        for chain2 in chain_list:
-            cmp = compare_chains(chain, chain2)
-
-            if cmp:
-                similar_sequences[chain2] = similar_sequences[chain]
-                break
+    similar_sequences = get_similar_sequences(chain_list)
 
     interaction_dict = {}
 
@@ -493,7 +505,7 @@ if __name__ == '__main__':
     # result = pickle.load( open( "result.p", "rb" ) )
     #pdb_filename = '5vox.pdb'
 
-    # get_all_interaction_pairs('1gzx.pdb')
+    # get_interaction_pairs('2f1d.pdb')
     #
     # exit(0)
 
@@ -509,10 +521,12 @@ if __name__ == '__main__':
     structure.add(Model.Model(0))
     complex_id = complex_id.ComplexId(structure,result[0],result[1],result[2])
 
-    chain = list(result[2].keys())[0]
-    structure[0].add(chain)
-    complex_id.add_node(chain)
+    chain1 = list(result[2].keys())[0]
+    structure[0].add(chain1)
+    complex_id.add_node(chain1)
 
-    for pair in [pair for pair in result[0] if result[1][result[2][chain]] in pair]:
-        print(pair)
+    for pair in [pair for pair in result[0] if result[1][result[2][chain1]] in pair]:
+        for interaction in result[0][pair]:
+            chain = [chain for chain in interaction if chain != chain1 ][0]
+            complex_id.add_node(chain,complex_id.get_nodes()[0],interaction)
 

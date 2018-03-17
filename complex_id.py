@@ -11,7 +11,7 @@ class Node(object):
         self.pos = pos
 
     def add_interaction(self, node, interaction):
-        self.interaction_list[interaction] = node
+        self.interaction_list[tuple(interaction)] = node
 
     def get_chain_type(self):
         return self.chain_type
@@ -23,7 +23,9 @@ def get_nodes_from_structure(complex_id, structure):
 
 
 def compare_complex_ids(complex1, complex2):
-    pass
+    if len(complex1.get_nodes()) != len(complex2.get_nodes()):
+        return False
+    if
 
 
 def pop_structure(structure, complex_id):
@@ -71,6 +73,11 @@ class ComplexId(object):
 
     def get_interaction_dict(self):
         return self.interaction_dict
+
+    def get_chain_type_list(self):
+        return [node.get_chain_type() for node in self.get_nodes()]
+
+
 
 
 if __name__ == '__main__':

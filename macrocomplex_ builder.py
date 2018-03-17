@@ -71,14 +71,20 @@ def macrocomplex_builder(str_dict, id_dict, similar_seq, complex_id_dict):
         base_struct.add(Model.Model(0))
         copy_chain = copy.deepcopy(Chain.Chain(chains_str_dict[chain]))
         base_struct[0].add(copy_chain)
-        #complex_id -- build for a chain
+        #complex_id for base structure
         update_structure(base_struct, complex_id)
 
 
 ##########
 
 def update_structure(base_struct, complex_id):
-    if complex_id not in complex_id_dict[complex_id.nodes()]:
+    count = 0
+    for other_CI in complex_id_dict[complex_id.nodes()]:
+        if complex_id == other_CI:  # how to compare CI...
+            break
+        else:
+            count += 1
+    if count == len(complex_id_dict[complex_id.nodes()]):
         for nodes in complex_id.nodes():
             for interact in nodes.interact_list():
                 if nodes.interact_list[interact] == None:
@@ -89,8 +95,7 @@ def update_structure(base_struct, complex_id):
                     else:
                         for i in interact:
                             if similar_seq[chains_str_dict[node.chain_type]] == similar_seq[i]:
-                                chain_str2_copy = copy.deepcopy(i)
-                                superimpose_fun(base_struct, interact, node, chain_str2_copy, complex_id)
+                                superimpose_fun(base_struct, interact, node, i, complex_id)
                                 update_structure(base_struct, complex_id)
 #########
 
@@ -105,7 +110,7 @@ def superimpose_fun(str1, str2, node, chain_str2, complex_id):
     :return: complex_id with new node if superimposition is feasible or a clash if it is not.
     """
     chain1 = node.get_chain()
-    chain2 = chain_str2
+    chain2 = copy.deepcopy(chain_str2)
     atoms_chain1 = list(str1[0][chain1].get_atoms())
     atoms_chain2 = copy.deepcopy(list(str2[0][chain2].get_atoms()))
     sup = Superimposer()
@@ -121,14 +126,14 @@ def superimpose_fun(str1, str2, node, chain_str2, complex_id):
     CA_other2 = [x['CA'] for x in str2[0][other_chain2].get_residues() if
                  'CA' in [y.get_id() for y in x.get_atoms()]]
 
-
     distance_array = []
     for pair in zip(CA_other1, CA_other2):
         distance_array.append(pair[0] - pair[1])
 
-    mean_distances.append( sum(distance_array)/len(distance_array) )
+    mean_distances.append(sum(distance_array)/len(distance_array))
 
     if mean_distances > 2:
         complex_id.add_node(node, str2, chain_str2)
+        similar_sequences[chain2] = similar_sequences[chain_str2]
     else:
-        complex_id.add_node(node, str2, "clash_royale")
+        complex_id.add_node(node, str2, "clash")

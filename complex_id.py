@@ -3,7 +3,7 @@ from Bio.PDB.Model import Model
 
 class Node(object):
 
-    def __init__(self,chain_type, chain, complex_id,pos):
+    def __init__(self, chain_type, chain, complex_id,pos):
         self.chain = chain
         self.interaction_list = complex_id.get_all_interactions_of_chain(self.chain_type)
         self.chain_type = chain_type

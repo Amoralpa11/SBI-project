@@ -17,6 +17,8 @@ import os
 from pdb_files_comparison import str_comparison_superimpose
 import copy
 import string
+import complex_id
+import pickle
 
 sns.set()
 
@@ -476,6 +478,15 @@ def get_interaction_pairs_from_input(directory):
             counter+=1
     print(counter)
 
+    return [interaction_dict,id_dict]
+
 if __name__ == '__main__':
 
-    get_interaction_pairs_from_input('5vox_all_interactions')
+    # result = get_interaction_pairs_from_input('5vox_all_interactions')
+
+    result = pickle.load( open( "result.p", "rb" ) )
+
+
+    structure = Structure.Structure('1')
+    structure.add(Model.Model('0'))
+    complex_id = complex_id.ComplexId(structure,result[0],result[1])

@@ -238,6 +238,19 @@ def get_seq_dict(structure):
             continue
     return seq_dict
 
+def get_neighbor_chains(structure):
+
+    neighbor_chains = {}
+    ns = NeighborSearch(list(structure.get_atoms()))
+    for chain in structure.get_chains():
+        neighbor_chains[chain] = set([])
+        for atom in [atom for atom in chain.get_atoms() if atom.get_id() == 'CA']:
+            for chain2 in ns.search(atom.get_coord(), 5, level='C'):
+                if chain2 != chain and chain2 not in neighbor_chains.keys():
+                    neighbor_chains[chain].add(chain2)
+    # print(neighbor_chains)
+    return neighbor_chains
+
 
 def get_interaction_pairs(pdb_filename):
     parser = PDBParser(PERMISSIVE=1)
@@ -246,17 +259,7 @@ def get_interaction_pairs(pdb_filename):
     filename = pdb_filename
     structure = parser.get_structure(structure_id, filename)
 
-    neighbor_chains = {}
-
-    ns = NeighborSearch(list(structure.get_atoms()))
-
-    for chain in structure.get_chains():
-        neighbor_chains[chain] = set([])
-        for atom in chain.get_atoms():
-            for chain2 in ns.search(atom.get_coord(), 5, level='C'):
-                if chain2 != chain and chain2 not in neighbor_chains.keys():
-                    neighbor_chains[chain].add(chain2)
-    # print(neighbor_chains)
+    neighbor_chains = get_neighbor_chains(structure)
 
     similar_sequences = {}
     seq_dict = get_seq_dict(structure)
@@ -267,7 +270,7 @@ def get_interaction_pairs(pdb_filename):
             similar_sequences[chain] = chain
         chain_list2.remove(chain)
         for chain2 in chain_list2:
-            cmp = compare_chains(chain, chain2, seq_dict)
+            cmp = compare_chains(chain, chain2)
 
             if cmp:
                 similar_sequences[chain2] = similar_sequences[chain]
@@ -323,6 +326,9 @@ def get_interaction_pairs(pdb_filename):
                     ChainSelect(interaction[0].get_id(), interaction[1].get_id()))
 
 
+
+
+
 def get_all_interaction_pairs(pdb_filename):
     parser = PDBParser(PERMISSIVE=1)
 
@@ -330,17 +336,7 @@ def get_all_interaction_pairs(pdb_filename):
     filename = pdb_filename
     structure = parser.get_structure(structure_id, filename)
 
-    neighbor_chains = {}
-
-    ns = NeighborSearch(list(structure.get_atoms()))
-
-    for chain in structure.get_chains():
-        neighbor_chains[chain] = []
-        for atom in chain.get_atoms():
-            for chain2 in ns.search(atom.get_coord(), 5, level='C'):
-                if chain2 != chain and chain2 not in neighbor_chains.keys():
-                    neighbor_chains[chain].append(chain2)
-    # print(neighbor_chains)
+    neighbor_chains = get_neighbor_chains(structure)
 
     if not os.path.exists('%s_all_interactions' % structure_id):
         os.makedirs('%s_all_interactions' % structure_id)
@@ -478,15 +474,33 @@ def get_interaction_pairs_from_input(directory):
             counter+=1
     print(counter)
 
-    return [interaction_dict,id_dict]
+    return [interaction_dict,id_dict,similar_sequences]
 
 if __name__ == '__main__':
 
     # result = get_interaction_pairs_from_input('5vox_all_interactions')
+    #
+    # pickle.dump(result, open('result.p','wb'))
+    #
+    # exit(0)
+    #
+    # result = pickle.load( open( "result.p", "rb" ) )
+    #pdb_filename = '5vox.pdb'
 
-    result = pickle.load( open( "result.p", "rb" ) )
+    get_interaction_pairs('1gzx.pdb')
 
+    exit(0)
+
+    result = get_interaction_pairs_from_input('1gzx_all_interactions')
+
+    # parser = PDBParser(PERMISSIVE=1)
+
+    # structure_id = get_structure_name(pdb_filename)
+    # filename = pdb_filename
+    # full_structure = parser.get_structure(structure_id, filename)
 
     structure = Structure.Structure('1')
-    structure.add(Model.Model('0'))
-    complex_id = complex_id.ComplexId(structure,result[0],result[1])
+    structure.add(Model.Model(0))
+    complex_id = complex_id.ComplexId(structure,result[0],result[1],result[2])
+
+    print('hey')

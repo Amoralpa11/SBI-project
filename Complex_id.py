@@ -35,27 +35,6 @@ def get_nodes_from_structure(complex_id, structure):
         complex_id.add_node(chain)
 
 
-def compare_complex_ids(complex1, complex2, cycles):
-    if len(complex1.get_nodes()) != len(complex2.get_nodes()):
-        return False
-    if complex1.get_chain_type_list() != complex2.get_chain_type_list():
-        return False
-    for cycle in range(1,cycles):
-
-        interaction_list2 = complex2.get_interaction_id(cycle)
-
-        list_to_remove = []
-
-        for interaction_dict in complex1.get_interaction_id(cycle):
-            if interaction_dict not in interaction_list2:
-                return False
-            else:
-                interaction_list2.remove(interaction_dict)
-
-    return True
-
-
-
 
 def pop_structure(structure, complex_id):
     pass
@@ -116,6 +95,23 @@ class ComplexId(object):
 
     def __copy__(self):
         pass
+
+    def compare_with(self,complex2,cycles):
+        if len(self.get_nodes()) != len(complex2.get_nodes()):
+            return False
+        if self.get_chain_type_list() != complex2.get_chain_type_list():
+            return False
+        for cycle in range(1, cycles):
+
+            interaction_list2 = complex2.get_interaction_id(cycle)
+
+            for interaction_dict in self.get_interaction_id(cycle):
+                if interaction_dict not in interaction_list2:
+                    return False
+                else:
+                    interaction_list2.remove(interaction_dict)
+
+        return True
 
 
 if __name__ == '__main__':

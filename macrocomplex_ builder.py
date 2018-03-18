@@ -1,3 +1,11 @@
+from Bio.PDB import Superimposer
+from Bio.PDB import Structure
+from Bio.PDB import Model
+from Bio.PDB import Chain
+import copy
+
+
+
 def str_comparison_superimpose(str1, str2):
     '''
     This function compares if 2 structures are structurally similar
@@ -87,7 +95,7 @@ def update_structure(base_struct, complex_id):
     if count == len(complex_id_dict[complex_id.nodes()]):
         for nodes in complex_id.nodes():
             for interact in nodes.interact_list():
-                if nodes.interact_list[interact] == None:
+                if nodes.interact_list[interact] is None:
                     if similar_seq[interact[0]] == similar_seq[interact[1]]:
                         chain_str2_copy = copy.deepcopy(interact[0])
                         superimpose_fun(base_struct, interact, node, chain_str2_copy , complex_id)

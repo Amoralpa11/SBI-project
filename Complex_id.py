@@ -7,14 +7,27 @@ class Node(object):
     def __init__(self, chain_type, chain, complex_id, pos):
         self.chain = chain
         self.chain_type = chain_type
-        self.interaction_list = complex_id.get_all_interactions_of_chain(self.chain_type)
+        self.interaction_dict = complex_id.get_all_interactions_of_chain(self.chain_type)
         self.pos = pos
 
     def add_interaction(self, node, interaction):
-        self.interaction_list[tuple(interaction)] = node
+        self.interaction_dict[tuple(interaction)] = node
 
     def get_chain_type(self):
         return self.chain_type
+
+    def get_interaction_list(self):
+        return self.interaction_dict
+
+    def get_deep_interactions(self, cycles, prev_node = None):
+        deep_interactions_dict = {}
+        if cycles > 0:
+            for interaction in self.interaction_dict:
+                if prev_node != self.interaction_dict[tuple(interaction)] != None:
+                    deep_interactions_dict[tuple(interaction)] = self.interaction_dict[tuple(interaction)].get_deep_interactions(cycles-1,self)
+
+            if len(deep_interactions_dict) > 0:
+                return deep_interactions_dict
 
 
 def get_nodes_from_structure(complex_id, structure):
@@ -22,10 +35,26 @@ def get_nodes_from_structure(complex_id, structure):
         complex_id.add_node(chain)
 
 
-def compare_complex_ids(complex1, complex2):
+def compare_complex_ids(complex1, complex2, cycles):
     if len(complex1.get_nodes()) != len(complex2.get_nodes()):
         return False
-    if
+    if complex1.get_chain_type_list() != complex2.get_chain_type_list():
+        return False
+    for cycle in range(1,cycles):
+
+        interaction_list2 = complex2.get_interaction_id(cycle)
+
+        list_to_remove = []
+
+        for interaction_dict in complex1.get_interaction_id(cycle):
+            if interaction_dict not in interaction_list2:
+                return False
+            else:
+                interaction_list2.remove(interaction_dict)
+
+    return True
+
+
 
 
 def pop_structure(structure, complex_id):
@@ -75,9 +104,18 @@ class ComplexId(object):
         return self.interaction_dict
 
     def get_chain_type_list(self):
-        return [node.get_chain_type() for node in self.get_nodes()]
+        return sorted([node.get_chain_type() for node in self.get_nodes()])
+
+    def get_interaction_id(self,cycles):
+        deep_interaction_list = []
+        for node in self.get_nodes():
+            deep_interaction_list.append(node. get_deep_interactions(cycles))
+
+        return deep_interaction_list
 
 
+    def __copy__(self):
+        pass
 
 
 if __name__ == '__main__':

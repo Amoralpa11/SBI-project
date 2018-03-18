@@ -20,31 +20,18 @@ import string
 import Complex_id
 import pickle
 
-sns.set()
-
-"""En este archivo estarán las funciones cuyo proposito sea procesar la información del input que proporcione el usuario. Esto implica, identificar proteinas similares presentes en mas de una interacción, clasificar cuantos tipos de interacciones establece una misma proteina, teniendo en cuenta con qué protein interaccionan y si la superficie de contacto es la misma. """
-
-parser = PDBParser(PERMISSIVE=1)
-
-structure_id = '5vox'
-filename = '5vox.pdb'
-structure = parser.get_structure(structure_id, filename)
+"""In this file there are the functions that will take part in the processing of the user input. That implies 
+identify similar proteins in the input pdb files, classifiying in a non redundant way the types of interactions that 
+a protein can stablish. """
 
 
 def get_structure_name(filename):
+
+    """Takes a .pdb file name, returns the string without extension"""
+
     p = re.compile('(.*).pdb')
     m = p.match(filename)
     return m.group(1)
-
-
-def get_min_distance(chain1, chain2):
-    distance_list = []
-    for res1 in chain1.get_residues():
-        for res2 in chain2.get_residues():
-            distance_list.append(res1['CA'] - res2['CA'])
-
-    min_distance = min(distance_list)
-    return min_distance
 
 
 class ChainSelect(Select):

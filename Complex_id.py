@@ -1,14 +1,18 @@
 from Bio.PDB.Structure import Structure
 from Bio.PDB.Model import Model
+import copy
 
 
 class Node(object):
 
-    def __init__(self, chain_type, chain, complex_id, pos):
-        self.chain = chain
+    def __init__(self, chain_type, chain, complex_id):
+        if type(chain) == type(str()):
+            self.chain = chain
+        else:
+            self.chain = chain.get_id()
+
         self.chain_type = chain_type
         self.interaction_dict = complex_id.get_all_interactions_of_chain(self.chain_type)
-        self.pos = pos
 
     def add_interaction(self, node, interaction):
         self.interaction_dict[tuple(interaction)] = node
@@ -16,8 +20,14 @@ class Node(object):
     def get_chain_type(self):
         return self.chain_type
 
-    def get_interaction_list(self):
+    def get_interaction_dict(self):
         return self.interaction_dict
+
+    def get_chain(self):
+        return self.chain
+
+    def __set_interaction__dict(self,interaction_dict):
+        self.interaction_dict = interaction_dict
 
     def get_deep_interactions(self, cycles, prev_node = None):
         deep_interactions_dict = {}
@@ -28,6 +38,15 @@ class Node(object):
 
             if len(deep_interactions_dict) > 0:
                 return deep_interactions_dict
+
+
+
+    def copy(self,complex_id):
+
+        new_node = Node(self.get_chain_type(),self.get_chain(),complex_id)
+        new_node.__set_interaction__dict(copy.copy(self.get_interaction_dict()))
+
+        return new_node
 
 
 def get_nodes_from_structure(complex_id, structure):
@@ -42,12 +61,13 @@ def pop_structure(structure, complex_id):
 
 class ComplexId(object):
 
-    def __init__(self, structure, interaction_dict, id_dict, similar_sequences):
+    def __init__(self, interaction_dict, id_dict, similar_sequences, structure = None):
         self.id_dict = id_dict
         self.interaction_dict = interaction_dict
         self.similar_sequences = similar_sequences
         self.nodes = []
-        get_nodes_from_structure(self, structure)
+        if structure:
+            get_nodes_from_structure(self, structure)
 
     def get_all_interactions_of_chain(self, chain_type):
 
@@ -63,7 +83,7 @@ class ComplexId(object):
 
         chain_type = self.id_dict[self.similar_sequences[chain]]
 
-        new_node = Node(chain_type, chain, self, len(self.nodes))
+        new_node = Node(chain_type, chain, self)
 
         if interaction and node:
             new_node.add_interaction(node, interaction)
@@ -93,8 +113,22 @@ class ComplexId(object):
         return deep_interaction_list
 
 
-    def __copy__(self):
-        pass
+    def copy(self):
+
+        """
+        Returns a copy of the complex id keeping
+        :return:
+        """
+
+        new_complex_id = ComplexId(self.interaction_dict,self.id_dict,self.similar_sequences)
+
+        node_list = []
+        for node in self.get_nodes():
+            node_list.append(node.copy(new_complex_id))
+
+        new_complex_id.__set_nodes__(node_list)
+
+        return new_complex_id
 
     def compare_with(self,complex2,cycles):
         if len(self.get_nodes()) != len(complex2.get_nodes()):
@@ -112,7 +146,17 @@ class ComplexId(object):
                     interaction_list2.remove(interaction_dict)
 
         return True
+    def pop_structure(self,structure):
 
+        """
+        This function removes from structure the chain that has the same id than the later node added to this complex_id
+        :param structure:
+        :return: None
+        """
+        structure.detach_child([chain for chain in structure.get_chains() if chain.get_id() == self.nodes[-1].get_chain()][0])
+
+    def __set_nodes__(self,nodes):
+        self.nodes = nodes
 
 if __name__ == '__main__':
     pass

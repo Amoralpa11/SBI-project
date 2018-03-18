@@ -519,7 +519,7 @@ if __name__ == '__main__':
 
     structure = Structure.Structure('1')
     structure.add(Model.Model(0))
-    complex_id = Complex_id.ComplexId(structure, result[0], result[1], result[2])
+    complex_id = Complex_id.ComplexId(result[0], result[1], result[2],structure)
 
     chain1 = list(result[2].keys())[0]
     structure[0].add(chain1)
@@ -529,5 +529,11 @@ if __name__ == '__main__':
         for interaction in result[0][pair]:
             chain = [chain for chain in interaction if chain != chain1 ][0]
             complex_id.add_node(chain,complex_id.get_nodes()[0],interaction)
-    cmp = Complex_id.compare_complex_ids(complex_id,complex_id,1)
+
+
+
+    new_complex_id = complex_id.copy()
+
+    complex_id.add_node(list(result[2].keys())[-1])
+
     print('hey')

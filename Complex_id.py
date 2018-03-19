@@ -55,10 +55,6 @@ def get_nodes_from_structure(complex_id, structure):
 
 
 
-def pop_structure(structure, complex_id):
-    pass
-
-
 class ComplexId(object):
 
     def __init__(self, interaction_dict, id_dict, similar_sequences, structure = None):

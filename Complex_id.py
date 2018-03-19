@@ -5,6 +5,8 @@ import copy
 
 class Node(object):
 
+    """This class is the main component of the ComplexId class. It holds """
+
     def __init__(self, chain_type, chain, complex_id):
         if type(chain) == type(str()):
             self.chain = chain

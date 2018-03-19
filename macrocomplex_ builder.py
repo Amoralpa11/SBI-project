@@ -1,5 +1,5 @@
 def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict):
-    count = 0
+
     for other_CI in [ ident for ident in complex_id_dict[len(complex_id.nodes())] if ident != complex_id]:
         if complex_id.compare_with(other_CI):  # how to compare CI...
             return
@@ -15,8 +15,11 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                 for i in interact:
                     if similar_seq[chains_str_dict[nodes.chain_type()]] == similar_seq[i]:
                         superimpose_fun(base_struct, interact, nodes, i, complex_id)
-                        update_structure(base_struct, complex_id)
+                        update_structure(base_struct, complex_id.copy())
                         break
+        # TODO if the structure is modified when we go back a node
+        if structure modified:
+            pop_
 #########
 
 def superimpose_fun(str1, str2, node, chain_str2, complex_id):
@@ -31,11 +34,12 @@ def superimpose_fun(str1, str2, node, chain_str2, complex_id):
     """
     chain1 = node.get_chain()
     str2_copy = copy.deepcopy(str2)
+
+    trim_to_superimpose(str1[0][chain1], str2[0][chain_str2])
     atoms_chain1 = list(str1[0][chain1].get_atoms())
     atoms_chain2 = list(str2[0][chain_str2].get_atoms())
     sup = Superimposer()
 
-    # TODO trimming
     sup.set_atoms(atoms_chain1, atoms_chain2)
     sup.apply(str2_copy)
 

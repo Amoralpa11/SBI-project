@@ -13,7 +13,7 @@ def get_clash_chains(structure, chain):
     chain_atoms = chain.get_atoms()
     # chain_atoms = Selection.unfold_entities(center_residues, 'A')
     atom_list = structure.get_atoms()
-    ns = NeighbourSearch(atom_list)
+    ns = NeighborSearch(atom_list)
     # clashing_chains = {res for chain_atoms in chain_atoms
     #                    for res in ns.search(chain_atoms.get_coord(), 1.2, 'C')}
     clashing_chain_ls = []

@@ -1,113 +1,75 @@
-from Bio.PDB import Superimposer
-from Bio.PDB import Structure
-from Bio.PDB import Model
-from Bio.PDB import Chain
-import copy
+form Bio.PDB import *
+from  Complex_breaker import *
 
+def get_clash_chains(structure, chain):
 
-
-def str_comparison_superimpose(str1, str2):
-    '''
-    This function compares if 2 structures are structurally similar
-    and returns a 0 if they are the same or 1 if they are different.
-    It requires 2 arguments, the 2 structures we want to compare.
-    '''
-
-    chains_list = [x.get_id() for x in str1.get_chains()]
-    res = 0
-    sup = Superimposer()
-    mean_distances = []
-    for chain_id1 in chains_list:
-        for chain_id2 in chains_list:
-            if chain_id1.upper() != chain_id2.upper():
-                continue
-            for round in range(10):
-                sup.set_atoms(list(str1[0][chain_id1].get_atoms()), list(str2[0][chain_id2].get_atoms()))
-                sup.apply(str2)
-
-            distance_array = []
-            other_chain1 = [x for x in chains_list if x != chain_id1][0]
-            other_chain2 = [x for x in chains_list if x != chain_id2][0]
-            CA_other1 = [x['CA'] for x in str1[0][other_chain1].get_residues() if
-                         'CA' in [y.get_id() for y in x.get_atoms()]]
-            CA_other2 = [x['CA'] for x in str2[0][other_chain2].get_residues() if
-                         'CA' in [y.get_id() for y in x.get_atoms()]]
-            for pair in zip(CA_other1, CA_other2):
-                distance_array.append(pair[0] - pair[1])
-
-            mean_distances.append(sum(distance_array) / len(distance_array))
-
-            if min(mean_distances) < 9:
-                print('\t%s' % min(mean_distances))
-                return 0
-    print('\t%s' % min(mean_distances))
-    return 1
-
-
-def update_structure(chain, str1, str2):
     """
-    This functions returns the superimposed structure between str1 and str2.
-    :param chain: chain in common for superimposition.
-    :param str1: fixed structure.
-    :param str2: mobile structure.
-    :return: str1 with str2 updated.
+    This function recieves a hain and a structure and calculates if there is a clash between these.
+    :param structure: structure where we want to add the chain
+    :param chain: chain object we want to add to the structure
+    :return: True or false, True if there is clash and false if there is no clash.
     """
-    sup = Superimposer()
-    for round in range(10):
-        sup.set_atoms(list(str1[0][chain].get_atoms()), list(str2[0][chain].get_atoms()))
-        sup.apply(str2)
+    # center_residues = chain.get_residues()
+    chain_atoms = chain.get_atoms()
+    # chain_atoms = Selection.unfold_entities(center_residues, 'A')
+    atom_list = structure.get_atoms()
+    ns = NeighbourSearch(atom_list)
+    # clashing_chains = {res for chain_atoms in chain_atoms
+    #                    for res in ns.search(chain_atoms.get_coord(), 1.2, 'C')}
+    clashing_chain_ls = []
+    for atom1 in chain_atoms:
+        for chain in ns.search(atom1.get_coord(), 1.2, 'C'):
+            # if chain != atom1.get_parent().get_parent():
+            clashing_chain_ld.append(chain)
 
-    return structure_updated
+    if clashing_chain_ls:
+        return True
+    else:
+        return False
 
-
-def macrocomplex_builder(str_dict, id_dict, similar_seq, complex_id_dict):
-    """
-    This function rebuilds a complex with the interactions we obtained from the pdb files.
-    :param str_dict: dictionary with all the interactions we want to build the complex with.
-    :param id_dict: dictionary with all the chains with their specific key.
-    :return: returns a XXXXXXX with the macrocomplex built and... the middle steps??
-    """
-
-    # returns a set with all the chains passed by the user
-    chains = set([item for sublist in [x for x in str_dict] for item in sublist])
-
-    # Create a dictionary with structures equivalent only to the chain in the key
-    chains_str_dict = {v: k for k, v in id_dict.items() if id in chains}
-
-    for chain in chains_str_dict:
-        base_struct = Structure.Structure('1')
-        base_struct.add(Model.Model(0))
-        copy_chain = copy.deepcopy(Chain.Chain(chains_str_dict[chain]))
-        base_struct[0].add(copy_chain)
-        #complex_id for base structure
-        update_structure(base_struct, complex_id)
-
-
-##########
-
-def update_structure(base_struct, complex_id):
-    count = 0
-    for other_CI in complex_id_dict[complex_id.nodes()]:
-        if complex_id == other_CI:  # how to compare CI...
-            break
-        else:
-            count += 1
-    if count == len(complex_id_dict[complex_id.nodes()]):
-        for nodes in complex_id.nodes():
-            for interact in nodes.interact_list():
-                if nodes.interact_list[interact] is None:
-                    if similar_seq[interact[0]] == similar_seq[interact[1]]:
-                        chain_str2_copy = copy.deepcopy(interact[0])
-                        superimpose_fun(base_struct, interact, node, chain_str2_copy , complex_id)
-                        update_structure(base_struct, complex_id)
-                    else:
-                        for i in interact:
-                            if similar_seq[chains_str_dict[node.chain_type]] == similar_seq[i]:
-                                superimpose_fun(base_struct, interact, node, i, complex_id)
-                                update_structure(base_struct, complex_id)
 #########
 
-def superimpose_fun(str1, str2, node, chain_str2, complex_id):
+def interaction_finder(structure, ref_chain_id, complex_id):
+    """
+    This function recieves a hain and a structure and calculates if there is a clash between these.
+    :param structure: structure where we want to add the chain
+    :param chain: chain object we want to add to the structure
+    :return: True or false, True if there is clash and false if there is no clash.
+    """
+    neighbor_chains = []
+    ns = NeighborSearch(list(structure.get_atoms()))
+    ref_chain = structure[0][ref_chain_id]
+    for atom in [atom for atom in ref_chain.get_atoms() if atom.get_id() == 'CA']:  # For every alpha carbon in chain
+        for atom2 in ns.search(atom.get_coord(), 8, level='A'):
+            if atom2.get_id() == 'CA':  # for every alpha carbon at 8 armstrongs or less from atom
+                chain2 = atom2.get_parent().get_parent()  # Getting to which chain it belongs
+                if chain2 != ref_chain and chain2 not in neighbor_chains:
+                    neighbor_chains.add(chain2)  # If it is not in the same chain and it is not already a
+                    # key (we already have its interactions) we add the chain as a value
+
+    for chain in neighbor_chains:
+        for interaction in complex_id.get_interaction_dict():
+            if complex_id.id_dict[complex_id.similar_sequences[chain]] in interaction and complex_id.nodes[-1].get_chain_type() in interaction:
+                if not compare_interactions([structure[0][ref_chain_id], chain], interaction, complex_id.similar_sequences):
+                    complex_id.nodes[-1].add_interaction(complex_id[chain.get_id()], interaction)
+                    complex_id[chain.get_id()].add_interaction(complex_id.nodes[-1], interaction)
+                    break
+
+#########
+
+def copy_chain(chain, id):
+    """
+    This function creates a new chain which is a copy of the passed one but with a different ID
+    :param chain: chain we want to copy
+    :return: copy of the passed chain
+    """
+
+    new_chain = copy.deepcopy(chain)
+    new_chain.id = id
+    return new_chain
+#########
+
+def superimpose_fun(str1, str2, node, chain_str2, complex_id, similar_seq):
     """
     This functions superimposes 2 structure using nodes
     :param str1: fixed structure
@@ -118,30 +80,87 @@ def superimpose_fun(str1, str2, node, chain_str2, complex_id):
     :return: complex_id with new node if superimposition is feasible or a clash if it is not.
     """
     chain1 = node.get_chain()
-    chain2 = copy.deepcopy(chain_str2)
+    str2_copy = copy.deepcopy(str2)
+
+    trim_to_superimpose(str1[0][chain1], str2[0][chain_str2])
     atoms_chain1 = list(str1[0][chain1].get_atoms())
-    atoms_chain2 = copy.deepcopy(list(str2[0][chain2].get_atoms()))
+    atoms_chain2 = list(str2[0][chain_str2].get_atoms())
     sup = Superimposer()
 
     sup.set_atoms(atoms_chain1, atoms_chain2)
-    sup.apply(str2)
+    sup.apply(str2_copy)
 
-    other_chain1 = [x for x in chains_list if x != chain1][0]
-    other_chain2 = [x for x in chains_list if x != chain2][0]
+    other_chain2 = [x for x in str2_copy.get_chains() if x != chain_str2]
 
-    CA_other1 = [x['CA'] for x in str1[0][other_chain1].get_residues() if
-                 'CA' in [y.get_id() for y in x.get_atoms()]]
-    CA_other2 = [x['CA'] for x in str2[0][other_chain2].get_residues() if
-                 'CA' in [y.get_id() for y in x.get_atoms()]]
-
-    distance_array = []
-    for pair in zip(CA_other1, CA_other2):
-        distance_array.append(pair[0] - pair[1])
-
-    mean_distances.append(sum(distance_array)/len(distance_array))
-
-    if mean_distances > 2:
-        complex_id.add_node(node, str2, chain_str2)
-        similar_sequences[chain2] = similar_sequences[chain_str2]
+    if not get_clash_chains(str1, other_chain2): ## returns T if there is a clash and F if there isn't.
+        complex_id.add_node(other_chain2, node, str2)
+        str1[0].add(other_chain2)
+        similar_seq[other_chain2.get_id()] = similar_seq[chain_str2]
+        interaction_finder(str1, other_chain2.get_id(), complex_id)
+        return True
     else:
-        complex_id.add_node(node, str2, "clash")
+        node.add_interaction("clash", str2)
+
+#########
+
+def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict):
+    modified_str = 0
+    for other_CI in [ ident for ident in complex_id_dict[len(complex_id.nodes())] if ident != complex_id]:
+        if complex_id.compare_with(other_CI):
+            return
+
+    for nodes in complex_id.nodes():
+        for interact in [ interaction[0] for interaction in nodes.get_interact_dict().items() if interaction[1] is None ]:
+
+            if similar_seq[interact[0]] == similar_seq[interact[1]]:
+                # TODO len de complex id
+                chain_str2_copy = copy_chain(interact[0], len(complex_id.get_nodes()))
+                modified_str = superimpose_fun(base_struct, interact, nodes, chain_str2_copy, complex_id, similar_seq)
+
+                if modified_str:
+                    update_structure(base_struct, complex_id)
+                    complex_id.pop_structure(base_struct)
+
+            else:
+                for i in interact:
+                    if similar_seq[chains_str_dict[nodes.chain_type()]] == similar_seq[i]:
+                        chain_str2_copy = copy_chain(i, len(complex_id.get_nodes()))
+                        modified_str = superimpose_fun(base_struct, interact, nodes, chain_str2_copy, complex_id, similar_seq)
+
+                        if modified_str:
+                            update_structure(base_struct, complex_id)
+                            complex_id.pop_structure(base_struct)
+                        break
+
+def macrocomplex_builder(str_dict, id_dict, similar_seq, interaction_dict):
+    """
+    This function rebuilds a complex with the interactions we obtained from the pdb files.
+    :param str_dict: dictionary with all the interactions we want to build the complex with.
+    :param id_dict: dictionary with all the chains with their specific key.
+    :return: returns a XXXXXXX with the macrocomplex built and... the middle steps??
+    """
+
+    # # returns a set with all the chains passed by the user
+    # chains = set([item for sublist in [x for x in str_dict] for item in sublist])
+
+    # unique structure selection
+    unique_chains = set(similar_seq.values())
+
+    # Create a dictionary with unique chains with chain name as key and str in the value
+    chains_str_dict = {v: k for k, v in id_dict.items() if k in unique_chains}
+
+    # initialize a complex id dictionary
+    complex_id_dict = {}
+
+    for chain in chains_str_dict:
+        # initialize an empty structure
+        base_struct = Structure.Structure('1')
+        base_struct.add(Model.Model(0))
+        # copy_chain = copy.deepcopy(Chain.Chain(chains_str_dict[chain]))
+        chain_copied = copy_chain(chains_str_dict[chain], 1)
+        # add chain to the new structure
+        base_struct[0].add(chain_copied)
+        similar_seq[1] = similar_seq[chain]
+        complex_id = ComplexId(interaction_dict, id_dict, similar_seq, base_struct)
+        complex_id_dict[len(complex_id.nodes())] = complex_id
+        update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict)

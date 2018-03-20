@@ -168,12 +168,16 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
     different and 0 if they are the same interaction """
 
     structure1 = Structure.Structure('1')  # Because we are going to remove non matching ressidues, we will make a copy
+
     structure2 = Structure.Structure('2')  # of the structures to avoid modifiying the original chains
+
 
     structure1.add(Model.Model(0))
     structure2.add(Model.Model(0))
 
+
     homodimer = False  # This variable will be true if the chians in the interaction are more than a 95% similar
+
 
     for chain in interaction1:
         chain_id = similar_sequences[chain].get_id() # To identify similar chains in the superimposition we name them
@@ -260,7 +264,9 @@ def get_neighbor_chains(structure):
     ns = NeighborSearch(list(structure.get_atoms()))
     for chain in structure.get_chains():
         neighbor_chains[chain] = set([])
-        for atom in [atom for atom in chain.get_atoms() if atom.get_id() == 'CA']:  # For every alpha carbon in chain
+
+        for atom in [atom for atom in chain.get_atoms() if atom.get_id() == 'CA' ]:  # For every alpha carbon in chain
+
             for atom2 in ns.search(atom.get_coord(), 8, level='A'):
                 if atom2.get_id() == 'CA':  # for every alpha carbon at 8 amstrongs or less from atom
                     chain2 = atom2.get_parent().get_parent()  # Gettin to wich chain it belongs
@@ -331,6 +337,7 @@ def get_interaction_pairs(pdb_filename):
     clean_interaction_dict(interaction_dict, similar_sequences)
 
     counter = 0
+    print('\n')
     for pair in interaction_dict:
         print(pair)
         for int in interaction_dict[pair]:
@@ -363,6 +370,7 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
     # Todo discutir si es conveniente eliminar de la lista dos aquellas interacciones que hayan encontrado interacciones similares
 
     for pair in interaction_dict:
+
         list_to_remove = []  # to avoid modifiying a list while looping through it we store here the elements we want
         #  to remove and do it at the end
         print('\n')
@@ -385,9 +393,11 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
             interaction_list1.remove(interaction)
         interaction_dict[pair] = interaction_list1
 
-        # Todo duplicar y girar interacciones homodimeros
 
-
+        for pair in [pair for pair in interaction_dict if pair[0] == pair[1]]:
+            tmp_list = copy.copy(interaction_dict[pair])
+            for interaction in tmp_list:
+                interaction_dict[pair].append(interaction[::-1])
 
 def get_all_interaction_pairs(pdb_filename):
 
@@ -417,7 +427,6 @@ def get_all_interaction_pairs(pdb_filename):
             io.save(
                 '%s_all_interactions/%s_%s%s.pdb' % (structure_id, structure_id, chain.get_id(), other_chain.get_id()),
                 ChainSelect(chain.get_id(), other_chain.get_id()))
-
 
 def get_pdb_from_directory(directory):
 
@@ -455,6 +464,9 @@ def get_id_dict(structure_list):
 
 
 def get_interaction_pairs_from_input(directory):
+
+    #  Todo: hacer que la función pueda procesar moleculas de DNA
+    #  Todo: hacer que pueda trabajar con interacciones de mas de dos moléculas
 
     """Takes the path of a directory and returns a list holding the interaction dictionary of the pdbs in this directory, a similar chains dictionary and a dictionary that relates every chain with its id """
 
@@ -502,44 +514,4 @@ def get_interaction_pairs_from_input(directory):
 
 if __name__ == '__main__':
 
-    # result = get_interaction_pairs_from_input('5vox_all_interactions')
-    #
-    # pickle.dump(result, open('result.p','wb'))
-    #
-    # exit(0)
-    #
-    # result = pickle.load( open( "result.p", "rb" ) )
-    #pdb_filename = '5vox.pdb'
-
-    # get_interaction_pairs_from_input('2f1d_all_interactions')
-    #
-    # exit(0)
-
-    result = get_interaction_pairs_from_input('1gzx_all_interactions')
-
-    # parser = PDBParser(PERMISSIVE=1)
-
-    # structure_id = get_structure_name(pdb_filename)
-    # filename = pdb_filename
-    # full_structure = parser.get_structure(structure_id, filename)
-
-    structure = Structure.Structure('1')
-    structure.add(Model.Model(0))
-    complex_id = Complex_id.ComplexId(result[0], result[1], result[2],structure)
-
-    chain1 = list(result[2].keys())[0]
-    structure[0].add(chain1)
-    complex_id.add_node(chain1)
-
-    for pair in [pair for pair in result[0] if result[1][result[2][chain1]] in pair]:
-        for interaction in result[0][pair]:
-            chain = [chain for chain in interaction if chain != chain1 ][0]
-            complex_id.add_node(chain,complex_id.get_nodes()[0],interaction)
-
-
-
-    new_complex_id = complex_id.copy()
-
-    complex_id.add_node(list(result[2].keys())[-1])
-
-    print('hey')
+    get_interaction_pairs('3kuy.pdb')

@@ -1,6 +1,4 @@
-from Bio.PDB import NeighborSearch
-from Bio.PDB import Superimposer
-import copy
+from Bio.PDB import *
 from Complex_breaker import *
 from Complex_id import *
 
@@ -48,19 +46,20 @@ def interaction_finder(structure, ref_chain_id, complex_id):
             if atom2.get_id() == 'CA':  # for every alpha carbon at 8 armstrongs or less from atom
                 chain2 = atom2.get_parent().get_parent()  # Getting to which chain it belongs
                 if chain2 != ref_chain and chain2 not in neighbor_chains:
-                    neighbor_chains.add(chain2)  # If it is not in the same chain and it is not already a
+                    neighbor_chains.append(chain2)  # If it is not in the same chain and it is not already a
                     # key (we already have its interactions) we add the chain as a value
 
     for chain in neighbor_chains:
-        for interaction in complex_id.get_interaction_dict():
-            if complex_id.id_dict[complex_id.similar_sequences[chain]] in interaction and complex_id.nodes[
-                -1].get_chain_type() in interaction:
-                if not compare_interactions([structure[0][ref_chain_id], chain], interaction,
-                                            complex_id.similar_sequences):
-                    complex_id.nodes[-1].add_interaction(complex_id[chain.get_id()], interaction)
-                    complex_id[chain.get_id()].add_interaction(complex_id.nodes[-1], interaction)
-                    break
+        tup = sorted([complex_id.id_dict[complex_id.similar_sequences[chain]],complex_id.nodes[-1].get_chain_type()])
+        tup = tuple(tup)
 
+        for interaction in complex_id.get_interaction_dict():
+            if tup == interaction:
+                for interaction_type in complex_id.get_interaction_dict()[tup]:
+                    if not compare_interactions([structure[0][ref_chain_id], chain], interaction_type, complex_id.similar_sequences):
+                        complex_id.nodes[-1].add_interaction(complex_id[chain.get_id()], interaction)
+                        complex_id[chain.get_id()].add_interaction(complex_id.nodes[-1], interaction)
+                        break
 
 #########
 
@@ -78,7 +77,7 @@ def copy_chain(chain, id):
 
 #########
 
-def superimpose_fun(str1, str2, node, chain_str2, complex_id, similar_seq):
+def superimpose_fun(str1, str2, node, i, complex_id, similar_seq):
     """
     This functions superimposes 2 structure using nodes
     :param str1: fixed structure
@@ -90,21 +89,29 @@ def superimpose_fun(str1, str2, node, chain_str2, complex_id, similar_seq):
     """
     chain1 = node.get_chain()
     str2_copy = copy.deepcopy(str2)
+    node_chain_copy = copy.deepcopy(str1[0][chain1])
+    chain_str2 = copy.deepcopy(i)
 
-    trim_to_superimpose(str1[0][chain1], str2[0][chain_str2])
-    atoms_chain1 = list(str1[0][chain1].get_atoms())
-    atoms_chain2 = list(str2[0][chain_str2].get_atoms())
+    trim_to_superimpose(node_chain_copy, chain_str2)
+    atoms_chain1 = list(node_chain_copy.get_atoms())
+    atoms_chain2 = list(chain_str2.get_atoms())
     sup = Superimposer()
 
+    print('hey')
+
     sup.set_atoms(atoms_chain1, atoms_chain2)
-    sup.apply(str2_copy)
 
-    other_chain2 = [x for x in str2_copy.get_chains() if x != chain_str2]
+    other_chain2 = [x for x in str2_copy if x.get_id() != chain_str2.get_id()][0]
+    other_chain2_original = [x for x in str2 if x.get_id() != chain_str2.get_id()][0]
 
-    if not get_clash_chains(str1, other_chain2):  ## returns T if there is a clash and F if there isn't.
+    sup.apply(other_chain2)
+
+    if not get_clash_chains(str1, other_chain2): ## returns T if there is a clash and F if there isn't.
+        # TODO: establecer un treshold de clashes para considerar clash
+        other_chain2.id = len(complex_id.get_nodes())+1
+        similar_seq[other_chain2] = similar_seq[other_chain2_original]
         complex_id.add_node(other_chain2, node, str2)
         str1[0].add(other_chain2)
-        similar_seq[other_chain2.get_id()] = similar_seq[chain_str2]
         interaction_finder(str1, other_chain2.get_id(), complex_id)
         return True
     else:
@@ -114,12 +121,14 @@ def superimpose_fun(str1, str2, node, chain_str2, complex_id, similar_seq):
 #########
 
 def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict):
-    for other_CI in [ident for ident in complex_id_dict[len(complex_id.nodes())] if ident != complex_id]:
+    print("Starting new Branch:")
+    for other_CI in [ident for ident in complex_id_dict[len(complex_id.get_nodes())] if ident != complex_id]:
         if complex_id.compare_with(other_CI):
+
             return
 
-    for nodes in complex_id.nodes():
-        for interact in [interaction[0] for interaction in nodes.get_interact_dict().items() if interaction[1] is None]:
+    for nodes in complex_id.get_nodes():
+        for interact in [ interaction[0] for interaction in nodes.get_interaction_dict().items() if interaction[1] is None ]:
 
             if similar_seq[interact[0]] == similar_seq[interact[1]]:
                 # TODO len de complex id
@@ -127,23 +136,29 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                 modified_str = superimpose_fun(base_struct, interact, nodes, chain_str2_copy, complex_id, similar_seq)
 
                 if modified_str:
-                    update_structure(base_struct, complex_id)
+
+                    if len(complex_id.get_nodes()) not in complex_id_dict:
+                        complex_id_dict[len(complex_id.get_nodes())] = []
+
+                    update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict)
                     complex_id.pop_structure(base_struct)
 
             else:
                 for i in interact:
-                    if similar_seq[chains_str_dict[nodes.chain_type()]] == similar_seq[i]:
-                        chain_str2_copy = copy_chain(i, len(complex_id.get_nodes()))
-                        modified_str = superimpose_fun(base_struct, interact, nodes, chain_str2_copy, complex_id,
-                                                       similar_seq)
+                    if similar_seq[chains_str_dict[nodes.get_chain_type()]] == similar_seq[i]:
+
+                        modified_str = superimpose_fun(base_struct, interact, nodes, i, complex_id, similar_seq)
 
                         if modified_str:
-                            update_structure(base_struct, complex_id)
+
+                            if len(complex_id.get_nodes()) not in complex_id_dict:
+                                complex_id_dict[len(complex_id.get_nodes())] = []
+
+                            update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict)
                             complex_id.pop_structure(base_struct)
                         break
 
-
-def macrocomplex_builder(str_dict, id_dict, similar_seq, interaction_dict):
+def macrocomplex_builder(id_dict, similar_seq, interaction_dict):
     """
     This function rebuilds a complex with the interactions we obtained from the pdb files.
     :param str_dict: dictionary with all the interactions we want to build the complex with.
@@ -171,7 +186,22 @@ def macrocomplex_builder(str_dict, id_dict, similar_seq, interaction_dict):
         chain_copied = copy_chain(chains_str_dict[chain], 1)
         # add chain to the new structure
         base_struct[0].add(chain_copied)
-        similar_seq[1] = similar_seq[chain]
+        similar_seq[chain_copied] = similar_seq[chains_str_dict[chain]]
         complex_id = ComplexId(interaction_dict, id_dict, similar_seq, base_struct)
-        complex_id_dict[len(complex_id.nodes())] = complex_id
+        complex_id_dict[len(complex_id.get_nodes())] = []
+        complex_id_dict[len(complex_id.get_nodes())].append(complex_id)
         update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict)
+
+
+if __name__ == '__main__':
+
+    # get_all_interaction_pairs('')
+
+    result = get_interaction_pairs_from_input('1gzx_all_interactions')
+
+    id_dict = result[1]
+    interaction_dict = result[0]
+    similar_sequences = result[2]
+
+    macrocomplex_builder(id_dict, similar_sequences, interaction_dict)
+

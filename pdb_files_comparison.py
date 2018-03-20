@@ -127,13 +127,13 @@ def dict_filler(pdb_list, pdb_interact_dict):
         if counter == len(pdb_interact_dict):
             pdb_interact_dict[pdb_file] = structure
 
-if __name__ == '__main__':
-
-    pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb", "PAIR_JI.pdb",
-                 "PAIR_KH.pdb", "PAIR_LE.pdb",
-                 "PAIR_LG.pdb", "PAIR_LK.pdb"]
-    pairwise_interact = {}
-
-    dict_filler(pdb_files, pairwise_interact)
-
-    print(pairwise_interact)
+# if __name__ == '__main__':
+#
+#     pdb_files = ["PAIR_HG.pdb", "PAIR_HHGG.pdb", "PAIR_IH.pdb", "PAIR_JC.pdb", "PAIR_JG.pdb", "PAIR_JI.pdb",
+#                  "PAIR_KH.pdb", "PAIR_LE.pdb",
+#                  "PAIR_LG.pdb", "PAIR_LK.pdb"]
+#     pairwise_interact = {}
+#
+#     dict_filler(pdb_files, pairwise_interact)
+#
+#     print(pairwise_interact)

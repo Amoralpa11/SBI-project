@@ -19,6 +19,7 @@ class Node(object):
 
         self.interaction_dict = complex_id.get_all_interactions_of_chain(self.chain_type)  # From the parent complex id we get all the interactions that this chain cand have
 
+
     def add_interaction(self, node, interaction):
         self.interaction_dict[tuple(interaction)] = node
 
@@ -54,16 +55,19 @@ class Node(object):
 
     def copy(self,complex_id):
 
+
         """This function takes a complex id and returns a new node with a swallow copy of the interaction dict of the
         current node """
 
         new_node = Node(self.get_chain(),complex_id)
+
         new_node.__set_interaction__dict(copy.copy(self.get_interaction_dict()))
 
         return new_node
 
 
 def get_nodes_from_structure(complex_id, structure):
+
 
     """This function takes a complex id and an structure and adds a non connected node for every chain in the structure"""
 
@@ -74,9 +78,11 @@ def get_nodes_from_structure(complex_id, structure):
 
 class ComplexId(object):
 
+
     """This class holds the information of protein interactions in a structure. Its main component are the nodes, stored in the nodes list. It also have the information about the interactions that can have every chain in the complex, a dictionary relating similar sequences in the user input"""
 
     def __init__(self, interaction_dict, id_dict, similar_sequences, structure=None):
+
         self.id_dict = id_dict
         self.interaction_dict = interaction_dict
         self.similar_sequences = similar_sequences
@@ -86,7 +92,9 @@ class ComplexId(object):
 
     def get_all_interactions_of_chain(self, chain_type):
 
+
         """Takes an string that is the identifier of the main chain of a kind and extracts all the interactions from the interaction_dict where it is involved this group of chains"""
+
 
         interaction_list = {}
 
@@ -98,9 +106,11 @@ class ComplexId(object):
 
     def add_node(self, chain, node=None, interaction=None):
 
+
         """takes a chain, an existing node and an interaction and creates a new node with one interaction poionting to the existing node and adds an interaction to the existing node pointing to the new node"""
 
         new_node = Node(chain, self)
+
 
         if interaction and node:
             new_node.add_interaction(node, interaction)
@@ -124,6 +134,7 @@ class ComplexId(object):
 
     def get_interaction_id(self,cycles):
 
+
         """Takes a number of cycles and calls the function get_deep_interactions for every node in the complex id. returns a list of deep_interaction (dicts of dicts) of 'cycle' levels"""
 
         deep_interaction_list = []
@@ -136,6 +147,7 @@ class ComplexId(object):
     def copy(self):
 
         """
+
         Returns a copy of the complex id keeping the chain objects in the interactions dicts of the nodes pointing to the same reference to avoid missusing memory
         :return:
         """
@@ -152,6 +164,7 @@ class ComplexId(object):
 
     def compare_with(self,complex2,cycles):
 
+
         """
         Takes one complex and a number of cycles and compares self with the complex provided. Returns true if complex
         are equeal and and false if not.
@@ -164,8 +177,6 @@ class ComplexId(object):
         :param cycles: int
         :return: Bool
         """
-
-
         if len(self.get_nodes()) != len(complex2.get_nodes()):
             return False
         if self.get_chain_type_list() != complex2.get_chain_type_list():
@@ -194,11 +205,11 @@ class ComplexId(object):
     def __set_nodes__(self,nodes):
         self.nodes = nodes
 
+
     def __getitem__(self,chain):
         for node in self.get_nodes():
             if node.get_chain() == chain:
                 return node
-        
 
 if __name__ == '__main__':
     pass

@@ -168,12 +168,16 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
     different and 0 if they are the same interaction """
 
     structure1 = Structure.Structure('1')  # Because we are going to remove non matching ressidues, we will make a copy
+
     structure2 = Structure.Structure('2')  # of the structures to avoid modifiying the original chains
+
 
     structure1.add(Model.Model(0))
     structure2.add(Model.Model(0))
 
+
     homodimer = False  # This variable will be true if the chians in the interaction are more than a 95% similar
+
 
     for chain in interaction1:
         chain_id = similar_sequences[chain].get_id() # To identify similar chains in the superimposition we name them
@@ -260,7 +264,9 @@ def get_neighbor_chains(structure):
     ns = NeighborSearch(list(structure.get_atoms()))
     for chain in structure.get_chains():
         neighbor_chains[chain] = set([])
+
         for atom in [atom for atom in chain.get_atoms() if atom.get_id() == 'CA' ]:  # For every alpha carbon in chain
+
             for atom2 in ns.search(atom.get_coord(), 8, level='A'):
                 if atom2.get_id() == 'CA':  # for every alpha carbon at 8 amstrongs or less from atom
                     chain2 = atom2.get_parent().get_parent()  # Gettin to wich chain it belongs
@@ -364,6 +370,7 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
     # Todo discutir si es conveniente eliminar de la lista dos aquellas interacciones que hayan encontrado interacciones similares
 
     for pair in interaction_dict:
+
         list_to_remove = []  # to avoid modifiying a list while looping through it we store here the elements we want
         #  to remove and do it at the end
         print('\n')
@@ -386,11 +393,11 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
             interaction_list1.remove(interaction)
         interaction_dict[pair] = interaction_list1
 
+
         for pair in [pair for pair in interaction_dict if pair[0] == pair[1]]:
             tmp_list = copy.copy(interaction_dict[pair])
             for interaction in tmp_list:
                 interaction_dict[pair].append(interaction[::-1])
-
 
 def get_all_interaction_pairs(pdb_filename):
 
@@ -420,7 +427,6 @@ def get_all_interaction_pairs(pdb_filename):
             io.save(
                 '%s_all_interactions/%s_%s%s.pdb' % (structure_id, structure_id, chain.get_id(), other_chain.get_id()),
                 ChainSelect(chain.get_id(), other_chain.get_id()))
-
 
 def get_pdb_from_directory(directory):
 

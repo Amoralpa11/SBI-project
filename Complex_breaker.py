@@ -168,12 +168,12 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
     different and 0 if they are the same interaction """
 
     structure1 = Structure.Structure('1')  # Because we are going to remove non matching ressidues, we will make a copy
-    structure2 = Structure.Structure('2')  # of the structures to avoid modifiying the original chains
+    structure2 = Structure.Structure('2')  # of the structures to avoid modifying the original chains
 
     structure1.add(Model.Model(0))
     structure2.add(Model.Model(0))
 
-    homodimer = False  # This variable will be true if the chians in the interaction are more than a 95% similar
+    homodimer = False  # This variable will be true if the chains in the interaction are more than a 95% similar
 
     for chain in interaction1:
         chain_id = similar_sequences[chain].get_id() # To identify similar chains in the superimposition we name them

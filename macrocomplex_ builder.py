@@ -1,5 +1,8 @@
-form Bio.PDB import *
+from Bio.PDB import NeighborSearch
+from Bio.PDB import Superimposer
+import copy
 from  Complex_breaker import *
+from Complex_id import *
 
 def get_clash_chains(structure, chain):
 
@@ -13,14 +16,14 @@ def get_clash_chains(structure, chain):
     chain_atoms = chain.get_atoms()
     # chain_atoms = Selection.unfold_entities(center_residues, 'A')
     atom_list = structure.get_atoms()
-    ns = NeighbourSearch(atom_list)
+    ns = NeighborSearch(atom_list)
     # clashing_chains = {res for chain_atoms in chain_atoms
     #                    for res in ns.search(chain_atoms.get_coord(), 1.2, 'C')}
     clashing_chain_ls = []
     for atom1 in chain_atoms:
         for chain in ns.search(atom1.get_coord(), 1.2, 'C'):
             # if chain != atom1.get_parent().get_parent():
-            clashing_chain_ld.append(chain)
+            clashing_chain_ls.append(chain)
 
     if clashing_chain_ls:
         return True

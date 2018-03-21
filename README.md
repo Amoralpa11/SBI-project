@@ -67,10 +67,9 @@ Lastly, we optimize the model using **modeler conjugate gradient**. This functio
 tweeks the sidechains so as to minimize the overall energy of the macro-complex.
 
 ### Evaluation
-
+*Do we have to evaluate the energy of the model??*
 In order to validate the model we should analyse using a prosa like software to
 asses the energy of the interacting surfaces that where not in the starting set.
-
 
 
 ### Output

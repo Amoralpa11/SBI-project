@@ -12,41 +12,56 @@ interactions.
 The input, is a set of pdb files holding pairs of proteins interacting. This
 input does not have to be perfect:
 
-* there may be many protein complexes that can be formed using the interactions provided.
+* There may be many protein complexes that can be formed using the interactions provided.
 * The sequences of the same protein appearing in several pdb files may not be the same although they have to be very
 similar.
 * The same pair of proteins can interact in different ways
+* A pair of proteins provided by the user does not have to end up in the protein macro-complex 
 * etc.
 
 The user can also introduce some information about the output that wants to
-obtain, For instance, the user may indicate the stoichiometry of the final
-complex. They can also provide a limit of subunits limiting the size of
-polymeric complexes that can be virtually endless.
+obtain, For instance, the the stoichiometry of the final
+complex. They can also provide a subunit limit to define the size of
+polymeric complexes which otherwise would be virtually endless.
 
 ## Steps
 
 ### Classifying the chains
 
-Because they may not be labeled in a consistent way one of the firsts steps in
-the process would be labelling all the chains that we can find in input.
-Registering how are they called in their pdb files or even changing those labels
-in a consistent way. At this point we would be able of identify the interactions
-that stablish every protein.
+Because chains may not be labeled in a consistent way one of the firsts steps in
+the process is labelling all the chains that we can find in input.
+Registering how they are called in their pdb files if they are the first of their type
+or changing the labels in a consistent way. At this point we are able to identify
+the interactions each protein stablishes.
+**DO WE???**
+**We also check which interactions are possible at the same time.**
 
-We would also need to check which interactions are possible at the same time.
+###  Macro-complex assembly
 
-###  assembling
+Once we have processed and classified all the pairwise interactions from the input set
+we start constructing the macro-complex using superimposition.
 
-Once we have processed and classified all the interactions inside the input set
-we can start constructing the complex.
+The approach adopted in this package is based on a recursive function which will
+attempt to add as many interactions as each chain forming the macro-complex at 
+that stage can.
 
-One possible approach would be choosing a monomer, randomly or based in a
-criteria, like the number of different interactions that can have at the same
-time. This monomer would be a core, around which we would start adding proteins
-in the same way they interact in the pdb file.
+By doing so we will start with all the different chains the user has found in the
+input and recursively build on top of them. Each node of the recursive tree has an
+identifier indicating the interactions occuring at that stage, this identifier is 
+saved for further usage. This identifier enables us to assess if a macro-complex at 
+a specific node has already been processed in a previous node and, therefore, 
+stop that branch. 
 
-Every time we add a protein we would have to check if there is a crash with
-another protein already added.
+Before we add a new chain to the macro-complex we check that it is not clashing with 
+the other chains already in the structure. Furthermore, once we add it we also register
+the interactions this new chain has with the surrounding ones so as to not attempt to
+superimpose that interaction in nodes to come thus, reducing processing demand.
+
+Once the recursive function has finished we are able to build the macro-complex/es 
+obtained from the identifiers at the final nodes of the recursive tree. This enables
+us to work only with one structure throughout the entire thus minimizing the memory
+usage of the computer.
+
 
 If we find a pair of exclusive interactions we should keep an individual thread
 for the two possible interactions and either return all the produced complexes

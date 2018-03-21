@@ -2,6 +2,7 @@ from Bio.PDB import *
 from Complex_breaker import *
 from Complex_id import *
 
+main_counter = 0
 
 def get_clash_chains(structure, chain):
     """
@@ -176,9 +177,8 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict):
     # initialize a complex id dictionary
     complex_id_dict = {}
     global main_counter
-    main_counter = 0
     for chain in chains_str_dict:
-        print('Ininciando rama %n' % main_counter)
+        print('Ininciando rama %s' % main_counter)
         # initialize an empty structure
         base_struct = Structure.Structure('1')
         base_struct.add(Model.Model(0))

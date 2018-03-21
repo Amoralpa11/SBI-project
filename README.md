@@ -1,26 +1,27 @@
 # SBI-project
-A python package for protein complex modelling form protein pairwise interactions.
+A python package for protein complex modeling from protein pairwise interactions.
 
 ## Objective
 
-This python package takes a set of pdb files of pairwise protein interactions
-and returns a pdb file with the multiplotein complex that is formed with these
+This python package takes a set of PDB files of pairwise protein interactions
+and returns a PDB file with the multiprotein complex that is formed with these
 interactions.
 
 ## Input
 
-The input, is a set of pdb files holding pairs of proteins interacting. This
+The input is a set of PDB files holding pairs of proteins interacting. This
 input does not have to be perfect:
 
 * There may be many protein complexes that can be formed using the interactions provided.
-* The sequences of the same protein appearing in several pdb files may not be the same although they have to be very
+* The sequences of the same protein appearing in several PDB files may not be the same 
+although they have to be very
 similar.
 * The same pair of proteins can interact in different ways
 * A pair of proteins provided by the user does not have to end up in the protein macro-complex 
 * etc.
 
 The user can also introduce some information about the output that wants to
-obtain, For instance, the the stoichiometry of the final
+obtain, For instance, the stoichiometry of the final
 complex. They can also provide a subunit limit to define the size of
 polymeric complexes which otherwise would be virtually endless.
 
@@ -29,10 +30,10 @@ polymeric complexes which otherwise would be virtually endless.
 ### Classifying the chains
 
 Because chains may not be labeled in a consistent way one of the firsts steps in
-the process is labelling all the chains that we can find in input.
-Registering how they are called in their pdb files if they are the first of their type
-or changing the labels in a consistent way. At this point we are able to identify
-the interactions each protein stablishes.
+the process is labeling all the chains that we can find in the input.
+Registering how they are called in their PDB files if they are the first of their type
+or changing the labels in a consistent way. At this point, we are able to identify
+the interactions each protein establishes.
 
 **DO WE???**
 We also check which interactions are possible at the same time.
@@ -48,9 +49,9 @@ that stage can.
 
 By doing so we start with all the different chains the user has found in the
 input and recursively add chains on top of them. Each node of the recursive tree has an
-identifier indicating the interactions occuring at that stage, this identifier is 
-saved for further usage. This identifier enables us to assess if a macro-complex at 
-a specific node has already been processed in a previous node and, therefore, 
+identifier indicating the interactions occuring at that stage, this identifier is saved 
+for further usage. This identifier enables us to assess if a macro-complex at a specific 
+node has already been processed in a previous node and, therefore, 
 stop that branch. 
 
 Before we add a new chain to the macro-complex we check that it is not clashing with 
@@ -60,30 +61,32 @@ superimpose that interaction in nodes to come thus, reducing processing demand.
 
 Once the recursive function has finished we are able to build the macro-complex/es 
 obtained from the identifiers at the final nodes of the recursive tree. This enables
-us to work only with one structure to wich we add and remove chains every time we move 
+us to work only with one structure to which we add and remove chains every time we move 
 up/down the tree, therefore, minimizing the memory usage of the computer.
 
 Lastly, we optimize the model using **modeler conjugate gradient**. This function
-tweeks the sidechains so as to minimize the overall energy of the macro-complex.
+tweaks the sidechains so as to minimize the overall energy of the macro-complex.
 
 ### Evaluation
 *Do we have to evaluate the energy of the model??*
-In order to validate the model we should analyse using a prosa like software to
-asses the energy of the interacting surfaces that where not in the starting set.
+In order to validate the model, we should analyze using a prose like software to
+assess the energy of the interacting surfaces that were not in the starting set.
 
 
 ### Output
 
-The output of this function are pdb files of the macro-complex/es built from 
-the pairwise interactions. If the user specified of passing an already build 
-structure it returns a new directory named XXXX_all_interactions cotaining the
-pdb files of the pariwise interactions.
+The output of this function are PDB files of the macro-complex/es built from the pairwise interactions. If the user specified passing an already build 
+structure it returns a new directory named XXXX_all_interactions containing the
+PDB files of the pairwise interactions.
 
 ## Complementary software
 
 This package includes complementary functions which can be set by the user.
-* Allows the user to pass a protein-RNA interaction to rebuild the model.
-* Allows the user to pass pdb interaction files of more than 2 proteins.
-* Allows the user to pass a full protein complex to be broken into pairwise interaction pdb files.
+* Allows the user to pass a protein-RNA interaction to rebuild the model. (**To be decided**)
+* Allows the user to pass PDB interaction files of more than 2 proteins.
+* Allows the user to pass a full protein complex to be broken into pairwise interaction PDB files.
 * Allows the user to pass the stoichiometry so as to specify the components of the macro-complex.
 * Allows the user to pass a number of subunits he wants the model to have in case the macro-complex is theoretically infinite.
+
+## Tutorial
+

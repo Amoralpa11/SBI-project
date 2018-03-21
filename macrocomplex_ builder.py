@@ -12,9 +12,9 @@ def get_clash_chains(structure, chain):
     :return: True or false, True if there is clash and false if there is no clash.
     """
     # center_residues = chain.get_residues()
-    chain_atoms = chain.get_atoms()
+    chain_atoms = list(chain.get_atoms())
     # chain_atoms = Selection.unfold_entities(center_residues, 'A')
-    atom_list = structure.get_atoms()
+    atom_list = list(structure.get_atoms())
     ns = NeighborSearch(atom_list)
     # clashing_chains = {res for chain_atoms in chain_atoms
     #                    for res in ns.search(chain_atoms.get_coord(), 1.2, 'C')}
@@ -91,11 +91,9 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq):
     chain_str2 = copy.deepcopy(i)
 
     trim_to_superimpose(node_chain_copy, chain_str2)
-    atoms_chain1 = list(node_chain_copy.get_atoms())
-    atoms_chain2 = list(chain_str2.get_atoms())
+    atoms_chain1 = [atom for atom in list(node_chain_copy.get_atoms()) if atom.get_id() == 'CA']
+    atoms_chain2 = [atom for atom in list(chain_str2.get_atoms())if atom.get_id() == 'CA']
     sup = Superimposer()
-
-    print('hey')
 
     sup.set_atoms(atoms_chain1, atoms_chain2)
 
@@ -118,7 +116,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq):
 #########
 
 def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict):
-    print("Starting new Branch:")
+    print("Starting new Branch: ")
     for other_CI in [ident for ident in complex_id_dict[len(complex_id.get_nodes())] if ident != complex_id]:
         if complex_id.compare_with(other_CI):
 
@@ -151,7 +149,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                             if len(complex_id.get_nodes()) not in complex_id_dict:
                                 complex_id_dict[len(complex_id.get_nodes())] = []
 
-                            update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict)
+                            update_structure(base_struct, complex_id.copy(), complex_id_dict, similar_seq, chains_str_dict)
                             complex_id.pop_structure(base_struct)
                         break
 
@@ -174,8 +172,10 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict):
 
     # initialize a complex id dictionary
     complex_id_dict = {}
-
+    global main_counter
+    main_counter = 0
     for chain in chains_str_dict:
+        print('Ininciando rama %n' % main_counter)
         # initialize an empty structure
         base_struct = Structure.Structure('1')
         base_struct.add(Model.Model(0))
@@ -188,6 +188,7 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict):
         complex_id_dict[len(complex_id.get_nodes())] = []
         complex_id_dict[len(complex_id.get_nodes())].append(complex_id)
         update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict)
+        main_counter += 1
 
 
 if __name__ == '__main__':

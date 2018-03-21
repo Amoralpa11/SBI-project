@@ -7,13 +7,21 @@ class Node(object):
     holds information about all the interactions it is having and to which chains (other nodes) it is interacting
     with """
 
-    def __init__(self, chain, complex_id):
+    def __init__(self, chain, complex_id, chain_type = None):
 
         """ When a Node is created we have to link it to a chain in the structure and to its parent complex id"""
 
-        self.chain = chain.get_id()
+        if type(chain) == type(int()):
+            self.chain = chain
+        else:
+            self.chain = chain.get_id()
 
-        self.chain_type = complex_id.id_dict[complex_id.similar_sequences[chain]]
+        if not chain_type:
+
+            self.chain_type = complex_id.id_dict[complex_id.similar_sequences[chain]]
+
+        else:
+            self.chain_type = chain_type
 
         self.interaction_dict = complex_id.get_all_interactions_of_chain(self.chain_type)  # From the parent complex id we get all the interactions that this chain cand have
 
@@ -57,7 +65,7 @@ class Node(object):
         """This function takes a complex id and returns a new node with a swallow copy of the interaction dict of the
         current node """
 
-        new_node = Node(self.get_chain(),complex_id)
+        new_node = Node(self.get_chain(),complex_id,self.get_chain_type())
 
         new_node.__set_interaction__dict(copy.copy(self.get_interaction_dict()))
 
@@ -198,15 +206,15 @@ class ComplexId(object):
         :param structure:
         :return: None
         """
-        structure.detach_child([chain for chain in structure.get_chains() if chain.get_id() == self.nodes[-1].get_chain()][0])
+        structure[0].detach_child(self.nodes[-1].get_chain())
 
     def __set_nodes__(self,nodes):
         self.nodes = nodes
 
 
-    def __getitem__(self,chain):
+    def __getitem__(self,chain_id):
         for node in self.get_nodes():
-            if node.get_chain() == chain:
+            if node.get_chain() == chain_id:
                 return node
 
 if __name__ == '__main__':

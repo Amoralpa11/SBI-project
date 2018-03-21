@@ -120,7 +120,14 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq):
 #########
 
 def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict):
-    print("Starting new Branch: ")
+
+    print("Starting new Branch:")
+
+    for node in complex_id.get_nodes():
+        print(node.get_chain())
+        for interaction, node in node.get_interaction_dict().get_item():
+            print("%s: %s " %(interaction, node))
+
     for other_CI in [ident for ident in complex_id_dict[len(complex_id.get_nodes())] if ident != complex_id]:
         if complex_id.compare_with(other_CI):
 
@@ -176,6 +183,7 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict):
 
     # initialize a complex id dictionary
     complex_id_dict = {}
+
     global main_counter
     for chain in chains_str_dict:
         print('Ininciando rama %s' % main_counter)

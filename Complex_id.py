@@ -51,7 +51,8 @@ class Node(object):
         deep_interactions_dict = {}
         if cycles > 0:
             for interaction in self.interaction_dict:
-                if prev_node != self.interaction_dict[tuple(interaction)] != None: # for all the interactions stablished
+                next_node = self.interaction_dict[tuple(interaction)]
+                if prev_node != next_node != None and next_node != 'clash': # for all the interactions stablished
                     deep_interactions_dict[tuple(interaction)] = self.interaction_dict[tuple(interaction)].get_deep_interactions(cycles-1,self)  # We create the key for the dictionary and start a recursive funcitión calling again get_deep_interactions with the other chain involved in the interaction, with a cycle less and the current node as previous node
 
             if len(deep_interactions_dict) > 0:
@@ -145,7 +146,7 @@ class ComplexId(object):
 
         deep_interaction_list = []
         for node in self.get_nodes():
-            deep_interaction_list.append(node. get_deep_interactions(cycles))
+            deep_interaction_list.append(node.get_deep_interactions(cycles))
 
         return deep_interaction_list
 

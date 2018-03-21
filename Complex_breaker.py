@@ -362,6 +362,19 @@ def get_interaction_pairs(pdb_filename):
                     ChainSelect(interaction[0].get_id(), interaction[1].get_id()))
 
 
+def clean_heteroatoms(interaction_dict):
+
+    chain_set = set([])
+    for interaction_list in interaction_dict.values():
+        for interaction in interaction_list:
+            for chain in interaction:
+                chain_set.add(chain)
+
+    for chain in chain_set:
+        for residue in chain.get_residues():
+            if residue.get_id()[0] != ' ':
+                chain.detach_child(residue.get_id())
+
 def clean_interaction_dict(interaction_dict, similar_sequences):
 
     """Takes an dictionary with tuples of 2 strings and a list of lists of chains and a dictionary with chains as
@@ -398,6 +411,8 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
             tmp_list = copy.copy(interaction_dict[pair])
             for interaction in tmp_list:
                 interaction_dict[pair].append(interaction[::-1])
+
+        clean_heteroatoms(interaction_dict)
 
 def get_all_interaction_pairs(pdb_filename):
 
@@ -478,6 +493,8 @@ def get_interaction_pairs_from_input(directory):
         structure_id = get_structure_name(file)
         structure_list.append(parser.get_structure(structure_id, file))
 
+
+
     id_dict = get_id_dict(structure_list)
 
     chain_list = []
@@ -500,6 +517,8 @@ def get_interaction_pairs_from_input(directory):
 
     clean_interaction_dict(interaction_dict,similar_sequences)
 
+
+
     print('\n')
 
     counter = 0
@@ -509,6 +528,8 @@ def get_interaction_pairs_from_input(directory):
             print("\t%s" % int)
             counter+=1
     print(counter)
+
+    # TODO: Eliminar cadenas no utilizadas de similar sequences
 
     return [interaction_dict,id_dict,similar_sequences]
 

@@ -63,7 +63,8 @@ def compare_chains(chain1, chain2, seq_dict):
         alignment = pairwise2.align.globalxx(seq1, seq2)
 
         score = alignment[0][2]
-        ident_perc = score / len(seq1)
+        length = max(len(seq1), len(seq2))
+        ident_perc = score / length
 
         if ident_perc > 0.95:
             # print(alignment)
@@ -122,7 +123,8 @@ def trim_to_superimpose(chain1, chain2):
     alignment = pairwise2.align.globalxx(seq1, seq2)
 
     score = alignment[0][2]
-    ident_perc = score / len(seq1)
+    length = max(len(seq1), len(seq2))
+    ident_perc = score / length
 
     # print("%s-%s" % (chain1.get_id(),chain2.get_id()))
     #
@@ -381,6 +383,9 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
             interaction_list2.remove(interaction1)
             for interaction2 in interaction_list2:
 
+                if pair == ('ab', 'ad'):
+                    print('hey')
+
                 if interaction2 in list_to_remove:
                     continue
                 print('\t%s' % interaction2)
@@ -529,4 +534,4 @@ def get_interaction_pairs_from_input(directory):
 
 if __name__ == '__main__':
 
-    get_all_interaction_pairs('5vox.pdb')
+    get_all_interaction_pairs('2f1d_Bio1.pdb')

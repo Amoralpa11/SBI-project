@@ -30,6 +30,8 @@ def get_clash_chains(structure, chain):
 
 
     if clashing_chain_ls:
+
+        # Todo: hacer que los clashes pasen a la madre también
         print('Clash found')
         return True
     else:
@@ -191,7 +193,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                 modified_str = superimpose_fun(base_struct, interact, copied_current_node, chain_str2_copy, complex_id_copy, similar_seq, True)
 
                 if modified_str == 'clash':
-                    node.add_interaction("clash", interact)
+                    nodes.add_interaction("clash", interact)
                     modified_str = None
 
                 if modified_str:
@@ -211,7 +213,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
 
                         modified_str = superimpose_fun(base_struct, interact, copied_current_node, i, complex_id_copy, similar_seq, False)
                         if modified_str == 'clash':
-                            node.add_interaction("clash", interact)
+                            nodes.add_interaction("clash", interact)
                             modified_str = None
 
                         if modified_str:
@@ -225,6 +227,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                             print('Haciendo un pop')
                             complex_id_copy.pop_structure(base_struct)
                         break
+    
     branch_id.pop()
     print('\nvolviendo a la rama %s' % ".".join([str(x) for x in branch_id[:-1]]))
 
@@ -272,7 +275,7 @@ if __name__ == '__main__':
 
     # get_all_interaction_pairs('')
 
-    result = get_interaction_pairs_from_input('1gzx_all_interactions')
+    result = get_interaction_pairs_from_input('2f1d_all_interactions')
 
     id_dict = result[1]
     interaction_dict = result[0]

@@ -90,3 +90,13 @@ This package includes complementary functions which can be set by the user.
 
 ## Tutorial
 
+## Requirements
+In order to run this package with all its functionalities the user must have several programs:
+* Python 3.6.3
+* Python modules
+...*  [Modeller version 9.19](https://salilab.org/modeller/download_installation.html)
+...*  Biopython
+...*  numpy
+...*  gzip
+...*  re
+...*  copy

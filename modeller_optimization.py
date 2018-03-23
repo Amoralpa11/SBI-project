@@ -45,6 +45,7 @@ def structure_optimization(pdb_file):
     mdl.restraints.write(file=code + '.rsr')
 
     mpdf = atmsel.energy()
+    print("The energy of " + code + " is: " + mpdf)
 
     # Create optimizer objects and set defaults for all further optimizations
     cg = conjugate_gradients(output='REPORT')

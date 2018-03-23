@@ -52,7 +52,7 @@ class Node(object):
         if cycles > 0:
             for interaction in self.interaction_dict:
                 next_node = self.interaction_dict[tuple(interaction)]
-                if prev_node != next_node != None and next_node != 'clash': # for all the interactions stablished
+                if next_node not in [prev_node,None,'clash']: # for all the interactions stablished
                     deep_interactions_dict[tuple(interaction)] = self.interaction_dict[tuple(interaction)].get_deep_interactions(cycles-1,self)  # We create the key for the dictionary and start a recursive funcitión calling again get_deep_interactions with the other chain involved in the interaction, with a cycle less and the current node as previous node
 
             if len(deep_interactions_dict) > 0:
@@ -60,17 +60,14 @@ class Node(object):
 
 
 
-    def copy(self,complex_id):
+    def copy_interactions_from(self,old_node, nodes_dict):
 
+        for interaction, value in old_node.get_interaction_dict().items():
+            if type(value) == type(self):
+                self.add_interaction(nodes_dict[value],interaction)
+            else:
+                self.add_interaction(value,interaction)
 
-        """This function takes a complex id and returns a new node with a swallow copy of the interaction dict of the
-        current node """
-
-        new_node = Node(self.get_chain(),complex_id,self.get_chain_type())
-
-        new_node.__set_interaction__dict(copy.copy(self.get_interaction_dict()))
-
-        return new_node
 
 
 def get_nodes_from_structure(complex_id, structure):
@@ -120,8 +117,15 @@ class ComplexId(object):
 
 
         if interaction and node:
-            new_node.add_interaction(node, interaction)
-            node.add_interaction(new_node, interaction)
+            if interaction[0] != interaction[1] or interaction[::-1] not in node.get_interaction_dict():
+                new_node.add_interaction(node, interaction)
+                node.add_interaction(new_node, interaction)
+            else:
+
+                new_node.add_interaction(node, interaction)
+                node.add_interaction(new_node, interaction[::-1])
+
+
 
         self.nodes.append(new_node)
 
@@ -160,12 +164,16 @@ class ComplexId(object):
         """
 
         new_complex_id = ComplexId(self.interaction_dict,self.id_dict,self.similar_sequences)
-
-        node_list = []
+        nodes_dict = {}
+        new_node_list = []
         for node in self.get_nodes():
-            node_list.append(node.copy(new_complex_id))
+            nodes_dict[node] = Node(node.get_chain(),new_complex_id,node.get_chain_type())
+            new_node_list.append(nodes_dict[node])
 
-        new_complex_id.__set_nodes__(node_list)
+        for old_node in self.get_nodes():
+            nodes_dict[old_node].copy_interactions_from(old_node,nodes_dict)
+
+        new_complex_id.__set_nodes__(new_node_list)
 
         return new_complex_id
 

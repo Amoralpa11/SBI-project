@@ -167,67 +167,50 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
     values relating them if they have more than a 95% of similarity and returns 1 if the two interactions are
     different and 0 if they are the same interaction """
 
-    structure1 = Structure.Structure('1')  # Because we are going to remove non matching ressidues, we will make a copy
-
-    structure2 = Structure.Structure('2')  # of the structures to avoid modifiying the original chains
-
-
-    structure1.add(Model.Model(0))
-    structure2.add(Model.Model(0))
-
-
     homodimer = False  # This variable will be true if the chians in the interaction are more than a 95% similar
+
+    chain_list1 = []
+    chain_list2 = []
 
 
     for chain in interaction1:
         chain_id = similar_sequences[chain].get_id() # To identify similar chains in the superimposition we name them
         #  as the main chain of its type
-        if chain_id in [x.get_id() for x in structure1.get_chains()]:
+        if chain_id in [x.get_id() for x in chain_list1]:
             homodimer = True  #  if the second chain is similar to the first we change homodimer to true and
-            if chain_id.upper() == chain_id:  # change the case of the id to avoid conflicts
-                chain_id = chain_id.lower()
-            else:
-                chain_id = chain_id.upper
-
-        structure1[0].add(Chain.Chain(chain_id))
+        chain_list1.append(Chain.Chain(chain_id))
         res_counter = 0
         for residue in chain:
             if 'CA' in [x.get_id() for x in residue.get_atoms()]:  # for every residue in chain that have an alpha carbon
                 atom = residue['CA']  # storing the alpha carbon
-                structure1[0][chain_id].add(
+                chain_list1[-1].add(
                     Residue.Residue(('', res_counter, ''), residue.get_resname(), residue.get_segid()))  # adding the
                 #  residue
-
-                structure1[0][chain_id][('', res_counter, '')].add(atom.copy())  # adding a copy of the atom to avoid
+                chain_list1[-1][('', res_counter, '')].add(atom.copy())  # adding a copy of the atom to avoid
                 #  modifiying the original ones
                 res_counter += 1
 
     for chain in interaction2:  # Doing the same for the structure 2
 
         chain_id = similar_sequences[chain].get_id()
-        if chain_id in [x.get_id() for x in structure2.get_chains()]:
-            if chain_id.upper() == chain_id:
-                chain_id = chain_id.lower()
-            else:
-                chain_id = chain_id.upper
 
-        structure2[0].add(Chain.Chain(chain_id))
+        chain_list2.append(Chain.Chain(chain_id))
         res_counter = 0
         for residue in chain:
             if 'CA' in [x.get_id() for x in residue.get_atoms()]:
                 atom = residue['CA']
-                structure2[0][chain_id].add(
+                chain_list2[-1].add(
                     Residue.Residue(('', res_counter, ''), residue.get_resname(), residue.get_segid()))
 
-                structure2[0][chain_id][('', res_counter, '')].add(atom.copy())
+                chain_list2[-1][('', res_counter, '')].add(atom.copy())
                 res_counter += 1
 
     if homodimer: # if the chain is an homodimer we remove different residues from chains in the same interaction
-        for int in [structure1[0], structure2[0]]:
-            trim_to_superimpose(list(int.get_chains())[0], list(int.get_chains())[1])
+        for int in [chain_list1, chain_list2]:
+            trim_to_superimpose(int[0], int[1])
 
-    for chain1 in structure1[0]: # Removing different residues betwen similar chains in different interactions
-        for chain2 in structure2[0]:
+    for chain1 in chain_list1: # Removing different residues betwen similar chains in different interactions
+        for chain2 in chain_list2:
             if chain1.get_id() != chain2.get_id():
                 continue
             trim_to_superimpose(chain1, chain2)
@@ -237,7 +220,7 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
 
     # print(list(structure1.get_chains()))
     # print(list(structure2.get_chains()))
-    result = str_comparison_superimpose(structure1, structure2)
+    result = str_comparison_superimpose(chain_list1, chain_list2)
 
     return result
 
@@ -290,15 +273,15 @@ def get_similar_sequences(chain_list, seq_dict):
         if chain not in similar_sequences:  #  If not, it is the first time we saw it its value will be itself
             similar_sequences[chain] = chain
         chain_list2.remove(chain)  # Removing the chain from the second list to avoid comparing the same chain
-        # remove_list = []
+        remove_list = []
         for chain2 in chain_list2:
             if compare_chains(chain, chain2,seq_dict):  # if the chains have more than a 95 % of similarity
                 similar_sequences[chain2] = similar_sequences[chain]  # Conecting them in the dict
-                # remove_list.append(chain2)  #  We will remove this chain from the list 2
+                remove_list.append(chain2)  #  We will remove this chain from the list 2
         #         Todo: discutir si la linea de arriba produce un mal funcionamiento
-        #
-        # for chain in remove_list:
-        #     chain_list2.remove(chain)
+
+        for chain in remove_list:
+            chain_list2.remove(chain)
 
     return similar_sequences
 
@@ -381,11 +364,12 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
     keys and similar chains as values and removes chain pairs interacting in a similar way from the interaction dict """
 
     # Todo discutir si es conveniente eliminar de la lista dos aquellas interacciones que hayan encontrado interacciones similares
-
+    list_to_inverse = set([])
     for pair in interaction_dict:
 
         list_to_remove = []  # to avoid modifiying a list while looping through it we store here the elements we want
-        #  to remove and do it at the end
+        #  to remove and do it at the endç
+
         print('\n')
         print(pair)
         interaction_list1 = copy.copy(interaction_dict[pair])
@@ -400,19 +384,29 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
                 if interaction2 in list_to_remove:
                     continue
                 print('\t%s' % interaction2)
-                if not compare_interactions(interaction1, interaction2, similar_sequences):
-                    list_to_remove.append(interaction2)
+
+                comparison_result = compare_interactions(interaction1, interaction2, similar_sequences)
+                if len(comparison_result) == 1:
+                    if True in comparison_result:
+                        list_to_remove.append(interaction2)
+                else:
+                    if False in comparison_result:
+                        if True  in comparison_result :
+                            list_to_remove.append(interaction2)
+                            list_to_inverse.add((pair,tuple(interaction1)))
+                    else:
+                         list_to_remove.append(interaction2)
+
         for interaction in list_to_remove:
             interaction_list1.remove(interaction)
         interaction_dict[pair] = interaction_list1
 
 
-        for pair in [pair for pair in interaction_dict if pair[0] == pair[1]]:
-            tmp_list = copy.copy(interaction_dict[pair])
-            for interaction in tmp_list:
-                interaction_dict[pair].append(interaction[::-1])
+    for pair, interaction in list_to_inverse:
+        interaction_copy = copy.copy(list(interaction))
+        interaction_dict[pair].append(interaction_copy[::-1])
 
-        clean_heteroatoms(interaction_dict)
+    clean_heteroatoms(interaction_dict)
 
 def get_all_interaction_pairs(pdb_filename):
 
@@ -535,4 +529,4 @@ def get_interaction_pairs_from_input(directory):
 
 if __name__ == '__main__':
 
-    get_interaction_pairs('3kuy.pdb')
+    get_all_interaction_pairs('5vox.pdb')

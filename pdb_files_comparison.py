@@ -62,39 +62,49 @@ def str_comparison_superimpose(str1, str2):
     It requires 2 arguments, the 2 structures we want to compare.
     '''
 
-    chains_list = [x.get_id() for x in str1.get_chains()]
-    res = 0
     sup = Superimposer()
+    result = []
     # print(list(str1.get_atoms()))
     # print(list(str2.get_atoms()))
     # print("superimposition")
     mean_distances = []
-    for chain_id1 in chains_list:
-        for chain_id2 in chains_list:
-            if chain_id1.upper() != chain_id2.upper():
-                continue
-            for round in range(10):
-                sup.set_atoms(list(str1[0][chain_id1].get_atoms()), list(str2[0][chain_id2].get_atoms()))
-                sup.apply(str2)
+    for chain_position in range(2):
+        if str1[0].get_id() != str2[chain_position].get_id():
+            continue
 
-            distance_array = []
-            other_chain1 = [x for x in chains_list if x != chain_id1][0]
-            other_chain2 = [x for x in chains_list if x != chain_id2][0]
-            CA_other1 = [x['CA'] for x in str1[0][other_chain1].get_residues() if
-                        'CA' in [y.get_id() for y in x.get_atoms()]]
-            CA_other2 = [x['CA'] for x in str2[0][other_chain2].get_residues() if
-                        'CA' in [y.get_id() for y in x.get_atoms()]]
-            for pair in zip(CA_other1,CA_other2):
-                
-                distance_array.append(pair[0]-pair[1])
+        sup.set_atoms(list(str1[0].get_atoms()), list(str2[chain_position].get_atoms()))
+        atom_list = list(str2[0].get_atoms())+list(str2[1].get_atoms())
+        sup.apply(atom_list)
 
-            mean_distances.append(sum(distance_array)/len(distance_array))
+        distance_array = []
+        other_chain1 = str1[1]
+        other_chain2 = [x for x in str2 if x != str2[chain_position]][0]
+        CA_other1 = [x['CA'] for x in other_chain1.get_residues() if
+                    'CA' in [y.get_id() for y in x.get_atoms()]]
+        CA_other2 = [x['CA'] for x in other_chain2.get_residues() if
+                    'CA' in [y.get_id() for y in x.get_atoms()]]
+        for pair in zip(CA_other1,CA_other2):
 
-            if min(mean_distances) < 9:
+            distance_array.append(pair[0]-pair[1])
+
+        mean_distances.append(sum(distance_array)/len(distance_array))
+
+        if min(mean_distances) < 9:
+
+            if str1[0].get_id() == str1[1].get_id():
+                result.append(True)
+            else:
                 print('\t%s' % min(mean_distances))
-                return 0
+                return [True]
+        else:
+
+            if str1[0].get_id() == str1[1].get_id():
+                result.append(False)
+            else:
+                print('\t%s' % min(mean_distances))
+                return [False]
     print('\t%s' % min(mean_distances))
-    return 1
+    return result
 
 
 

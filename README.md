@@ -90,8 +90,28 @@ This package includes complementary functions which can be set by the user.
 
 ## Tutorial
 
+In the following section we are going to do a little tutorial in order to make the program 
+of easy use and gor the user to get a grasp of all the functionalities it has available .
+
+### Command line arguments:
+* -i --input: Input a directory containing only the pdb files with the interactions the user wants to process.
+* -v --verbose: Increase output verbosity, by default is is set to False.
+* -k --subunit_limit: Subunit threshold if the protein can theoretically be limitless, by default it is set to False.
+* -opt -- optimization: Indicate if you want to optimize the model, by default it is True.
+* -intensive --intensive: Indicate if you want to find all possible structures or just the first one found, by default it is intensive.
+* -br --break: Indicate if you want to find all possible structures or just the first one. If you pass 'all' the program will output all the pairwise interactions found and if you pass 'unique' it will only return one interaction of each type.
+* -clash --clash_parameters: Pass a file with the clash detection parameters, see the manual to see the format of the file. Depth, number of atoms clashing, distance...
+*-inter_par, --interaction_parameters: Pass a file with the interection detection parameters, see the manual to see the format of the file: number of residues involved to consider interactions.
+
+1 Default settings
+
+
+With the default settings this program requires an 
+
+
 
 # Requirements
+
 In order to run this package with all its functionalities the user must have several programs:
 * Python 3
 * Python modules

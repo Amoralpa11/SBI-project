@@ -136,7 +136,7 @@ of easy use and gor the user to get a grasp of all the functionalities it has av
   ...
 
 
-5 Specify interaction characteristics
+5. Specify interaction characteristics
 
  *python3 macrocomplex_builder.py -inter_par interaction_parameters.txt*
   

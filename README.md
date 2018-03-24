@@ -103,32 +103,31 @@ of easy use and gor the user to get a grasp of all the functionalities it has av
 * -clash_par --clash_parameters: Pass a file with the clash detection parameters, see the manual to see the format of the file. Depth, number of atoms clashing, distance...
 *-inter_par, --interaction_parameters: Pass a file with the interection detection parameters, see the manual to see the format of the file: number of residues involved to consider interactions.
 
-1 Default settings
+1. Default settings
 
  *python3 macrocomplex_builder.py -i interactions_3kuy*
  * interactions_3kuy is the path to the directory containing all the interaction pdb files that are to be used in the construction of the macro-complex
 
-2  Assembly specifications
+2.  Assembly specifications
 
-2.1
-
+ *
  *python3 macrocomplex_builder.py -i interactions_3kuy -opt 0 -intensive 0*
  This command is the same as before but this time specifying if you want an intensive search and the final model to be optimized or not.
  * -opt 0: specification for the final model not to be optimized.
  * -intensive 0: specification for the program to return the first program it finds.
 
-2.2 
+ *
  *python3 macrocomplex_builder.py -i interactions_3kuy -k 100*
  This command in turn specifies the number of subunits the macro-complex has to have. This feature is set for proteins such as tubuline that would otherwise be endless.
  * -k 100: indicates the macro-complex has to have a maximum of 100 subunits.
 
-3 Get interactions
+3. Get interactions
 
  *python3 macrocomplex_builder.py -i interactions_3kuy -br all*
  
  This command is different form the previous ones. In this case you pass a fully built macro-complex and the output will be a directory with all the pairwise interactions found in the structure. If the user just wants one of each type of interactions he should pass unique instead of all.
  
-4 Specify clash characteristics
+4. Specify clash characteristics
 
  *python3 macrocomplex_builder.py -clash_par clash_parameters.txt*
   
@@ -157,3 +156,6 @@ In order to run this package with all its functionalities the user must have sev
   *  gzip
   *  re
   *  copy
+  
+  # TODOS
+  let the user provide all the interactions and we rebuild it with one of each interaction.

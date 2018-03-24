@@ -158,4 +158,5 @@ In order to run this package with all its functionalities the user must have sev
   *  copy
   
   # TODOS
-  let the user provide all the interactions and we rebuild it with one of each interaction.
+  * let the user provide all the interactions and we rebuild it with one of each interaction.
+  * let the user pass the estequiometria

@@ -105,7 +105,7 @@ def interaction_finder(structure, ref_chain_id, complex_id, node):
         tup = tuple(tup)
 
         if tup in complex_id.get_interaction_dict():
-            known_interaction = False
+
             for interaction_type in complex_id.get_interaction_dict()[tup]:
 
                 comparison_result = compare_interactions([structure[0][ref_chain_id], chain], interaction_type, complex_id.similar_sequences)
@@ -114,12 +114,12 @@ def interaction_finder(structure, ref_chain_id, complex_id, node):
                     if comparison_result == [True,False]:
                         complex_id.nodes[-1].add_interaction(complex_id[chain.get_id()], interaction_type)
                         complex_id[chain.get_id()].add_interaction(complex_id.nodes[-1], interaction_type[::-1])
-                        known_interaction = True
+
                         break
                     elif comparison_result == [True,True]:
                         complex_id.nodes[-1].add_interaction(complex_id[chain.get_id()], interaction_type)
                         complex_id[chain.get_id()].add_interaction(complex_id.nodes[-1], interaction_type)
-                        known_interaction = True
+
                         break
 
 
@@ -127,14 +127,9 @@ def interaction_finder(structure, ref_chain_id, complex_id, node):
 
                     complex_id.nodes[-1].add_interaction(complex_id[chain.get_id()], interaction_type)
                     complex_id[chain.get_id()].add_interaction(complex_id.nodes[-1], interaction_type)
-                    known_interaction = True
+
                     break
 
-            if not known_interaction:
-                return False  # We will return false if the interaction is not in the input
-
-        else:
-            return False  # We will return false if the interaction is not in the input
 
 
 #########
@@ -187,13 +182,15 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
 
     sup.apply(other_chain2)
 
-    if not get_clash_chains(str1, other_chain2,chain1) and interaction_finder(str1, other_chain2.get_id(), complex_id,node): ## returns T if there is a clash and F if there isn't.
+    if not get_clash_chains(str1, other_chain2,chain1): ## returns T if there is a clash and F if there isn't.
 
         other_chain2.id = len(complex_id.get_nodes())+1
         similar_seq[other_chain2] = similar_seq[other_chain2_original]
         complex_id.add_node(other_chain2, node, str2)
         str1[0].add(other_chain2)
 
+        interaction_finder(str1, other_chain2.get_id(), complex_id,node)
+    
         return True
     else:
         return 'clash'
@@ -340,7 +337,7 @@ if __name__ == '__main__':
 
     # get_all_interaction_pairs('')
 
-    result = get_interaction_pairs_from_input('1gzx_all_interactions')
+    result = get_interaction_pairs_from_input('5vox_all_interactions')
 
     id_dict = result[1]
     interaction_dict = result[0]

@@ -161,5 +161,6 @@ In order to run this package with all its functionalities the user must have sev
   * let the user provide all the interactions and we rebuild it with one of each interaction.
   * let the user pass the estequiometria
   * pass rna-dna molecules
+  * Limitations in minimizing interactions
   * **DO WE???**
   We also check which interactions are possible at the same time.

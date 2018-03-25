@@ -100,7 +100,8 @@ def get_sequence_from_chain(chain):
     d = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
          'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
          'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
-         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','UNK': 'X'}
+         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M',
+         'UNK': 'X', ' DG': 'g', ' DA': 'a', ' DC': 'c', ' DT': 'u', 'ATV':'z'}
 
     res_short_list = []
 
@@ -248,13 +249,23 @@ def get_neighbor_chains(structure):
     neighbor_chains = {}
     ns = NeighborSearch(list(structure.get_atoms()))
     for chain in structure.get_chains():
+        if [' DA', ' DC', ' DG', ' DT', 'ATV'] == sorted(set([x.get_resname() for x in chain.get_residues()])):
+            for atom in chain.get_atoms():
+                atom.id = 'P'
+
+        residue_name = set()
+        residue_id = set()
+        for residue in chain.get_residues():
+            residue_name.add(residue.get_resname())
+            residue_id.add(residue.get_id())
+
+    for chain in structure.get_chains():
         neighbor_chains[chain] = set([])
 
         neighbor_dict = {}
-        for atom in [atom for atom in chain.get_atoms() if atom.get_id() == 'CA' ]:  # For every alpha carbon in chain
-
+        for atom in [ atom for atom in chain.get_atoms() if atom.get_id() == 'CA' or atom.get_id() == 'P' ]:  # For every alpha carbon in chain
             for atom2 in ns.search(atom.get_coord(), 8, level='A'):
-                if atom2.get_id() == 'CA':  # for every alpha carbon at 8 amstrongs or less from atom
+                if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 amstrongs or less from atom
                     chain2 = atom2.get_parent().get_parent()  # Gettin to wich chain it belongs
                     if chain2 != chain and chain2 not in neighbor_chains.keys():
   # If it is not in the same chain and it is not already a
@@ -565,4 +576,5 @@ def get_interaction_pairs_from_input(directory):
 
 if __name__ == '__main__':
 
-    get_all_interaction_pairs('5vox.pdb')
+    get_all_interaction_pairs('3kuy.pdb')
+    print('Hello')

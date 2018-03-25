@@ -48,7 +48,7 @@ def get_clash_chains(structure, chain, prev_chain):
     :return: True or false, True if there is clash and false if there is no clash.
     """
     # center_residues = chain.get_residues()
-    chain_atoms = [x for x in list(chain.get_atoms()) if x.get_id() == 'CA']
+    chain_atoms = [x for x in list(chain.get_atoms()) if x.get_id() == 'CA' or x.get_id() == 'P']
     # chain_atoms = Selection.unfold_entities(center_residues, 'A')
     atom_list = list(structure.get_atoms())
     ns = NeighborSearch(atom_list)
@@ -92,9 +92,9 @@ def interaction_finder(structure, ref_chain_id, complex_id, node):
     neighbor_chains = []
     ns = NeighborSearch(list(structure.get_atoms()))
     ref_chain = structure[0][ref_chain_id]
-    for atom in [atom for atom in ref_chain.get_atoms() if atom.get_id() == 'CA']:  # For every alpha carbon in chain
+    for atom in [atom for atom in ref_chain.get_atoms() if atom.get_id() == 'CA' or atom.get_id() == 'P']:  # For every alpha carbon in chain
         for atom2 in ns.search(atom.get_coord(), 8, level='A'):
-            if atom2.get_id() == 'CA':  # for every alpha carbon at 8 armstrongs or less from atom
+            if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 armstrongs or less from atom
                 chain2 = atom2.get_parent().get_parent()  # Getting to which chain it belongs
                 if chain2 != ref_chain and chain2 not in neighbor_chains and chain2.get_id() != node.get_chain():
                     neighbor_chains.append(chain2)  # If it is not in the same chain and it is not already a
@@ -337,8 +337,8 @@ if __name__ == '__main__':
 
     # get_all_interaction_pairs('')
 
-    result = get_interaction_pairs_from_input('5vox_all_interactions')
-
+    result = get_interaction_pairs_from_input('3kuy_all_interactions')
+    print(result)
     id_dict = result[1]
     interaction_dict = result[0]
     similar_sequences = result[2]

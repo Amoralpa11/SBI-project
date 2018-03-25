@@ -190,7 +190,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
         str1[0].add(other_chain2)
 
         interaction_finder(str1, other_chain2.get_id(), complex_id,node)
-    
+
         return True
     else:
         return 'clash'
@@ -337,7 +337,7 @@ if __name__ == '__main__':
 
     # get_all_interaction_pairs('')
 
-    result = get_interaction_pairs_from_input('5vox_all_interactions')
+    result = get_interaction_pairs_from_input('3j7l_all_interactions')
 
     id_dict = result[1]
     interaction_dict = result[0]

@@ -44,7 +44,7 @@ class ChainSelect(Select):
         self.chain_to_include2 = chain_to_include2
 
     def accept_chain(self, chain):
-        if chain.get_id() == self.chain_to_include1 or chain.get_id() == self.chain_to_include2:
+        if chain == self.chain_to_include1 or chain == self.chain_to_include2:
             return True
         else:
             return False
@@ -250,13 +250,25 @@ def get_neighbor_chains(structure):
     for chain in structure.get_chains():
         neighbor_chains[chain] = set([])
 
+        neighbor_dict = {}
         for atom in [atom for atom in chain.get_atoms() if atom.get_id() == 'CA' ]:  # For every alpha carbon in chain
 
             for atom2 in ns.search(atom.get_coord(), 8, level='A'):
                 if atom2.get_id() == 'CA':  # for every alpha carbon at 8 amstrongs or less from atom
                     chain2 = atom2.get_parent().get_parent()  # Gettin to wich chain it belongs
                     if chain2 != chain and chain2 not in neighbor_chains.keys():
-                        neighbor_chains[chain].add(chain2)  # If it is not in the same chain and it is not already a
+  # If it is not in the same chain and it is not already a
+                        if chain2 not in neighbor_dict:
+                            neighbor_dict[chain2] = 0
+                        neighbor_dict[chain2] += 1
+
+        print('\n%s' % chain)
+        for close_chain, contacts in neighbor_dict.items():
+            print('%s: %s' % (close_chain, contacts))
+            if contacts > 8:
+                neighbor_chains[chain].add(close_chain)
+            # elif len(neighbor_dict.keys()) == 1 and contacts > 5:
+            #     neighbor_chains[chain].add(close_chain)
                         # key (we already have its interactions) we add the chain as a value
     # print(neighbor_chains)
     return neighbor_chains
@@ -344,7 +356,7 @@ def get_interaction_pairs(pdb_filename):
     for pair in interaction_dict:
         for interaction in interaction_dict[pair]:
             io.save('%s/%s_%s%s.pdb' % (structure_id, structure_id, interaction[0].get_id(), interaction[1].get_id()),
-                    ChainSelect(interaction[0].get_id(), interaction[1].get_id()))
+                    ChainSelect(interaction[0], interaction[1]))
 
 
 def clean_heteroatoms(interaction_dict):
@@ -413,7 +425,7 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
 
     clean_heteroatoms(interaction_dict)
 
-def get_all_interaction_pairs(pdb_filename):
+def get_all_interaction_pairs(pdb_filename, print_files = True):
 
     """Takes a pdb file path and generates a folder with all the pairs of interacting chains without checking if there is redundant content. This simulates the user input"""
 
@@ -425,22 +437,37 @@ def get_all_interaction_pairs(pdb_filename):
 
     neighbor_chains = get_neighbor_chains(structure)
 
-    if not os.path.exists('%s_all_interactions' % structure_id):
-        os.makedirs('%s_all_interactions' % structure_id)
+    if print_files:
+        if not os.path.exists('%s_all_interactions' % structure_id):
+            os.makedirs('%s_all_interactions' % structure_id)
+        else:
+            for the_file in os.listdir('%s_all_interactions' % structure_id):
+                file_path = os.path.join('%s_all_interactions' % structure_id, the_file)
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+
+        io = PDBIO()
+        io.set_structure(structure)
+
+        for chain in neighbor_chains:
+            for other_chain in neighbor_chains[chain]:
+                io.save(
+                    '%s_all_interactions/%s_%s%s.pdb' % (structure_id, structure_id, chain.get_id(), other_chain.get_id()),
+                    ChainSelect(chain, other_chain))
     else:
-        for the_file in os.listdir('%s_all_interactions' % structure_id):
-            file_path = os.path.join('%s_all_interactions' % structure_id, the_file)
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
+        interaction_list = []
+        structure_counter = 0
+        for chain, neighbor in neighbor_chains.items():
+            for chain2 in neighbor:
+                new_str = Structure.Structure('%s_%s' % (structure_id, structure_counter))
+                structure_counter += 1
+                new_str.add(Model.Model(0))
+                new_str[0].add(chain)
+                new_str[0].add(chain2)
+                interaction_list.append(new_str)
 
-    io = PDBIO()
-    io.set_structure(structure)
+        return interaction_list
 
-    for chain in neighbor_chains:
-        for other_chain in neighbor_chains[chain]:
-            io.save(
-                '%s_all_interactions/%s_%s%s.pdb' % (structure_id, structure_id, chain.get_id(), other_chain.get_id()),
-                ChainSelect(chain.get_id(), other_chain.get_id()))
 
 def get_pdb_from_directory(directory):
 
@@ -480,7 +507,7 @@ def get_id_dict(structure_list):
 def get_interaction_pairs_from_input(directory):
 
     #  Todo: hacer que la función pueda procesar moleculas de DNA
-    #  Todo: hacer que pueda trabajar con interacciones de mas de dos moléculas
+
 
     """Takes the path of a directory and returns a list holding the interaction dictionary of the pdbs in this directory, a similar chains dictionary and a dictionary that relates every chain with its id """
 
@@ -490,7 +517,11 @@ def get_interaction_pairs_from_input(directory):
     parser = PDBParser(PERMISSIVE=1)
     for file in files_list:
         structure_id = get_structure_name(file)
-        structure_list.append(parser.get_structure(structure_id, file))
+        structure = parser.get_structure(structure_id, file)
+        if len(list(structure.get_chains())) == 2:
+            structure_list.append(structure)
+        else:
+            structure_list += get_all_interaction_pairs(file,False)
 
 
 
@@ -534,4 +565,4 @@ def get_interaction_pairs_from_input(directory):
 
 if __name__ == '__main__':
 
-    get_all_interaction_pairs('2f1d_Bio1.pdb')
+    get_all_interaction_pairs('5vox.pdb')

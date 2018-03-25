@@ -89,7 +89,7 @@ def str_comparison_superimpose(str1, str2):
 
         mean_distances.append(sum(distance_array)/len(distance_array))
 
-        if min(mean_distances) < 9:
+        if min(mean_distances) < 7:
 
             if str1[0].get_id() == str1[1].get_id():
                 result.append(True)

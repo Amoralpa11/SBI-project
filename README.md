@@ -82,7 +82,7 @@ PDB files of the pairwise interactions.
 ## Complementary software
 
 This package includes complementary functions which can be set by the user.
-* Allows the user to pass a protein-RNA interaction to rebuild the model. (**To be decided**)
+* Allows the user to pass a protein-RNA interaction to rebuild the model.
 * Allows the user to pass PDB interaction files of more than 2 proteins.
 * Allows the user to pass a full protein complex to be broken into pairwise interaction PDB files.
 * Allows the user to pass the stoichiometry so as to specify the components of the macro-complex.
@@ -158,7 +158,7 @@ In order to run this package with all its functionalities the user must have sev
   *  copy
   
   # TODOS
-  * let the user provide all the interactions and we rebuild it with one of each interaction.
+  * let the user provide all the interactions forming the strucutre and the programs rebuilds it with those interactions.
   * let the user pass the estequiometria
   * pass rna-dna molecules
   * Limitations in minimizing interactions

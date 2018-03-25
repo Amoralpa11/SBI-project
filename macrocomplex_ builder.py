@@ -72,7 +72,7 @@ def get_clash_chains(structure, chain, prev_chain):
                 break
         if atom_produces_clash:
             clash_counter += 1
-            if clash_counter < 5:
+            if clash_counter > 5:
                 print('more than 5 clashes found')
                 # print('hey')
                 return True

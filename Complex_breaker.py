@@ -2,23 +2,14 @@ from Bio.PDB.PDBParser import PDBParser
 from Bio.PDB import Structure
 from Bio.PDB import Model
 from Bio.PDB import Chain
-from Bio.PDB import Residue
-from Bio.PDB import Atom
 from Bio.PDB import NeighborSearch
 from Bio.PDB import PDBIO
 from Bio.PDB import Select
-from Bio.PDB.Polypeptide import PPBuilder
 from Bio import pairwise2
 import re
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 import os
 from pdb_files_comparison import str_comparison_superimpose
 import copy
-import string
-import Complex_id
-import pickle
 
 """In this file there are the functions that will take part in the processing of the user input. That implies 
 identify similar proteins in the input pdb files, classifiying in a non redundant way the types of interactions that 
@@ -382,7 +373,7 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
     for pair in interaction_dict:
 
         list_to_remove = []  # to avoid modifiying a list while looping through it we store here the elements we want
-        #  to remove and do it at the endç
+        #  to remove and do it at the end
 
         print('\n')
         print(pair)
@@ -505,9 +496,6 @@ def get_id_dict(structure_list):
 
 
 def get_interaction_pairs_from_input(directory):
-
-    #  Todo: hacer que la función pueda procesar moleculas de DNA
-
 
     """Takes the path of a directory and returns a list holding the interaction dictionary of the pdbs in this directory, a similar chains dictionary and a dictionary that relates every chain with its id """
 

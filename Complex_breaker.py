@@ -550,8 +550,8 @@ def get_interaction_pairs_from_input(directory):
 
     # TODO: Eliminar cadenas no utilizadas de similar sequences
 
-    return [interaction_dict,id_dict,similar_sequences]
+    return [interaction_dict,id_dict,similar_sequences, seq_dict]
 
 if __name__ == '__main__':
 
-    get_all_interaction_pairs('../4v4a-pdb-bundle1.pdb')
+    get_all_interaction_pairs('4v4a_prot.pdb')

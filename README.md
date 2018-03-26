@@ -94,14 +94,15 @@ In the following section we are going to do a little tutorial in order to make t
 of easy use and gor the user to get a grasp of all the functionalities it has available .
 
 ### Command line arguments:
-* -i --input: Input a directory containing only the pdb files with the interactions the user wants to process.
+* -i --input: Input a directory containing only the pdb files with the interactions the user wants to process or a macro-complex pdb file if the break option is set.
 * -v --verbose: Increase output verbosity, by default is is set to False.
 * -k --subunit_limit: Subunit threshold if the protein can theoretically be limitless, by default it is set to False.
 * -opt -- optimization: Indicate if you want to optimize the model, by default it is True.
-* -intensive --intensive: Indicate if you want to find all possible structures or just the first one found, by default it is intensive.
-* -br --break: Indicate if you want to find all possible structures or just the first one. If you pass 'all' the program will output all the pairwise interactions found and if you pass 'unique' it will only return one interaction of each type.
+* -int --intensive: Indicate if you want to find all possible structures or just the first one found, by default it is intensive.
+* -br --break: Indicate if you want to return all the pairwise interactions or just one of each type. If you pass 'all' the program will output all the pairwise interactions found and if you pass 'unique' it will only return one interaction of each type.
 * -clash_par --clash_parameters: Pass a file with the clash detection parameters, see the manual to see the format of the file. Depth, number of atoms clashing, distance...
 *-inter_par, --interaction_parameters: Pass a file with the interection detection parameters, see the manual to see the format of the file: number of residues involved to consider interactions.
+* -stoic --stoichiometry: Parameter defining the stoichiometry of the complex, the program will assume the different interaction pdb files passed are the interactions forming the macro-complex and will attempt to build the complex using each interaction passed once.
 
 1. Default settings
 
@@ -110,14 +111,12 @@ of easy use and gor the user to get a grasp of all the functionalities it has av
 
 2.  Assembly specifications
 
- *
- *python3 macrocomplex_builder.py -i interactions_3kuy -opt 0 -intensive 0*
+ * *python3 macrocomplex_builder.py -i interactions_3kuy -opt 0 -intensive 0*
  This command is the same as before but this time specifying if you want an intensive search and the final model to be optimized or not.
  * -opt 0: specification for the final model not to be optimized.
  * -intensive 0: specification for the program to return the first program it finds.
 
- *
- *python3 macrocomplex_builder.py -i interactions_3kuy -k 100*
+ * *python3 macrocomplex_builder.py -i interactions_3kuy -k 100*
  This command in turn specifies the number of subunits the macro-complex has to have. This feature is set for proteins such as tubuline that would otherwise be endless.
  * -k 100: indicates the macro-complex has to have a maximum of 100 subunits.
 

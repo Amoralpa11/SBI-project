@@ -111,12 +111,12 @@ of easy use and gor the user to get a grasp of all the functionalities it has av
 
 2.  Assembly specifications
 
- * *python3 macrocomplex_builder.py -i interactions_3kuy -opt 0 -intensive 0*
+ *python3 macrocomplex_builder.py -i interactions_3kuy -opt 0 -intensive 0*
  This command is the same as before but this time specifying if you want an intensive search and the final model to be optimized or not.
  * -opt 0: specification for the final model not to be optimized.
  * -intensive 0: specification for the program to return the first program it finds.
 
- * *python3 macrocomplex_builder.py -i interactions_3kuy -k 100*
+ *python3 macrocomplex_builder.py -i interactions_3kuy -k 100*
  This command in turn specifies the number of subunits the macro-complex has to have. This feature is set for proteins such as tubuline that would otherwise be endless.
  * -k 100: indicates the macro-complex has to have a maximum of 100 subunits.
 

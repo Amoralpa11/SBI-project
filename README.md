@@ -98,7 +98,7 @@ of easy use and gor the user to get a grasp of all the functionalities it has av
 * -v --verbose: Increase output verbosity, by default is is set to False.
 * -k --subunit_limit: Subunit threshold if the protein can theoretically be limitless, by default it is set to False.
 * -opt -- optimization: Indicate if you want to optimize the model, by default it is True.
-* -int --intensive: Indicate if you want to find all possible structures or just the first one found, by default it is intensive.
+* -simp --simp: Indicate if you want to find all possible structures or just the first one found, by default it is intensive and will attempt to find all the possible structures.
 * -br --break: Indicate if you want to return all the pairwise interactions or just one of each type. If you pass 'all' the program will output all the pairwise interactions found and if you pass 'unique' it will only return one interaction of each type.
 * -clash_par --clash_parameters: Pass a file with the clash detection parameters, see the manual to see the format of the file. Depth, number of atoms clashing, distance...
 *-inter_par, --interaction_parameters: Pass a file with the interection detection parameters, see the manual to see the format of the file: number of residues involved to consider interactions.
@@ -163,3 +163,11 @@ In order to run this package with all its functionalities the user must have sev
   * Limitations in minimizing interactions
   * **DO WE???**
   We also check which interactions are possible at the same time.
+
+# Limitations
+
+The main limitations of this prorgam are the following:
+
+* When performing the reduction of repeated interactions in the input by similiarity we set certain thresholds of similiarity. These thresholds can lead to consider subunits formed by the same chains and that have the same interaction but that are slightly rotated, so as to fit in a barrerl for example, to be deprecated. In these cases we only gather one of these interactions and ultimately when building the complex, barrel in this case, the last subunit may not be added due to clashes derived from an accumulation of little rotation mistakes in the rest of subunits forming the barrel.
+
+* With the recursive approach the amount of processing time when many chains with many interactions are passed and an intesive search is required can be very large. In these cases we recommend to use the option -simp of the program which returns the first structure found, therefore, reducing processing time but with the inconvenient that the structure returned may not be the desired by the user.

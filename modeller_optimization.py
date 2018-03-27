@@ -32,7 +32,8 @@ def structure_optimization(pdb_file):
     env.libs.topology.read(file='$(LIB)/top_heav.lib')
     env.libs.parameters.read(file='$(LIB)/par.lib')
 
-    code, ext = pdb_file.split('.')
+    path, ext = pdb_file.split('.')
+    dir, code = path.split('/')
 
     mdl = complete_pdb(env, pdb_file)
     mdl.write(file=code + '.ini')
@@ -45,7 +46,7 @@ def structure_optimization(pdb_file):
     mdl.restraints.write(file=code + '.rsr')
 
     mpdf = atmsel.energy()
-    print("The energy of " + code + " is: " + mpdf)
+    print("The energy of " + code + " is: " + str(mpdf[0]))
 
     # Create optimizer objects and set defaults for all further optimizations
     cg = conjugate_gradients(output='REPORT')
@@ -66,9 +67,9 @@ def structure_optimization(pdb_file):
                 actions=[actions.trace(5, trcfil)])
 
     mpdf = atmsel.energy()
-    print("The energy of " + code + " is: " + mpdf)
+    print("The energy of " + code + " is: " + str(mpdf[0]))
 
-    mdl.write(file=code + '_optimized' + '.' + 'pdb')
+    mdl.write(file=dir + '/' + code + '_optimized' + '.' + 'pdb')
 
 
 if __name__ == "__main__":

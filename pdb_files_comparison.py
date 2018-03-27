@@ -9,20 +9,6 @@ import sys
 
 fasta_p = re.compile(".pdb")
 
-# Creating a list with the file/s passed:
-# if options.infile:
-#     if os.path.isfile(options.infile):
-#         pdb_files.append(options.infile)
-#     else:
-#         files = filter(fasta_p.search, os.listdir(options.infile))
-#         for i in files:
-#             pdb_files.append(''.join([options.infile, i]))
-# else:
-#     pdb_files = filter(fasta_only.search, os.listdir(os.getcwd()))
-
-
-
-
 def str_comparison_list(str1, str2):
     '''This function returns a list indicating which chains
     from str1 are the same in str2 based on % of identity.

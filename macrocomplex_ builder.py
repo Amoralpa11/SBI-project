@@ -226,7 +226,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
 
     for other_CI in [ident for ident in complex_id_dict[len(complex_id.get_nodes())]]:
 
-        if complex_id.compare_with(other_CI,4):
+        if complex_id.compare_with(other_CI, 4):
             if options.verbose:
                 print('Repeated Complex id found')
 

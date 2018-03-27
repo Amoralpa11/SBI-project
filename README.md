@@ -108,12 +108,12 @@ of easy use and gor the user to get a grasp of all the functionalities it has av
 
 2.  Assembly specifications
 
- *python3 macrocomplex_builder.py -i interactions_3kuy -opt 0 -intensive 0*
- This command is the same as before but this time specifying if you want an intensive search and the final model to be optimized or not.
- * -opt 0: specification for the final model not to be optimized.
- * -intensive 0: specification for the program to return the first program it finds.
+ *python3 macrocomplex_builder.py -i interactions_3kuy -opt -intensive*
+ This command is the same as before but this time specifying you want an intensive search and the final models to be optimized.
+ * -opt: specification for the final model to be optimized.
+ * -intensive: specification for the program to return all the possible structures found.
 
- *python3 macrocomplex_builder.py -i interactions_3kuy -k 100*
+ *python3 macrocomplex_builder.py -i interactions_1TUB -k 100*
  This command in turn specifies the number of subunits the macro-complex has to have. This feature is set for proteins such as tubuline that would otherwise be endless.
  * -k 100: indicates the macro-complex has to have a maximum of 100 subunits.
 
@@ -122,24 +122,6 @@ of easy use and gor the user to get a grasp of all the functionalities it has av
  *python3 macrocomplex_builder.py -i interactions_3kuy -br all*
  
  This command is different form the previous ones. In this case you pass a fully built macro-complex and the output will be a directory with all the pairwise interactions found in the structure. If the user just wants one of each type of interactions he should pass unique instead of all.
- 
-4. Specify clash characteristics
-
- *python3 macrocomplex_builder.py -clash_par clash_parameters.txt*
-  
-  With this command we can regulate the interaction parameters used when breaking the macro-complex to get the interactions.
-  interaction_parameters.txt is a file containing the interactions specifications the user wants to set. The file has to look like this:
-  ...
-
-
-5. Specify interaction characteristics
-
- *python3 macrocomplex_builder.py -inter_par interaction_parameters.txt*
-  
-  As the previous command the user can set the interaction parameters used when breaking the macro-complex to get the interactions.
-  interaction_parameters.txt is a file containing the interactions specifications the user wants to set. The file has to look like this:
-  ...
-
 
 # Requirements
 

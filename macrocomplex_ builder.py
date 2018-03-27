@@ -61,7 +61,7 @@ def get_clash_chains(structure, chain, prev_chain):
     for atom1 in chain_atoms:
         atom_produces_clash = False
         for atom in ns.search(atom1.get_coord(), 1.2, 'A'):
-            # print('%s(%s)-%s(%s)' % (atom1.get_id(),atom1.get_parent().get_id(), atom.get_id(),atom1.get_parent().get_id()))
+            print('%s(%s)-%s(%s)' % (atom1.get_id(),atom1.get_parent().get_id(), atom.get_id(),atom1.get_parent().get_id()))
             # if chain != atom1.get_parent().get_parent():
             clashing_chain = atom.get_parent().get_parent().get_id()
             if clashing_chain != prev_chain:
@@ -75,7 +75,6 @@ def get_clash_chains(structure, chain, prev_chain):
             clash_counter += 1
             if clash_counter > 5:
                 print('more than 5 clashes found')
-                # print('hey')
                 return True
 
     return False
@@ -199,7 +198,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
 
 #########
 
-def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict,stoichiometry_dict):
+def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict,stoichiometry_dict,st):
 
     global branch_id
     branch_id.append(0)
@@ -226,7 +225,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             branch_id[-1] += 1
             print("\nStarting new Branch: %s" % ".".join([str(x) for x in branch_id]))
 
-            if branch_id == [1,1]:
+            if nodes.get_chain() == 14:
                 print('stop')
 
 
@@ -242,7 +241,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             copied_current_node = complex_id_copy[nodes.get_chain()]
 
             if similar_seq[interact[0]] == similar_seq[interact[1]]:
-                if stoichiometry_dict[similar_seq[interact[0]]]:
+                if not st or (similar_seq[interact[0]] not in stoichiometry_dict or stoichiometry_dict[similar_seq[interact[0]]]):
                     # TODO len de complex id
                     chain_str2_copy = copy_chain(interact[0], len(complex_id.get_nodes()))
                     modified_str = superimpose_fun(base_struct, interact, copied_current_node, chain_str2_copy, complex_id_copy, similar_seq, True)
@@ -252,13 +251,13 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                         modified_str = None
 
                     if modified_str:
-
-                        stoichiometry_dict[similar_seq[interact[0]]] -=1
+                        if st and similar_seq[interact[0]] in stoichiometry_dict:
+                            stoichiometry_dict[similar_seq[interact[0]]] -=1
 
                         if len(complex_id_copy.get_nodes()) not in complex_id_dict:
                             complex_id_dict[len(complex_id_copy.get_nodes())] = []
 
-                        update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict)
+                        update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict,st)
                         print('Haciendo un pop')
                         complex_id_copy.pop_structure(base_struct)
                 else:
@@ -268,7 +267,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                 for i in interact:
                     if similar_seq[chains_str_dict[nodes.get_chain_type()]] == similar_seq[i]:
                         other_chain = [x for x in interact if x != i][0]
-                        if stoichiometry_dict[similar_seq[other_chain]]:
+                        if not st or (similar_seq[other_chain] not in stoichiometry_dict or stoichiometry_dict[similar_seq[other_chain]]):
 
                             modified_str = superimpose_fun(base_struct, interact, copied_current_node, i, complex_id_copy, similar_seq, False)
                             if modified_str == 'clash':
@@ -276,13 +275,13 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                                 modified_str = None
 
                             if modified_str:
-
-                                stoichiometry_dict[similar_seq[other_chain]] -= 1
+                                if st and similar_seq[other_chain] in stoichiometry_dict:
+                                    stoichiometry_dict[similar_seq[other_chain]] -= 1
 
                                 if len(complex_id_copy.get_nodes()) not in complex_id_dict:
                                     complex_id_dict[len(complex_id_copy.get_nodes())] = []
 
-                                update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict)
+                                update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict,st)
                                 print('Haciendo un pop')
                                 complex_id_copy.pop_structure(base_struct)
                             break
@@ -325,22 +324,25 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict):
             file_path = os.path.join('result', the_file)
             if os.path.isfile(file_path):
                 os.unlink(file_path)
-
+    st = True
     stoichiometry_dict = {}
+    if st:
 
-    chain_set = set(similar_seq.values())
+        chain_set = set(similar_seq.values())
 
-    print('\nWe have found %s different proteins in your input. Would you like to set sotoickiometry values for any of them?\n Enter \'q\' for skipping the process' % len(chain_set))
-    reverse_similar_seq = reverse_dictionary(similar_seq)
+        print('\nWe have found %s different proteins in your input. Would you like to set sotoickiometry values for any of them?\n Enter \'q\' for skipping the process' % len(chain_set))
+        reverse_similar_seq = reverse_dictionary(similar_seq)
 
-    chain_counter = 1
-    for chain in chain_set:
-        print('\nChain %s:\n' % chain_counter)
-        name_str = ', '.join(reverse_similar_seq[chain])
-        print('\tNames: %s\n\tSequence:\n\t%s' % (name_str, seq_dict[chain]))
-        copy_number = int(input('\tIntroduce number of copies:' ))
-        stoichiometry_dict[chain] = copy_number
-        chain_counter += 1
+        chain_counter = 1
+        for chain in chain_set:
+            print('\nChain %s:\n' % chain_counter)
+            name_str = ', '.join(reverse_similar_seq[chain])
+            print('\tNames: %s\n\tSequence:\n\t%s' % (name_str, seq_dict[chain]))
+            copy_number = input('\tIntroduce number of copies:' )
+            if copy_number and copy_number != 'q':
+                copy_number = int(copy_number)
+                stoichiometry_dict[chain] = copy_number
+            chain_counter += 1
 
     global branch_id
     for chain in chains_str_dict:
@@ -351,14 +353,17 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict):
         # copy_chain = copy.deepcopy(Chain.Chain(chains_str_dict[chain]))
         chain_copied = copy_chain(chains_str_dict[chain], 1)
         # add chain to the new structure
+
         base_struct[0].add(chain_copied)
         similar_seq[chain_copied] = similar_seq[chains_str_dict[chain]]
+        if st and similar_seq[chain_copied] in stoichiometry_dict:
+            stoichiometry_dict[similar_seq[chain_copied]] -= 1
         complex_id = ComplexId(interaction_dict, id_dict, similar_seq, base_struct)
         complex_id_dict[len(complex_id.get_nodes())] = []
-        update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict,stoichiometry_dict)
+        update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict,stoichiometry_dict, st)
         branch_id[-1] += 1
 
-    print('hey')
+
 
 
 def reverse_dictionary(dictionary):
@@ -382,7 +387,7 @@ if __name__ == '__main__':
 
     # get_all_interaction_pairs('')
 
-    result = get_interaction_pairs_from_input('1gzx_all_interactions')
+    result = get_interaction_pairs_from_input('5ara_all_interactions')
 
     id_dict = result[1]
     interaction_dict = result[0]

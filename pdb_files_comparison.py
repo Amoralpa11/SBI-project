@@ -64,7 +64,7 @@ def str_comparison_superimpose(str1, str2):
     # print(list(str1.get_atoms()))
     # print(list(str2.get_atoms()))
     # print("superimposition")
-    mean_distances = []
+
     for chain_position in range(2):
         if str1[0].get_id() != str2[chain_position].get_id():
             continue
@@ -84,23 +84,23 @@ def str_comparison_superimpose(str1, str2):
 
             distance_array.append(pair[0]-pair[1])
 
-        mean_distances.append(sum(distance_array)/len(distance_array))
+        mean_distances = sum(distance_array)/len(distance_array)
 
-        if min(mean_distances) < 7:
+        if mean_distances < 7:
 
             if str1[0].get_id() == str1[1].get_id():
                 result.append(True)
             else:
-                print('\t%s' % min(mean_distances))
+                print('\t%s' % mean_distances)
                 return [True]
         else:
 
             if str1[0].get_id() == str1[1].get_id():
                 result.append(False)
             else:
-                print('\t%s' % min(mean_distances))
+                print('\t%s' % mean_distances)
                 return [False]
-    print('\t%s' % min(mean_distances))
+
     return result
 
 

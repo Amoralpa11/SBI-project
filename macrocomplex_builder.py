@@ -170,8 +170,8 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
     chain_str2 = copy.deepcopy(i)
 
     trim_to_superimpose(node_chain_copy, chain_str2)
-    atoms_chain1 = [atom for atom in list(node_chain_copy.get_atoms()) if atom.get_id() == 'CA']
-    atoms_chain2 = [atom for atom in list(chain_str2.get_atoms()) if atom.get_id() == 'CA']
+    atoms_chain1 = [atom for atom in list(node_chain_copy.get_atoms()) if atom.get_id() == 'CA' or atom.get_id() == 'P']
+    atoms_chain2 = [atom for atom in list(chain_str2.get_atoms()) if atom.get_id() == 'CA' or atom.get_id() == 'P']
     sup = Superimposer()
 
     sup.set_atoms(atoms_chain1, atoms_chain2)

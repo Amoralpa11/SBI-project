@@ -64,11 +64,21 @@ def str_comparison_superimpose(str1, str2):
         other_chain2 = [x for x in str2 if x != str2[chain_position]][0]
         CA_other1 = [x['CA'] for x in other_chain1.get_residues() if
                     'CA' in [y.get_id() for y in x.get_atoms()]]
+        P_other1 = [x['P'] for x in other_chain1.get_residues() if
+                    'P' in [y.get_id() for y in x.get_atoms()]]
         CA_other2 = [x['CA'] for x in other_chain2.get_residues() if
                     'CA' in [y.get_id() for y in x.get_atoms()]]
-        for pair in zip(CA_other1,CA_other2):
+        P_other2 = [x['P'] for x in other_chain2.get_residues() if
+                     'P' in [y.get_id() for y in x.get_atoms()]]
 
-            distance_array.append(pair[0]-pair[1])
+        if CA_other1:
+            for pair in zip(CA_other1,CA_other2):
+
+                distance_array.append(pair[0]-pair[1])
+        else:
+            for pair in zip(P_other1,P_other2):
+
+                distance_array.append(pair[0]-pair[1])
 
         mean_distances = sum(distance_array)/len(distance_array)
 

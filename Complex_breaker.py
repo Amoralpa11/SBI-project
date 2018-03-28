@@ -81,7 +81,7 @@ def get_sequence_from_chain(chain):
     """Takes a chain and returns an string holding its sequence in a single character code"""
 
     # The next line avoids taking residuals that are not amino acids by only taking those with an alpha carbon
-    res_list = [x.get_resname() for x in chain.get_residues() if 'CA' in [y.get_id() for y in x.get_atoms()]]
+    res_list = [x.get_resname() for x in chain.get_residues() if 'CA' in [y.get_id() for y in x.get_atoms()] or 'P' in [y.get_id() for y in x.get_atoms()]]
 
     d = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
          'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
@@ -168,11 +168,20 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
         chain_list1.append(Chain.Chain(chain_id))
         res_counter = 0
         for residue in chain:
-            if 'CA' in [x.get_id() for x in
-                        residue.get_atoms()]:  # for every residue in chain that have an alpha carbon
+            if 'CA' in [x.get_id() for x in residue.get_atoms()]:  # for every residue in chain that have an alpha carbon
                 atom = residue['CA']  # storing the alpha carbon
                 chain_list1[-1].add(
                     Residue.Residue(('', res_counter, ''), residue.get_resname(), residue.get_segid()))  # adding the
+                #  residue
+                chain_list1[-1][('', res_counter, '')].add(atom.copy())  # adding a copy of the atom to avoid
+                #  modifiying the original ones
+                res_counter += 1
+            if 'P' in [x.get_id() for x in
+                        residue.get_atoms()]:  # for every residue in chain that have an alpha carbon
+                atom = residue['P']  # storing the alpha carbon
+                chain_list1[-1].add(
+                    Residue.Residue(('', res_counter, ''), residue.get_resname(),
+                                    residue.get_segid()))  # adding the
                 #  residue
                 chain_list1[-1][('', res_counter, '')].add(atom.copy())  # adding a copy of the atom to avoid
                 #  modifiying the original ones
@@ -187,6 +196,13 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
         for residue in chain:
             if 'CA' in [x.get_id() for x in residue.get_atoms()]:
                 atom = residue['CA']
+                chain_list2[-1].add(
+                    Residue.Residue(('', res_counter, ''), residue.get_resname(), residue.get_segid()))
+
+                chain_list2[-1][('', res_counter, '')].add(atom.copy())
+                res_counter += 1
+            if 'P' in [x.get_id() for x in residue.get_atoms()]:
+                atom = residue['P']
                 chain_list2[-1].add(
                     Residue.Residue(('', res_counter, ''), residue.get_resname(), residue.get_segid()))
 
@@ -242,7 +258,7 @@ def get_neighbor_chains(structure):
         neighbor_dict = {}
         for atom in [atom for atom in chain.get_atoms() if
                      atom.get_id() == 'CA' or atom.get_id() == 'P']:  # For every alpha carbon in chain
-            for atom2 in ns.search(atom.get_coord(), 8, level='A'):
+            for atom2 in ns.search(atom.get_coord(), 15, level='A'):
                 if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 amstrongs or less from atom
                     chain2 = atom2.get_parent().get_parent()  # Gettin to wich chain it belongs
                     if chain2 != chain and chain2 not in neighbor_chains.keys():
@@ -544,4 +560,4 @@ def get_interaction_pairs_from_input(directory):
 
 
 if __name__ == '__main__':
-    get_all_interaction_pairs('5oom.pdb')
+    get_all_interaction_pairs('3kuy.pdb')

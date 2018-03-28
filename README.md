@@ -134,6 +134,7 @@ In order to run this package with all its functionalities the user must have sev
   *  gzip
   *  re
   *  copy
+  * argparse
   
   # TODOS
   * pass rna-dna molecules

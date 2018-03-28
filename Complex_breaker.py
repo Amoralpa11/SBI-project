@@ -18,7 +18,6 @@ a protein can stablish. """
 
 
 def get_structure_name(filename):
-
     """Takes a .pdb file name, returns the string without extension"""
 
     p = re.compile('(.*).pdb')
@@ -27,7 +26,6 @@ def get_structure_name(filename):
 
 
 class ChainSelect(Select):
-
     """Class that allows the generation of a pdb file from an structure including only two chains specified in the
     constructor """
 
@@ -43,12 +41,10 @@ class ChainSelect(Select):
 
 
 def compare_chains(chain1, chain2, seq_dict):
-
     """Takes two chain objects and return true if their sequences are more than 95% simmilar and False if not"""
     if seq_dict:
         seq1 = seq_dict[chain1]
         seq2 = seq_dict[chain2]
-
 
     if seq1 and seq2:  # If there is an error in the sequecing of a chain the value of seq will be false
 
@@ -68,7 +64,6 @@ def compare_chains(chain1, chain2, seq_dict):
 
 
 def get_numeric_array(seq_aln):
-
     """Takes a sequence alignment and returns an array with numbers instead of residues"""
 
     numeric_array = []
@@ -83,7 +78,6 @@ def get_numeric_array(seq_aln):
 
 
 def get_sequence_from_chain(chain):
-
     """Takes a chain and returns an string holding its sequence in a single character code"""
 
     # The next line avoids taking residuals that are not amino acids by only taking those with an alpha carbon
@@ -92,7 +86,9 @@ def get_sequence_from_chain(chain):
     d = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
          'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
          'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
-         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','UNK': 'X'}
+         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M',
+         'UNK': 'X', ' DG': 'g', ' DA': 'a', ' DC': 'c', ' DT': 'u',
+         'ATV': 'z', '  A': 'a', '  U': 'u', '  G': 'g', '  C': 'c'}
 
     res_short_list = []
 
@@ -107,7 +103,6 @@ def get_sequence_from_chain(chain):
 
 
 def trim_to_superimpose(chain1, chain2):
-
     """Takes two chains and removes the residues that do not have a match in the sequence alignment"""
     seq1 = get_sequence_from_chain(chain1)
     seq2 = get_sequence_from_chain(chain2)
@@ -156,7 +151,6 @@ def trim_to_superimpose(chain1, chain2):
 
 
 def compare_interactions(interaction1, interaction2, similar_sequences):
-
     """This function takes two structures with two chains each one and a dictionary with chains as keys and keys as
     values relating them if they have more than a 95% of similarity and returns 1 if the two interactions are
     different and 0 if they are the same interaction """
@@ -166,16 +160,16 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
     chain_list1 = []
     chain_list2 = []
 
-
     for chain in interaction1:
-        chain_id = similar_sequences[chain].get_id() # To identify similar chains in the superimposition we name them
+        chain_id = similar_sequences[chain].get_id()  # To identify similar chains in the superimposition we name them
         #  as the main chain of its type
         if chain_id in [x.get_id() for x in chain_list1]:
-            homodimer = True  #  if the second chain is similar to the first we change homodimer to true and
+            homodimer = True  # if the second chain is similar to the first we change homodimer to true and
         chain_list1.append(Chain.Chain(chain_id))
         res_counter = 0
         for residue in chain:
-            if 'CA' in [x.get_id() for x in residue.get_atoms()]:  # for every residue in chain that have an alpha carbon
+            if 'CA' in [x.get_id() for x in
+                        residue.get_atoms()]:  # for every residue in chain that have an alpha carbon
                 atom = residue['CA']  # storing the alpha carbon
                 chain_list1[-1].add(
                     Residue.Residue(('', res_counter, ''), residue.get_resname(), residue.get_segid()))  # adding the
@@ -199,11 +193,11 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
                 chain_list2[-1][('', res_counter, '')].add(atom.copy())
                 res_counter += 1
 
-    if homodimer: # if the chain is an homodimer we remove different residues from chains in the same interaction
+    if homodimer:  # if the chain is an homodimer we remove different residues from chains in the same interaction
         for int in [chain_list1, chain_list2]:
             trim_to_superimpose(int[0], int[1])
 
-    for chain1 in chain_list1: # Removing different residues betwen similar chains in different interactions
+    for chain1 in chain_list1:  # Removing different residues betwen similar chains in different interactions
         for chain2 in chain_list2:
             if chain1.get_id() != chain2.get_id():
                 continue
@@ -220,36 +214,39 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
 
 
 def get_seq_dict(chain_list):
-
     """Takes a list of chains and returns a dictionary with chain objects as keys and strings holding their sequences as
     values """
 
     seq_dict = {}
     for chain in chain_list:
-            seq = get_sequence_from_chain(chain)
-            seq_dict[chain] = seq
+        seq = get_sequence_from_chain(chain)
+        seq_dict[chain] = seq
 
     return seq_dict
 
 
 def get_neighbor_chains(structure):
-
-    """Takes an strucutre and return a dicionary with chains as keys and a list of chains as values holding the
+    """Takes an structure and return a dicionary with chains as keys and a list of chains as values holding the
     chains with alpha carbons at less than 8 amgstrongs from an alpha carbon of the key chain """
 
     neighbor_chains = {}
     ns = NeighborSearch(list(structure.get_atoms()))
+    # for chain in structure.get_chains():
+    #     if 'CB' not in set([x.get_name() for x in chain.get_atoms()]):
+    #         for atom in chain.get_atoms():
+    #             atom.id = 'P'
+
     for chain in structure.get_chains():
         neighbor_chains[chain] = set([])
 
         neighbor_dict = {}
-        for atom in [atom for atom in chain.get_atoms() if atom.get_id() == 'CA' ]:  # For every alpha carbon in chain
-
+        for atom in [atom for atom in chain.get_atoms() if
+                     atom.get_id() == 'CA' or atom.get_id() == 'P']:  # For every alpha carbon in chain
             for atom2 in ns.search(atom.get_coord(), 8, level='A'):
-                if atom2.get_id() == 'CA':  # for every alpha carbon at 8 amstrongs or less from atom
+                if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 amstrongs or less from atom
                     chain2 = atom2.get_parent().get_parent()  # Gettin to wich chain it belongs
                     if chain2 != chain and chain2 not in neighbor_chains.keys():
-  # If it is not in the same chain and it is not already a
+                        # If it is not in the same chain and it is not already a
                         if chain2 not in neighbor_dict:
                             neighbor_dict[chain2] = 0
                         neighbor_dict[chain2] += 1
@@ -261,13 +258,12 @@ def get_neighbor_chains(structure):
                 neighbor_chains[chain].add(close_chain)
             # elif len(neighbor_dict.keys()) == 1 and contacts > 5:
             #     neighbor_chains[chain].add(close_chain)
-                        # key (we already have its interactions) we add the chain as a value
+            # key (we already have its interactions) we add the chain as a value
     # print(neighbor_chains)
     return neighbor_chains
 
 
 def get_similar_sequences(chain_list, seq_dict):
-
     """Takes a list of chain objects and a dictionary with chains as keys and their sequence as values and returns a
     dictionary with every chain as a key and a chain they are similar to as value """
 
@@ -276,14 +272,14 @@ def get_similar_sequences(chain_list, seq_dict):
     for chain in chain_list:
         if chain in similar_sequences:  # if the chain is already in the dictionary we skip it
             continue
-        if chain not in similar_sequences:  #  If not, it is the first time we saw it its value will be itself
+        if chain not in similar_sequences:  # If not, it is the first time we saw it its value will be itself
             similar_sequences[chain] = chain
         chain_list2.remove(chain)  # Removing the chain from the second list to avoid comparing the same chain
         remove_list = []
         for chain2 in chain_list2:
-            if compare_chains(chain, chain2,seq_dict):  # if the chains have more than a 95 % of similarity
+            if compare_chains(chain, chain2, seq_dict):  # if the chains have more than a 95 % of similarity
                 similar_sequences[chain2] = similar_sequences[chain]  # Conecting them in the dict
-                remove_list.append(chain2)  #  We will remove this chain from the list 2
+                remove_list.append(chain2)  # We will remove this chain from the list 2
         #         Todo: discutir si la linea de arriba produce un mal funcionamiento
 
         for chain in remove_list:
@@ -291,8 +287,8 @@ def get_similar_sequences(chain_list, seq_dict):
 
     return similar_sequences
 
-def get_interaction_pairs(pdb_filename):
 
+def get_interaction_pairs(pdb_filename):
     """ This function Takes a pdb file path and generates a folder with pdb files holding the unique pairwise interactions in the first pdb"""
 
     parser = PDBParser(PERMISSIVE=1)
@@ -331,7 +327,7 @@ def get_interaction_pairs(pdb_filename):
         print(pair)
         for int in interaction_dict[pair]:
             print("\t%s" % int)
-            counter+=1
+            counter += 1
     print(counter)
 
     if not os.path.exists(structure_id):
@@ -350,9 +346,10 @@ def get_interaction_pairs(pdb_filename):
             io.save('%s/%s_%s%s.pdb' % (structure_id, structure_id, interaction[0].get_id(), interaction[1].get_id()),
                     ChainSelect(interaction[0], interaction[1]))
 
+    return structure_id
+
 
 def clean_heteroatoms(interaction_dict):
-
     chain_set = set([])
     for interaction_list in interaction_dict.values():
         for interaction in interaction_list:
@@ -364,8 +361,8 @@ def clean_heteroatoms(interaction_dict):
             if residue.get_id()[0] != ' ':
                 chain.detach_child(residue.get_id())
 
-def clean_interaction_dict(interaction_dict, similar_sequences):
 
+def clean_interaction_dict(interaction_dict, similar_sequences):
     """Takes an dictionary with tuples of 2 strings and a list of lists of chains and a dictionary with chains as
     keys and similar chains as values and removes chain pairs interacting in a similar way from the interaction dict """
 
@@ -400,16 +397,15 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
                         list_to_remove.append(interaction2)
                 else:
                     if False in comparison_result:
-                        if True  in comparison_result :
+                        if True in comparison_result:
                             list_to_remove.append(interaction2)
-                            list_to_inverse.add((pair,tuple(interaction1)))
+                            list_to_inverse.add((pair, tuple(interaction1)))
                     else:
-                         list_to_remove.append(interaction2)
+                        list_to_remove.append(interaction2)
 
         for interaction in list_to_remove:
             interaction_list1.remove(interaction)
         interaction_dict[pair] = interaction_list1
-
 
     for pair, interaction in list_to_inverse:
         interaction_copy = copy.copy(list(interaction))
@@ -417,8 +413,8 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
 
     clean_heteroatoms(interaction_dict)
 
-def get_all_interaction_pairs(pdb_filename, print_files = True):
 
+def get_all_interaction_pairs(pdb_filename, print_files=True):
     """Takes a pdb file path and generates a folder with all the pairs of interacting chains without checking if there is redundant content. This simulates the user input"""
 
     parser = PDBParser(PERMISSIVE=1)
@@ -444,7 +440,8 @@ def get_all_interaction_pairs(pdb_filename, print_files = True):
         for chain in neighbor_chains:
             for other_chain in neighbor_chains[chain]:
                 io.save(
-                    '%s_all_interactions/%s_%s%s.pdb' % (structure_id, structure_id, chain.get_id(), other_chain.get_id()),
+                    '%s_all_interactions/%s_%s%s.pdb' % (
+                    structure_id, structure_id, chain.get_id(), other_chain.get_id()),
                     ChainSelect(chain, other_chain))
     else:
         interaction_list = []
@@ -458,19 +455,18 @@ def get_all_interaction_pairs(pdb_filename, print_files = True):
                 new_str[0].add(chain2)
                 interaction_list.append(new_str)
 
-        return interaction_list
+        return [interaction_list, 's%s_all_interactions' % structure_id]
 
 
 def get_pdb_from_directory(directory):
-
     """Takes a directory path and return a list of strings holding the names of pdb files in the directory """
 
     files_list = ['%s/%s' % (directory, f) for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
     return files_list
 
-def get_id_list():
 
+def get_id_list():
     """returns a list of all the combinations of two letters"""
 
     id_list = []
@@ -479,13 +475,12 @@ def get_id_list():
 
     for letter in alphabets:
         for letter2 in alphabets:
-            id_list.append('%s%s' % (letter,letter2))
+            id_list.append('%s%s' % (letter, letter2))
 
     return id_list[::-1]
 
 
 def get_id_dict(structure_list):
-
     """Takes a list of structures and returns a dictionary with chains as keys and unique idenfiers as values"""
 
     id_list = get_id_list()
@@ -497,7 +492,6 @@ def get_id_dict(structure_list):
 
 
 def get_interaction_pairs_from_input(directory):
-
     """Takes the path of a directory and returns a list holding the interaction dictionary of the pdbs in this directory, a similar chains dictionary and a dictionary that relates every chain with its id """
 
     files_list = get_pdb_from_directory(directory)
@@ -510,9 +504,7 @@ def get_interaction_pairs_from_input(directory):
         if len(list(structure.get_chains())) == 2:
             structure_list.append(structure)
         else:
-            structure_list += get_all_interaction_pairs(file,False)
-
-
+            structure_list += get_all_interaction_pairs(file, False)[0]
 
     id_dict = get_id_dict(structure_list)
 
@@ -522,7 +514,7 @@ def get_interaction_pairs_from_input(directory):
 
     seq_dict = get_seq_dict(chain_list)
 
-    similar_sequences = get_similar_sequences(chain_list,seq_dict)
+    similar_sequences = get_similar_sequences(chain_list, seq_dict)
 
     interaction_dict = {}
 
@@ -534,9 +526,7 @@ def get_interaction_pairs_from_input(directory):
 
         interaction_dict[nr_interaction].append(chains)
 
-    clean_interaction_dict(interaction_dict,similar_sequences)
-
-
+    clean_interaction_dict(interaction_dict, similar_sequences)
 
     print('\n')
 
@@ -545,13 +535,13 @@ def get_interaction_pairs_from_input(directory):
         print(pair)
         for int in interaction_dict[pair]:
             print("\t%s" % int)
-            counter+=1
+            counter += 1
     print(counter)
 
     # TODO: Eliminar cadenas no utilizadas de similar sequences
 
     return [interaction_dict,id_dict,similar_sequences, seq_dict]
 
-if __name__ == '__main__':
 
-    get_interaction_pairs('5ara.pdb')
+if __name__ == '__main__':
+    get_all_interaction_pairs('5oom.pdb')

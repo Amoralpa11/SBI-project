@@ -114,13 +114,13 @@ class ComplexId(object):
 
 
         if interaction and node:
-            if interaction[0] != interaction[1] or interaction[::-1] not in node.get_interaction_dict():
+            if self.similar_sequences[interaction[0]] != self.similar_sequences[interaction[1]] or interaction[::-1] not in node.get_interaction_dict():
                 new_node.add_interaction(node, interaction)
                 node.add_interaction(new_node, interaction)
             else:
 
-                new_node.add_interaction(node, interaction)
-                node.add_interaction(new_node, interaction[::-1])
+                new_node.add_interaction(node, interaction[::-1])
+                node.add_interaction(new_node, interaction)
 
 
 

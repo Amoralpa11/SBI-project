@@ -53,14 +53,14 @@ def structure_optimization(pdb_file):
     md = molecular_dynamics(output='REPORT')
 
     # Open a file to get basic stats on each optimization
-    trcfil = open(code + '.D00000001', 'w')
+    trcfil = open(dir + '/optimization_stats_' + code + '.D00000001', 'w')
 
     # Run CG on the all-atom selection; write stats every 5 steps
     cg.optimize(atmsel, max_iterations=20, actions=actions.trace(5, trcfil))
     # Run MD; write out a PDB structure (called '1fas.D9999xxxx.pdb') every
     # 10 steps during the run, and write stats every 10 steps
     md.optimize(atmsel, temperature=300, max_iterations=50,
-                actions=[actions.write_structure(10, code + '.D9999%04d.pdb'),
+                actions=[actions.write_structure(10, dir + code + '.D9999%04d.pdb'),
                          actions.trace(10, trcfil)])
     # Finish off with some more CG, and write stats every 5 steps
     cg.optimize(atmsel, max_iterations=20,

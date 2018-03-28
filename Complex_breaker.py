@@ -3,23 +3,14 @@ from Bio.PDB import Structure
 from Bio.PDB import Model
 from Bio.PDB import Chain
 from Bio.PDB import Residue
-from Bio.PDB import Atom
 from Bio.PDB import NeighborSearch
 from Bio.PDB import PDBIO
 from Bio.PDB import Select
-from Bio.PDB.Polypeptide import PPBuilder
 from Bio import pairwise2
 import re
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 import os
 from pdb_files_comparison import str_comparison_superimpose
 import copy
-import string
-import Complex_id
-import pickle
-from modeller_optimization import write_to_pdb
 
 """In this file there are the functions that will take part in the processing of the user input. That implies 
 identify similar proteins in the input pdb files, classifiying in a non redundant way the types of interactions that 
@@ -380,7 +371,7 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
     for pair in interaction_dict:
 
         list_to_remove = []  # to avoid modifiying a list while looping through it we store here the elements we want
-        #  to remove and do it at the endç
+        #  to remove and do it at the end
 
         print('\n')
         print(pair)
@@ -549,9 +540,8 @@ def get_interaction_pairs_from_input(directory):
 
     # TODO: Eliminar cadenas no utilizadas de similar sequences
 
-    return [interaction_dict, id_dict, similar_sequences]
+    return [interaction_dict,id_dict,similar_sequences, seq_dict]
 
 
 if __name__ == '__main__':
     get_all_interaction_pairs('5oom.pdb')
-    result = get_interaction_pairs_from_input('5oom_all_interactions')

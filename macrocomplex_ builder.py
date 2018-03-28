@@ -9,6 +9,7 @@ import argparse
 branch_id = [1]
 pdb_counter = 1
 
+
 def write_to_pdb(structure):
     """
     This function writes a pdb file from a structure
@@ -61,7 +62,7 @@ def get_clash_chains(structure, chain, prev_chain):
     for atom1 in chain_atoms:
         atom_produces_clash = False
         for atom in ns.search(atom1.get_coord(), 1.2, 'A'):
-            # print('%s(%s)-%s(%s)' % (atom1.get_id(),atom1.get_parent().get_id(), atom.get_id(),atom1.get_parent().get_id()))
+            print('%s(%s)-%s(%s)' % (atom1.get_id(),atom1.get_parent().get_id(), atom.get_id(),atom1.get_parent().get_id()))
             # if chain != atom1.get_parent().get_parent():
             clashing_chain = atom.get_parent().get_parent().get_id()
             if clashing_chain != prev_chain:
@@ -194,7 +195,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
         str1[0].add(other_chain2)
 
         interaction_finder(str1, other_chain2.get_id(), complex_id,node)
-    
+
         return True
     else:
         return 'clash'
@@ -202,8 +203,9 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
 
 #########
 
-def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict):
+def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict):
     global options
+    global branch_id
 
     # TODO subunit limit
     if options.subunit_n:
@@ -213,8 +215,6 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             file_name = write_to_pdb(base_struct)
             if options.optimize:
                 structure_optimization(file_name)
-
-    global branch_id
     branch_id.append(0)
 
     for node in complex_id.get_nodes():
@@ -244,11 +244,6 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             if options.verbose:
                 print("\nStarting new Branch: %s" % ".".join([str(x) for x in branch_id]))
 
-            if branch_id == [1,1]:
-                if options.verbose:
-                    print('stop')
-
-
             for node in complex_id.get_nodes():
                 if options.verbose:
                     print('%s: %s' % (node.get_chain(), node))
@@ -263,47 +258,58 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             copied_current_node = complex_id_copy[nodes.get_chain()]
 
             if similar_seq[interact[0]] == similar_seq[interact[1]]:
-                # TODO len de complex id
-                chain_str2_copy = copy_chain(interact[0], len(complex_id.get_nodes()))
-                modified_str = superimpose_fun(base_struct, interact, copied_current_node, chain_str2_copy, complex_id_copy, similar_seq, True)
+                if not options.st or (similar_seq[interact[0]] not in stoichiometry_dict or stoichiometry_dict[similar_seq[interact[0]]]):
+                    # TODO len de complex id
+                    chain_str2_copy = copy_chain(interact[0], len(complex_id.get_nodes()))
+                    modified_str = superimpose_fun(base_struct, interact, copied_current_node, chain_str2_copy, complex_id_copy, similar_seq, True)
 
-                if modified_str == 'clash':
-                    nodes.add_interaction("clash", interact)
-                    modified_str = None
+                    if modified_str == 'clash':
+                        nodes.add_interaction("clash", interact)
+                        modified_str = None
 
-                if modified_str:
+                    if modified_str:
+                        if options.st and similar_seq[interact[0]] in stoichiometry_dict:
+                            stoichiometry_dict[similar_seq[interact[0]]] -=1
 
-                    if len(complex_id_copy.get_nodes()) not in complex_id_dict:
-                        complex_id_dict[len(complex_id_copy.get_nodes())] = []
+                        if len(complex_id_copy.get_nodes()) not in complex_id_dict:
+                            complex_id_dict[len(complex_id_copy.get_nodes())] = []
 
-                    update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict)
-                    if options.verbose:
-                        print('Popping')
+                        update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict)
+                        if options.verbose:
+                            print('Popping')
                         if options.subunit_n:
                             options.subunit_n += 1
-                    complex_id_copy.pop_structure(base_struct)
-
+                        complex_id_copy.pop_structure(base_struct)
+                else:
+                    nodes.add_interaction("full", interact)
             else:
+
                 for i in interact:
                     if similar_seq[chains_str_dict[nodes.get_chain_type()]] == similar_seq[i]:
+                        other_chain = [x for x in interact if x != i][0]
+                        if not options.st or (similar_seq[other_chain] not in stoichiometry_dict or stoichiometry_dict[similar_seq[other_chain]]):
 
-                        modified_str = superimpose_fun(base_struct, interact, copied_current_node, i, complex_id_copy, similar_seq, False)
-                        if modified_str == 'clash':
-                            nodes.add_interaction("clash", interact)
-                            modified_str = None
+                            modified_str = superimpose_fun(base_struct, interact, copied_current_node, i, complex_id_copy, similar_seq, False)
+                            if modified_str == 'clash':
+                                nodes.add_interaction("clash", interact)
+                                modified_str = None
 
-                        if modified_str:
+                            if modified_str:
+                                if options.st and similar_seq[other_chain] in stoichiometry_dict:
+                                    stoichiometry_dict[similar_seq[other_chain]] -= 1
 
-                            if len(complex_id_copy.get_nodes()) not in complex_id_dict:
-                                complex_id_dict[len(complex_id_copy.get_nodes())] = []
-                            update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict)
-                            if options.verbose:
-                                print('Popping')
+                                if len(complex_id_copy.get_nodes()) not in complex_id_dict:
+                                    complex_id_dict[len(complex_id_copy.get_nodes())] = []
+
+                                update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict)
+                                if options.verbose:
+                                    print('Popping')
                                 if options.subunit_n:
                                     options.subunit_n += 1
-                            complex_id_copy.pop_structure(base_struct)
-                        break
-    # TODO break if intensive specifies print just the 1st one
+                                complex_id_copy.pop_structure(base_struct)
+                            break
+                        else:
+                            nodes.add_interaction("full", interact)
 
     for nodes in complex_id.get_nodes():
         verify = False
@@ -314,14 +320,14 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         if options.optimize and verify:
             structure_optimization(file_name)
 
-        if options.intensive and verify:
+        if not options.intensive and verify:
             exit(0)
 
     branch_id.pop()
     if options.verbose:
         print('\nReturning to branch %s' % ".".join([str(x) for x in branch_id[:-1]]))
 
-def macrocomplex_builder(id_dict, similar_seq, interaction_dict, directory):
+def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, directory):
     """
     This function rebuilds a complex with the interactions we obtained from the pdb files.
     :param str_dict: dictionary with all the interactions we want to build the complex with.
@@ -351,6 +357,24 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, directory):
             file_path = os.path.join('result', the_file)
             if os.path.isfile(file_path):
                 os.unlink(file_path)
+    stoichiometry_dict = {}
+    if options.st:
+
+        chain_set = set(similar_seq.values())
+
+        print('\nWe have found %s different proteins in your input. Would you like to set sotoickiometry values for any of them?\n Enter \'q\' for skipping the process' % len(chain_set))
+        reverse_similar_seq = reverse_dictionary(similar_seq)
+
+        chain_counter = 1
+        for chain in chain_set:
+            print('\nChain %s:\n' % chain_counter)
+            name_str = ', '.join(reverse_similar_seq[chain])
+            print('\tNames: %s\n\tSequence:\n\t%s' % (name_str, seq_dict[chain]))
+            copy_number = input('\tIntroduce number of copies:' )
+            if copy_number and copy_number != 'q':
+                copy_number = int(copy_number)
+                stoichiometry_dict[chain] = copy_number
+            chain_counter += 1
 
     for chain in chains_str_dict:
         if options.verbose:
@@ -360,12 +384,32 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, directory):
         base_struct.add(Model.Model(0))
         chain_copied = copy_chain(chains_str_dict[chain], 1)
         # add chain to the new structure
+
         base_struct[0].add(chain_copied)
         similar_seq[chain_copied] = similar_seq[chains_str_dict[chain]]
+        if options.st and similar_seq[chain_copied] in stoichiometry_dict:
+            stoichiometry_dict[similar_seq[chain_copied]] -= 1
         complex_id = ComplexId(interaction_dict, id_dict, similar_seq, base_struct)
         complex_id_dict[len(complex_id.get_nodes())] = []
-        update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict)
+        update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict)
         branch_id[-1] += 1
+
+
+def reverse_dictionary(dictionary):
+
+    """
+    Takes a dictionary, returns a dictionary with values as keys and arrays of keys as values
+    :param dictionary:
+    :return dictionary:
+    """
+
+    reverse_dict = {}
+    for key, value in dictionary.items():
+        if value not in reverse_dict:
+            reverse_dict[value] = set([])
+        reverse_dict[value].add(key.get_id())
+
+    return reverse_dict
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -397,6 +441,11 @@ if __name__ == "__main__":
                         help="Perform an intensive search or just return the 1st structure found.",
                         action="store_true")
 
+    parser.add_argument('-st', "--stoichiometry",
+                        dest="st",
+                        help="Allows the user to pass the stoichiometry once the chains have been processed.",
+                        action='store_true')
+
     parser.add_argument('-br', '--break',
                         dest="break_complex",
                         action='store',
@@ -414,12 +463,13 @@ if __name__ == "__main__":
     # get_all_interaction_pairs('')
     # print('starting')
 
-    if options.break_complex == None:
+    if not options.break_complex:
         result = get_interaction_pairs_from_input(options.infile)
         id_dict = result[1]
         interaction_dict = result[0]
         similar_sequences = result[2]
-        macrocomplex_builder(id_dict, similar_sequences, interaction_dict, options.infile)
+        seq_dict = result[3]
+        macrocomplex_builder(id_dict, similar_sequences, interaction_dict, seq_dict, options.infile)
 
     elif options.break_complex == "all":
         get_all_interaction_pairs(options.infile)
@@ -428,6 +478,5 @@ if __name__ == "__main__":
         get_interaction_pairs(options.infile)
 
     else:
-        # TODO raise exception saying option passed to break is not valid.
         raise WrongArgumentBreak('%s is not an accepted argument for -br, please pass "all" or "unique" if you are '
                                  'passing the -br argument')

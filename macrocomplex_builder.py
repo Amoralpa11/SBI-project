@@ -419,4 +419,3 @@ def reverse_dictionary(dictionary):
         reverse_dict[value].add(key.get_id())
 
     return reverse_dict
-

@@ -416,6 +416,7 @@ def reverse_dictionary(dictionary):
     return reverse_dict
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser(
         description="This program receives fasta files and returns an ordered list by sequence length of "
                     "id+length+molecular weight")

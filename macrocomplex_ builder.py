@@ -10,7 +10,7 @@ branch_id = [1]
 pdb_counter = 1
 
 
-def write_to_pdb(structure):
+def write_to_pdb(structure, directory):
     """
     This function writes a pdb file from a structure
     :param structure: structure we want to write the pdb file from.
@@ -30,7 +30,7 @@ def write_to_pdb(structure):
                        'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B',
                        'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
                        'V', 'W', 'X', 'Y', 'Z'][::-1]
-            model_counter +=1
+            model_counter += 1
             final_structure.add(Model.Model(model_counter))
 
         new_chain = chain.copy()
@@ -40,7 +40,7 @@ def write_to_pdb(structure):
 
     io = PDBIO()
     io.set_structure(final_structure)
-    file_name = 'result/' + structure.id + str(pdb_counter) + '.pdb'
+    file_name = 'result_' + directory + '/' + structure.id + str(pdb_counter) + '.pdb'
     io.save(file_name)
     pdb_counter += 1
     return file_name
@@ -203,7 +203,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
 
 #########
 
-def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict):
+def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict, directory):
     global options
     global branch_id
 
@@ -212,7 +212,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         if options.subunit_n > 0:
             options.subunit_n -= 1
         else:
-            file_name = write_to_pdb(base_struct)
+            file_name = write_to_pdb(base_struct, directory)
             if options.optimize:
                 structure_optimization(file_name)
     branch_id.append(0)
@@ -278,7 +278,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                         if len(complex_id_copy.get_nodes()) not in complex_id_dict:
                             complex_id_dict[len(complex_id_copy.get_nodes())] = []
 
-                        update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict)
+                        update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict, directory)
                         if options.verbose:
                             print('Popping')
                         if options.subunit_n:
@@ -305,7 +305,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                                 if len(complex_id_copy.get_nodes()) not in complex_id_dict:
                                     complex_id_dict[len(complex_id_copy.get_nodes())] = []
 
-                                update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict)
+                                update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict, directory)
                                 if options.verbose:
                                     print('Popping')
                                 if options.subunit_n:
@@ -319,7 +319,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         verify = False
         if None not in nodes.interaction_dict.values():
             verify = True
-            file_name = write_to_pdb(base_struct)
+            file_name = write_to_pdb(base_struct, directory)
 
         if options.optimize and verify:
             structure_optimization(file_name)
@@ -354,11 +354,11 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
     # initialize a complex id dictionary
     complex_id_dict = {}
 
-    if not os.path.exists('result'):
-        os.makedirs('result')
+    if not os.path.exists('result_' + directory):
+        os.makedirs('result_' + directory)
     else:
-        for the_file in os.listdir('result'):
-            file_path = os.path.join('result', the_file)
+        for the_file in os.listdir('result_' + directory):
+            file_path = os.path.join('result_' + directory, the_file)
             if os.path.isfile(file_path):
                 os.unlink(file_path)
     stoichiometry_dict = {}
@@ -366,7 +366,8 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
 
         chain_set = set(similar_seq.values())
 
-        print('\nWe have found %s different proteins in your input. Would you like to set sotoickiometry values for any of them?\n Enter \'q\' for skipping the process' % len(chain_set))
+        print('\nWe have found %s different proteins in your input. Would you like to set sotoickiometry values for '
+              'any of them?\n Enter \'q\' for skipping the process' % len(chain_set))
         reverse_similar_seq = reverse_dictionary(similar_seq)
 
         chain_counter = 1
@@ -374,7 +375,7 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
             print('\nChain %s:\n' % chain_counter)
             name_str = ', '.join(reverse_similar_seq[chain])
             print('\tNames: %s\n\tSequence:\n\t%s' % (name_str, seq_dict[chain]))
-            copy_number = input('\tIntroduce number of copies:' )
+            copy_number = input('\tIntroduce number of copies:')
             if copy_number and copy_number != 'q':
                 copy_number = int(copy_number)
                 stoichiometry_dict[chain] = copy_number
@@ -395,7 +396,7 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
             stoichiometry_dict[similar_seq[chain_copied]] -= 1
         complex_id = ComplexId(interaction_dict, id_dict, similar_seq, base_struct)
         complex_id_dict[len(complex_id.get_nodes())] = []
-        update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict)
+        update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict, directory)
         branch_id[-1] += 1
 
 
@@ -439,7 +440,7 @@ if __name__ == "__main__":
     parser.add_argument('-opt', "--optimize",
                         dest="optimize",
                         help="optimize the macro-complex",
-                        action="store_false")
+                        action="store_true")
 
     parser.add_argument('-int', "--intensive",
                         dest="intensive",

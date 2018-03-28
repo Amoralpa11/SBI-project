@@ -225,7 +225,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             branch_id[-1] += 1
             print("\nStarting new Branch: %s" % ".".join([str(x) for x in branch_id]))
 
-            if nodes.get_chain() == 14:
+            if nodes.get_chain() == 17:
                 print('stop')
 
 

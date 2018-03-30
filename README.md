@@ -199,7 +199,7 @@ chain/chain compound, for example then it will place it in the first place it ca
 
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_original.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_st.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized_st.png" width="150" height="150"> |
 | :---: | :---: | :---: | :---: | :---: |
-| *Original* | *Built-No Optimization* | *Optimization*| *Built-No Optimization-Stoichiometry* | *Built-Optimization-Stoichiometry* |
+| *Original* | *Built-No Optimization* | *Optimization*| *Built-No Op-St* | *Built-Op-St* |
 
 ### 5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA
 

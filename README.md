@@ -152,8 +152,8 @@ In the following section we are going to discuss some examples of inputs-outputs
 and how it worked for each one.
 ### 1gzx - Hemoglobin
 
-![original](https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png =250x250)
-![built macro-complex](https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png =250x250)
+![original](https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png =250x)
+![built macro-complex](https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png =250x)
 ![built macro-complex](https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimized.png?v=2&s=100)
 
 ### Limitations

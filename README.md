@@ -150,7 +150,7 @@ In order to run this package with all its functionalities the user must have sev
 
 In the following section we are going to discuss some examples of inputs-outputs
 and how it worked for each one.
-### 1gzx - Hemoglobin
+### [1gzx - Hemoglobin](https://www.rcsb.org/structure/1gzx)
 
 This is an example of complex formed by 2 different chains that form 3 types of
 interactions.This program is able to properly fully reconstruct this complex with
@@ -164,7 +164,7 @@ the program has built.
 | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*|
 
-### 3kuy - Nucleosome
+### [3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy)
 
 This is an example of complex formed by 10 different chains, 8 protein and 2 DNA.
 In the following images we can see the original 3kuy, the 3kuy we built superimposed
@@ -177,7 +177,7 @@ structures.
 | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*|
 
-### 1g65 - proteasome
+### [1g65 - proteasome](https://www.rcsb.org/structure/1g65)
 
 When we run a more complex model, 30 protein chains, the program can still rebuild
 it. Due to eliminating redundancy we can see that some chains are slightly shifted
@@ -188,7 +188,7 @@ any chain
 | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*|
 
-### 5vox - Yeast V-ATPase
+### [5vox - Yeast V-ATPase](https://www.rcsb.org/structure/5vox)
 
 When we run a more complex model with a particular chain composition, knowing the
 chain stoichiometry is necessary. If the stoichiometry is not set it will fit all
@@ -199,9 +199,9 @@ chain/chain compound, for example then it will place it in the first place it ca
 
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_original.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_st.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized_st.png" width="150" height="150"> |
 | :---: | :---: | :---: | :---: | :---: |
-| *Original* | *Built-No Optimization* | *Optimization*| *Built-No Op-St* | *Built-Op-St* |
+| *Original* | *Built-No Optimization* | *Optimization*| *Built-Not Opt-St* | *Built-Opt-St* |
 
-### 5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA
+### [5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA](https://www.rcsb.org/structure/5oom)
 
 5omm is another example of this programs robustness. As we can see in the images
 below the program was able to reconstruct this complex compounded of 53 chains. It

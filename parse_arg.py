@@ -65,5 +65,5 @@ if __name__ == "__main__":
 
     else:
         raise WrongArgumentBreak('%s is not an accepted argument for -br, please pass "all" or "unique" if you are '
-                                 'passing the -br argument')
+                                 'passing the -br argument' % options.break_complex)
 

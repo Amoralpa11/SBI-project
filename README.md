@@ -155,7 +155,7 @@ and how it worked for each one.
 
 <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png" width="30%">
 <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png" width="30%">
-<img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimizedl.png" width="30%">
+<img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimized.png" width="30%">
 
 
 ### Limitations

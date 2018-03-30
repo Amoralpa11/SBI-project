@@ -1,4 +1,32 @@
+*Table of Contents*:
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [SBI-project](#sbi-project)
+	- [Objective](#objective)
+	- [Theoretical background](#theoretical-background)
+	- [Input](#input)
+		- [Steps](#steps)
+			- [Classifying the chains](#classifying-the-chains)
+			- [Macro-complex assembly](#macro-complex-assembly)
+			- [Evaluation](#evaluation)
+			- [Output](#output)
+			- [Complementary software](#complementary-software)
+	- [Tutorial](#tutorial)
+		- [Command line arguments:](#command-line-arguments)
+	- [Requirements](#requirements)
+	- [Analysis](#analysis)
+		- [[1gzx - Hemoglobin](https://www.rcsb.org/structure/1gzx)](#1gzx-hemoglobinhttpswwwrcsborgstructure1gzx)
+		- [[3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy)](#3kuy-nucleosomehttpswwwrcsborgstructure3kuy)
+		- [[1g65 - proteasome](https://www.rcsb.org/structure/1g65)](#1g65-proteasomehttpswwwrcsborgstructure1g65)
+		- [[5vox - Yeast V-ATPase](https://www.rcsb.org/structure/5vox)](#5vox-yeast-v-atpasehttpswwwrcsborgstructure5vox)
+		- [[5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA](https://www.rcsb.org/structure/5oom)](#5oom-native-assembly-intermediate-of-the-human-mitochondrial-ribosome-with-unfolded-interfacial-rrnahttpswwwrcsborgstructure5oom)
+		- [Limitations](#limitations)
+	- [Acknowledgement](#acknowledgement)
+
+<!-- /TOC -->
+
 # SBI-project
+
 A python package for protein complex modeling from protein pairwise interactions.
 
 ## Objective
@@ -144,8 +172,6 @@ In order to run this package with all its functionalities the user must have sev
   *  copy
   *  argparse
 
-#
-
 ## Analysis
 
 In the following section we are going to discuss some examples of inputs-outputs
@@ -227,5 +253,4 @@ The main limitations of this program are the following:
 
 ## Acknowledgement
 All the protein visualization was done using [Chimera.](https://www.cgl.ucsf.edu/chimera/)
-
 All the code of this project was programmed in [Python 3.6.3.](https://www.python.org/downloads/release/python-363/)

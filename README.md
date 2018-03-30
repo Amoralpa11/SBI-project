@@ -104,7 +104,7 @@ pairwise interactions.
 #### Complementary software
 
 This package includes complementary functions which can be set by the user.
-* Allows the user to pass PDB interaction files of more than 2 proteins.
+* Allows the user to pass PDB interaction files of more than 2 proteins, no need specify.
 * Allows the user to pass a full protein complex to be broken into pairwise interaction PDB files.
 * Allows the user to pass the stoichiometry so as to specify the components of the macro-complex.
 * Allows the user to pass a number of subunits he wants the model to have in case the macro-complex is theoretically infinite.
@@ -116,7 +116,7 @@ Getting interactions from a macro-complex.
 
 #### Input
 
-A complex PDB file from which we want to obtain the pairwise interactions that comprise it.
+A PDB file from which we want to obtain the pairwise interactions that comprise it.
 
 #### Specifications
 
@@ -166,8 +166,8 @@ of easy use and for the user to get a grasp of all the functionalities available
  *python3 macrocomplex_builder-py -i interaction_3kuy -st*
 
  This command allows the user to pass the stoichiometry he desires to the model. To do so the program will first detect all the non redundant chains and then return to the user one by one these chains. The user will then have 2 options: i) set a number, which will correspond to the number of chains of that type he wishes the final model to have and ii) press enter, which will be as if no stoichiometry is set for that chain, the program will try to fit as many as it can in the final structure.
-
-3. Get interactions
+ 
+ 3. Get interactions
 
  *python3 macrocomplex_builder.py -i interactions_3kuy -br all*
 

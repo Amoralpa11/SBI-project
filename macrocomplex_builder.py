@@ -356,7 +356,6 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
     :return: returns the built macro-complex/es
     """
     global branch_id
-
     # # returns a set with all the chains passed by the user
     # chains = set([item for sublist in [x for x in str_dict] for item in sublist])
 

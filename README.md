@@ -46,7 +46,7 @@ that stage can.
 
 By doing so we start with all the different chains the user has found in the
 input and recursively add chains on top of them. Each node of the recursive tree has an
-identifier indicating the interactions occuring at that stage, this identifier is saved
+identifier indicating the interactions occurring at that stage, this identifier is saved
 for further usage. This identifier enables us to assess if a macro-complex at a specific
 node has already been processed in a previous node and, therefore,
 stop that branch.
@@ -152,16 +152,45 @@ In the following section we are going to discuss some examples of inputs-outputs
 and how it worked for each one.
 ### 1gzx - Hemoglobin
 
+This is an example of complex formed by 2 different chains that form 3 types of
+interactions.This program is able to properly fully reconstruct this complex with
+the interactions given as we can see in the images below. Our program, thus, has
+no problem dealing with this type of interactions. We can see there are no how there
+are minimal to no differences between the superimposed original 1gzx and the ones
+the program has built.
+
+
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimized.png" width="200" height="200"> |
 | :---: | :---: | :---: |
-| *Original* | *Built-no optimization* | *optimization*|
+| *Original* | *Built-no optimization* | *Optimization*|
+
+
+### 3kuy - Nucleosome
+
+This is an example of complex formed by 10 different chains, 8 protein and 2 DNA.
+In the following images we can see the original 3kuy, the 3kuy we built superimposed
+the real 3kuy and the optimized 3kuy with, again, the original 3kuy superimposed.
+No flaws are seen in the built complexes, therefore, we can say that the
+program can work with DNA as well as with protein chains with relatively simple
+structures.
+
+| <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/3kuy_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/3kuy_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/3kuy_built_optimized.png" width="200" height="200"> |
+| :---: | :---: | :---: |
+| *Original* | *Built-no optimization* | *Optimization*|
+
+### 1g65 - proteasome
+
+| <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_built_optimized.png" width="200" height="200"> |
+| :---: | :---: | :---: |
+| *Original* | *Built-no optimization* | *Optimization*|
+
 
 ### Limitations
 
 The main limitations of this program are the following:
 
-* When performing the reduction of repeated interactions in the input by similiarity we set certain thresholds of similiarity. These thresholds can lead to consider subunits formed by the same chains and that have the same interaction but that are slightly rotated, so as to fit in a barrerl for example, to be deprecated. In these cases we only gather one of these interactions and ultimately when building the complex, barrel in this case, the last subunit may not be added due to clashes derived from an accumulation of little rotation mistakes in the rest of subunits forming the barrel.
+* When performing the reduction of repeated interactions in the input by similarity we set certain thresholds of similarity. These thresholds can lead to consider subunits formed by the same chains and that have the same interaction but that are slightly rotated, so as to fit in a barrel for example, to be deprecated. In these cases we only gather one of these interactions and ultimately when building the complex, barrel in this case, the last subunit may not be added due to clashes derived from an accumulation of little rotation mistakes in the rest of subunits forming the barrel.
 
-* With the recursive approach the amount of processing time when many chains with many interactions are passed and an intesive search is specified can be very large. In these cases we recommend to use the option -simp of the program which returns the first structure found, therefore, reducing processing time but with the inconvenient that the structure returned may not be the desired by the user.
+* With the recursive approach the amount of processing time when many chains with many interactions are passed and an intensive search is specified can be very large. In these cases we recommend to use the option -simp of the program which returns the first structure found, therefore, reducing processing time but with the inconvenient that the structure returned may not be the desired by the user.
 
 * We would have liked to give the user a little more control over the parameters used to define clashes and interactions allowing him to pass a file with the specifications of the parameters. For example, if he wanted to use CA or CB to measure distances, minimum distance to consider a clash/interaction, etc...

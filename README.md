@@ -198,14 +198,14 @@ the position some of these chains are in the original model. If its a lateral
 chain/chain compound, for example then it will place it in the first place it can.
 
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_st.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized_st.png" width="200" height="200"> |
-| :---: | :---: | :---: |
+| :---: | :---: | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*| *Built-No Optimization-Stoichiometry* | *Built-Optimization-Stoichiometry* |
 
 ### 5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA
 
 5omm is another example of this programs robustness. As we can see in the images
 below the program was able to reconstruct this complex compounded of 53 chains. It
-did not place 2 small lateral alpha-helix probably because it didn't have the 
+did not place 2 small lateral alpha-helix probably because it didn't have the
 interaction file since these helices in the pdb files are made out of "unkown"
 residues and atoms. Therefore, our complex breaker didn't identify the interaction
 and was unable to incorporate it in the complex building process. Still, the

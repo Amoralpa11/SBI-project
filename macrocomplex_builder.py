@@ -203,9 +203,21 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
 
 def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict,
                      directory, options):
+    """
+    This is a recursive function which tries to add new chains until it is impossible to add any other due to clashes or
+    to the specifications set by the user.
+    :param base_struct: structure on to which we want to add new chains.
+    :param complex_id: complex id of the base structure.
+    :param complex_id_dict: dictionary of all the complex id set so far.
+    :param similar_seq: dictionary relating sequences that are similar.
+    :param chains_str_dict: dictionary with unique chains with chain name as key and str in the value
+    :param stoichiometry_dict: XXXXXXX
+    :param directory: name of the directory where the interactions files are.
+    :param options: parameters passed by the user using the command line.
+    :return: base structure updated with the new chain if it can add it.
+    """
     global branch_id
 
-    # TODO subunit limit
     if options.subunit_n:
         if options.subunit_n > 0:
             options.subunit_n -= 1
@@ -262,7 +274,6 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             if similar_seq[interact[0]] == similar_seq[interact[1]]:
                 if not options.st or (similar_seq[interact[0]] not in stoichiometry_dict or stoichiometry_dict[
                     similar_seq[interact[0]]]):
-                    # TODO len de complex id
                     chain_str2_copy = copy_chain(interact[0], len(complex_id.get_nodes()))
                     modified_str = superimpose_fun(base_struct, interact, copied_current_node, chain_str2_copy,
                                                    complex_id_copy, similar_seq, True, options)
@@ -329,6 +340,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             structure_optimization(file_name)
 
         if not options.intensive and verify:
+            global start_time
             exit(0)
 
     branch_id.pop()
@@ -341,9 +353,8 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
     This function rebuilds a complex with the interactions we obtained from the pdb files.
     :param str_dict: dictionary with all the interactions we want to build the complex with.
     :param id_dict: dictionary with all the chains with their specific key.
-    :return: returns a XXXXXXX with the macrocomplex built and... the middle steps??
+    :return: returns the built macro-complex/es
     """
-
     global branch_id
 
     # # returns a set with all the chains passed by the user
@@ -407,9 +418,9 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
 
 def reverse_dictionary(dictionary):
     """
-    Takes a dictionary, returns a dictionary with values as keys and arrays of keys as values
-    :param dictionary:
-    :return dictionary:
+    Takes a dictionary, returns a dictionary with values as keys and arrays of keys as values.
+    :param dictionary: dictionary we want to reverse.
+    :return dictionary: dictionary with values as keys and keys as values.
     """
 
     reverse_dict = {}

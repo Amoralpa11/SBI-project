@@ -18,7 +18,11 @@ a protein can stablish. """
 
 
 def get_structure_name(filename):
-    """Takes a .pdb file name, returns the string without extension"""
+    """
+    Takes a .pdb file name, returns the string without extension
+    :param filename: name of the file we want to process
+    :return: the string without the extension
+    """
 
     p = re.compile('(.*).pdb')
     m = p.match(filename)
@@ -26,8 +30,9 @@ def get_structure_name(filename):
 
 
 class ChainSelect(Select):
-    """Class that allows the generation of a pdb file from an structure including only two chains specified in the
-    constructor """
+    """
+
+    """
 
     def __init__(self, chain_to_include1, chain_to_include2):
         self.chain_to_include1 = chain_to_include1
@@ -41,7 +46,13 @@ class ChainSelect(Select):
 
 
 def compare_chains(chain1, chain2, seq_dict):
-    """Takes two chain objects and return true if their sequences are more than 95% simmilar and False if not"""
+    """
+    Takes two chain objects and return true if their sequences are more than 95% similar and False if not.
+    :param chain1: chain we want to compare.
+    :param chain2: other chain we want to compare.
+    :param seq_dict: dictionary relating sequences with their chain
+    :return: True or False if they are the same or not.
+    """
     if seq_dict:
         seq1 = seq_dict[chain1]
         seq2 = seq_dict[chain2]
@@ -64,7 +75,11 @@ def compare_chains(chain1, chain2, seq_dict):
 
 
 def get_numeric_array(seq_aln):
-    """Takes a sequence alignment and returns an array with numbers instead of residues"""
+    """
+    Takes a sequence alignment and returns an array with numbers instead of residues.
+    :param seq_aln: alignment we want to process.
+    :return: list with numbers instead of residues.
+    """
 
     numeric_array = []
     n = 0
@@ -78,7 +93,11 @@ def get_numeric_array(seq_aln):
 
 
 def get_sequence_from_chain(chain):
-    """Takes a chain and returns an string holding its sequence in a single character code"""
+    """
+    Takes a chain and returns a string holding its sequence in a single character code
+    :param chain: chain we want to know the sequence of.
+    :return: sequence of the chain.
+    """
 
     # The next line avoids taking residuals that are not amino acids by only taking those with an alpha carbon
     res_list = [x.get_resname() for x in chain.get_residues() if 'CA' in [y.get_id() for y in x.get_atoms()] or 'P' in [y.get_id() for y in x.get_atoms()]]
@@ -103,7 +122,12 @@ def get_sequence_from_chain(chain):
 
 
 def trim_to_superimpose(chain1, chain2):
-    """Takes two chains and removes the residues that do not have a match in the sequence alignment"""
+    """
+    Takes two chains and removes the residues that do not have a match in the sequence alignment.
+    :param chain1: first chain.
+    :param chain2:  second chain.
+    :return: returns chain 1 and 2 trimmed so that they have the same atom length.
+    """
     seq1 = get_sequence_from_chain(chain1)
     seq2 = get_sequence_from_chain(chain2)
 
@@ -151,11 +175,17 @@ def trim_to_superimpose(chain1, chain2):
 
 
 def compare_interactions(interaction1, interaction2, similar_sequences):
-    """This function takes two structures with two chains each one and a dictionary with chains as keys and keys as
+    """
+    This function takes two structures with two chains each one and a dictionary with chains as keys and keys as
     values relating them if they have more than a 95% of similarity and returns 1 if the two interactions are
-    different and 0 if they are the same interaction """
+    different and 0 if they are the same interaction.
+    :param interaction1: one of the interactions you want to compare.
+    :param interaction2: the other interaction you want to compare.
+    :param similar_sequences: dictionary which relates sequences by similiarity.
+    :return: returns true if they are the same and false if they ar enot.
+    """
 
-    homodimer = False  # This variable will be true if the chians in the interaction are more than a 95% similar
+    homodimer = False  # This variable will be true if the chains in the interaction are more than a 95% similar
 
     chain_list1 = []
     chain_list2 = []
@@ -219,19 +249,18 @@ def compare_interactions(interaction1, interaction2, similar_sequences):
                 continue
             trim_to_superimpose(chain1, chain2)
 
-            # print(list(chain1.get_residues())[0])
-            # print(list(chain2.get_residues())[0])
-
-    # print(list(structure1.get_chains()))
-    # print(list(structure2.get_chains()))
     result = str_comparison_superimpose(chain_list1, chain_list2)
 
     return result
 
 
 def get_seq_dict(chain_list):
-    """Takes a list of chains and returns a dictionary with chain objects as keys and strings holding their sequences as
-    values """
+    """
+    Takes a list of chains and returns a dictionary with chain objects as keys
+    and strings holding their sequences as values.
+    :param chain_list: list with chain objects.
+    :return: dictionary with chain objects as keys and strings holding their sequences as values
+    """
 
     seq_dict = {}
     for chain in chain_list:
@@ -242,16 +271,15 @@ def get_seq_dict(chain_list):
 
 
 def get_neighbor_chains(structure):
-    """Takes an structure and return a dicionary with chains as keys and a list of chains as values holding the
-    chains with alpha carbons at less than 8 amgstrongs from an alpha carbon of the key chain """
+    """
+    Takes an structure and returns a dictionary with chains as keys and a list of chains as values holding the
+    chains with alpha carbons at less than 8 amstrongs from an alpha carbon of the key chain
+    :param structure: structure we want to check for clashes.
+    :return: dictionary with the clashes between chains.
+    """
 
     neighbor_chains = {}
     ns = NeighborSearch(list(structure.get_atoms()))
-    # for chain in structure.get_chains():
-    #     if 'CB' not in set([x.get_name() for x in chain.get_atoms()]):
-    #         for atom in chain.get_atoms():
-    #             atom.id = 'P'
-
     for chain in structure.get_chains():
         neighbor_chains[chain] = set([])
 
@@ -272,16 +300,18 @@ def get_neighbor_chains(structure):
             print('%s: %s' % (close_chain, contacts))
             if contacts > 8:
                 neighbor_chains[chain].add(close_chain)
-            # elif len(neighbor_dict.keys()) == 1 and contacts > 5:
-            #     neighbor_chains[chain].add(close_chain)
-            # key (we already have its interactions) we add the chain as a value
-    # print(neighbor_chains)
     return neighbor_chains
 
 
 def get_similar_sequences(chain_list, seq_dict):
-    """Takes a list of chain objects and a dictionary with chains as keys and their sequence as values and returns a
-    dictionary with every chain as a key and a chain they are similar to as value """
+    """
+    Takes a list of chain objects and a dictionary with chains as keys
+    and their sequence as values and returns a dictionary with every chain
+    as a key and a chain they are similar to as value.
+    :param chain_list: list with all the chains passed by the user
+    :param seq_dict:
+    :return:
+    """
 
     similar_sequences = {}
     chain_list2 = copy.copy(chain_list)
@@ -305,7 +335,12 @@ def get_similar_sequences(chain_list, seq_dict):
 
 
 def get_interaction_pairs(pdb_filename):
-    """ This function Takes a pdb file path and generates a folder with pdb files holding the unique pairwise interactions in the first pdb"""
+    """
+    This function Takes a pdb file path and generates a folder with pdb files holding the unique pairwise
+    interactions in the first pdb
+    :param pdb_filename:
+    :return: ...
+    """
 
     parser = PDBParser(PERMISSIVE=1)
 
@@ -366,6 +401,11 @@ def get_interaction_pairs(pdb_filename):
 
 
 def clean_heteroatoms(interaction_dict):
+    """
+    Function that removes the heteroatoms from the chains in the dictionary passed .
+    :param interaction_dict: dictionary with the non-redundant interactions passed by the user.
+    :return: Modifies interaction_dict.
+    """
     chain_set = set([])
     for interaction_list in interaction_dict.values():
         for interaction in interaction_list:
@@ -379,8 +419,13 @@ def clean_heteroatoms(interaction_dict):
 
 
 def clean_interaction_dict(interaction_dict, similar_sequences):
-    """Takes an dictionary with tuples of 2 strings and a list of lists of chains and a dictionary with chains as
-    keys and similar chains as values and removes chain pairs interacting in a similar way from the interaction dict """
+    """
+    Takes an dictionary with tuples of 2 strings and a list of lists of chains and a dictionary with chains as
+    keys and similar chains as values and removes chain pairs interacting in a similar way from the interaction_dict.
+    :param interaction_dict:
+    :param similar_sequences:
+    :return:
+    """
 
     # Todo discutir si es conveniente eliminar de la lista dos aquellas interacciones que hayan encontrado interacciones similares
     list_to_inverse = set([])
@@ -431,7 +476,14 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
 
 
 def get_all_interaction_pairs(pdb_filename, print_files=True):
-    """Takes a pdb file path and generates a folder with all the pairs of interacting chains without checking if there is redundant content. This simulates the user input"""
+    """
+    Takes a pdb file path and generates a folder with all the pairs of interacting chains without checking if
+    there is redundant content. This simulates the user input
+    :param pdb_filename:  pdb file with the structure we want to break into interactions
+    :param print_files: parameter indicating if we want to output the interaction pairs to a directory.
+    :return: a directory with pdb files of the interactions and a list with the first element being the list of all
+    interactions, ... to finish this with adri
+    """
 
     parser = PDBParser(PERMISSIVE=1)
 
@@ -475,7 +527,11 @@ def get_all_interaction_pairs(pdb_filename, print_files=True):
 
 
 def get_pdb_from_directory(directory):
-    """Takes a directory path and return a list of strings holding the names of pdb files in the directory """
+    """
+    Takes a directory path and return a list of strings holding the names of pdb files in the directory
+    :param directory: directory where the pdb files with the interactions are
+    :return: returns a list with the names of the files.
+    """
 
     files_list = ['%s/%s' % (directory, f) for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
@@ -483,7 +539,9 @@ def get_pdb_from_directory(directory):
 
 
 def get_id_list():
-    """returns a list of all the combinations of two letters"""
+    """
+    :return: returns a list of all the combinations of two letters
+    """
 
     id_list = []
     alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -497,7 +555,12 @@ def get_id_list():
 
 
 def get_id_dict(structure_list):
-    """Takes a list of structures and returns a dictionary with chains as keys and unique idenfiers as values"""
+    """
+    Takes a list of structures and returns a dictionary with chains as keys and unique identifiers as values
+    :param structure_list: list of structures we want to process.
+    :return: dictionary with chains as the keys and their identifier as the value
+    """
+    """"""
 
     id_list = get_id_list()
     id_dict = {}
@@ -508,7 +571,15 @@ def get_id_dict(structure_list):
 
 
 def get_interaction_pairs_from_input(directory):
-    """Takes the path of a directory and returns a list holding the interaction dictionary of the pdbs in this directory, a similar chains dictionary and a dictionary that relates every chain with its id """
+    """
+    Takes the path of a directory and returns a list holding the interaction dictionary
+    of the pdbs in this directory, a similar chains dictionary and a dictionary that
+    relates every chain with its id.
+    :param directory: directory from where the pdb files we want to process are.
+    :return: list holding the interaction dictionary
+    of the pdbs in this directory, a similar chains dictionary and a dictionary that
+    relates every chain with its id
+    """
 
     files_list = get_pdb_from_directory(directory)
     structure_list = []

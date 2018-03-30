@@ -162,8 +162,7 @@ the program has built.
 
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimized.png" width="200" height="200"> |
 | :---: | :---: | :---: |
-| *Original* | *Built-no optimization* | *Optimization*|
-
+| *Original* | *Built-No Optimization* | *Optimization*|
 
 ### 3kuy - Nucleosome
 
@@ -176,14 +175,45 @@ structures.
 
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/3kuy_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/3kuy_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/3kuy_built_optimized.png" width="200" height="200"> |
 | :---: | :---: | :---: |
-| *Original* | *Built-no optimization* | *Optimization*|
+| *Original* | *Built-No Optimization* | *Optimization*|
 
 ### 1g65 - proteasome
 
+When we run a more complex model, 30 protein chains, the program can still rebuild
+it. Due to eliminating redundancy we can see that some chains are slightly shifted
+with respect to the original molecule but the complex is till built without missing
+any chain
+
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_built_optimized.png" width="200" height="200"> |
 | :---: | :---: | :---: |
-| *Original* | *Built-no optimization* | *Optimization*|
+| *Original* | *Built-No Optimization* | *Optimization*|
 
+### 5vox - Yeast V-ATPase
+
+When we run a more complex model with a particular chain composition, knowing the
+chain stoichiometry is necessary. If the stoichiometry is not set it will fit all
+the chains it can in the model even if the original model doesn't have them. If it
+is set then it will respect the number of chains but it won't necessarily respect
+the position some of these chains are in the original model. If its a lateral
+chain/chain compound, for example then it will place it in the first place it can.
+
+| <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_st.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized_st.png" width="200" height="200"> |
+| :---: | :---: | :---: |
+| *Original* | *Built-No Optimization* | *Optimization*| *Built-No Optimization-Stoichiometry* | *Built-Optimization-Stoichiometry* |
+
+### 5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA
+
+5omm is another example of this programs robustness. As we can see in the images
+below the program was able to reconstruct this complex compounded of 53 chains. It
+did not place 2 small lateral alpha-helix probably because it didn't have the 
+interaction file since these helices in the pdb files are made out of "unkown"
+residues and atoms. Therefore, our complex breaker didn't identify the interaction
+and was unable to incorporate it in the complex building process. Still, the
+program was able to rebuild it taking into account both protein and RNA chains.
+
+| <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5oom_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5oom_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5oom_built_optimized.png" width="200" height="200"> |
+| :---: | :---: | :---: |
+| *Original* | *Built-No Optimization* | *Optimization*|
 
 ### Limitations
 

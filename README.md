@@ -152,14 +152,6 @@ In the following section we are going to discuss some examples of inputs-outputs
 and how it worked for each one.
 ### 1gzx - Hemoglobin
 
-
-
-
-| <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimized.png" width="200" height="200">|
-|:--:|
-| *Original* | *Built-no optimization* | *optimization*|
-
-
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimized.png" width="200" height="200"> |
 | --- | --- | --- |
 | *Original* | *Built-no optimization* | *optimization*|

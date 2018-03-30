@@ -38,7 +38,13 @@ and returns a PDB file with the multi protein complex that is formed with these
 interactions.
 
 ## Theoretical background
-TODOS
+
+* Superimposition
+
+* Clashes specifications
+
+* Interaction specifications
+
 
 ## Algorithm
 

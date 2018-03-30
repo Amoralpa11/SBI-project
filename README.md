@@ -226,5 +226,6 @@ The main limitations of this program are the following:
 * We would have liked to give the user a little more control over the parameters used to define clashes and interactions allowing him to pass a file with the specifications of the parameters. For example, if he wanted to use CA or CB to measure distances, minimum distance to consider a clash/interaction, etc...
 
 ## Acknowledgement
-All the protein visualization was done using [Chimera.](https://www.cgl.ucsf.edu/chimera/).
+All the protein visualization was done using [Chimera.](https://www.cgl.ucsf.edu/chimera/)
+
 All the code of this project was programmed in [Python 3.6.3.](https://www.python.org/downloads/release/python-363/)

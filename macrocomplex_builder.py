@@ -97,7 +97,7 @@ def interaction_finder(structure, ref_chain_id, complex_id, node, options):
     for atom in [atom for atom in ref_chain.get_atoms() if
                  atom.get_id() == 'CA' or atom.get_id() == 'P']:  # For every alpha carbon in chain
         for atom2 in ns.search(atom.get_coord(), 8, level='A'):
-            if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 armstrongs or less from atom
+            if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 angstroms or less from atom
                 chain2 = atom2.get_parent().get_parent()  # Getting to which chain it belongs
                 if chain2 != ref_chain and chain2 not in neighbor_chains and chain2.get_id() != node.get_chain():
                     neighbor_chains.append(chain2)  # If it is not in the same chain and it is not already a

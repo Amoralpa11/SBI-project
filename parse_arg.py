@@ -1,6 +1,7 @@
 from macrocomplex_builder import *
 
 if __name__ == "__main__":
+
     parser = argparse.ArgumentParser(
         description="This program receives fasta files and returns an ordered list by sequence length of "
                     "id+length+molecular weight")
@@ -65,3 +66,4 @@ if __name__ == "__main__":
     else:
         raise WrongArgumentBreak('%s is not an accepted argument for -br, please pass "all" or "unique" if you are '
                                  'passing the -br argument')
+

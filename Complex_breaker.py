@@ -286,7 +286,7 @@ def get_neighbor_chains(structure):
         neighbor_dict = {}
         for atom in [atom for atom in chain.get_atoms() if
                      atom.get_id() == 'CA' or atom.get_id() == 'P']:  # For every alpha carbon in chain
-            for atom2 in ns.search(atom.get_coord(), 15, level='A'):
+            for atom2 in ns.search(atom.get_coord(), 8, level='A'):
                 if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 amstrongs or less from atom
                     chain2 = atom2.get_parent().get_parent()  # Gettin to wich chain it belongs
                     if chain2 != chain and chain2 not in neighbor_chains.keys():
@@ -631,4 +631,4 @@ def get_interaction_pairs_from_input(directory):
 
 
 if __name__ == '__main__':
-    get_all_interaction_pairs('3kuy.pdb')
+    get_all_interaction_pairs('5vox.pdb')

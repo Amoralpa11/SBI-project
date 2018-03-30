@@ -197,7 +197,7 @@ is set then it will respect the number of chains but it won't necessarily respec
 the position some of these chains are in the original model. If its a lateral
 chain/chain compound, for example then it will place it in the first place it can.
 
-| <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_st.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized_st.png" width="200" height="200"> |
+| <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_original.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_st.png" width="150" height="150"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/5vox_built_optimized_st.png" width="150" height="150"> |
 | :---: | :---: | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*| *Built-No Optimization-Stoichiometry* | *Built-Optimization-Stoichiometry* |
 

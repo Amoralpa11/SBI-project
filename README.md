@@ -3,7 +3,7 @@
 
 A python package for protein complex modeling from protein pairwise interactions.
 
-#*Table of Contents*:
+# *Table of Contents*:
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [SBI-project](#sbi-project)

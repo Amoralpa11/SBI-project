@@ -40,7 +40,9 @@ interactions.
 ## Theoretical background
 TODOS
 
-## Input
+## Algorithm
+
+### input
 
 The input is a set of PDB files holding pairs of proteins interacting. This
 input does not have to be perfect:
@@ -91,29 +93,42 @@ obtained from the identifiers at the final nodes of the recursive tree. This ena
 us to work only with one structure to which we add and remove chains every time we move
 up/down the tree, therefore, minimizing the memory usage of the computer.
 
-Lastly, we optimize the model using **modeler conjugate gradient**. This function
+Lastly, we optimize the model using [modeler conjugate gradient](https://salilab.org/modeller/9v8/manual/node253.html). This function
 tweaks the sidechains so as to minimize the overall energy of the macro-complex.
-
-#### Evaluation
-*Do we have to evaluate the energy of the model??*
-In order to validate the model, we should analyze using a prose like software to
-assess the energy of the interacting surfaces that were not in the starting set.
-
 
 #### Output
 
-The output of this function are PDB files of the macro-complex/es built from the
-pairwise interactions. If the user specified passing an already build structure
-it returns a new directory named XXXX_all_interactions containing the PDB files
-of the pairwise interactions.
+The output of this program are PDB files of the macro-complex/es built from the
+pairwise interactions.
 
 #### Complementary software
 
 This package includes complementary functions which can be set by the user.
-* Allows the user to pass PDB interaction files of more than 2 proteins.
+* Allows the user to pass PDB interaction files of more than 2 proteins, no need specify.
 * Allows the user to pass a full protein complex to be broken into pairwise interaction PDB files.
 * Allows the user to pass the stoichiometry so as to specify the components of the macro-complex.
 * Allows the user to pass a number of subunits he wants the model to have in case the macro-complex is theoretically infinite.
+
+
+### Complex breaker
+
+Getting interactions from a macro-complex.
+
+#### Input
+
+A PDB file from which we want to obtain the pairwise interactions that comprise it.
+
+#### Specifications
+
+The algorithm will classify two chains as having an interaction if they have alpha C at
+less than 8 angstrom. The program also classifies these interactions as unique or
+redundant and gives the user the option to obtain all the interactions or one of each
+type, eliminating redundancy.
+
+#### Output
+
+The user will get a new directory named XXXX_all_interactions containing the PDB files
+of the pairwise interactions.
 
 ## Tutorial
 
@@ -121,6 +136,7 @@ In the following section there is a little tutorial in order to make the program
 of easy use and for the user to get a grasp of all the functionalities available .
 
 ### Command line arguments:
+
 * -i --input: Input a directory containing only the pdb files with the interactions the user wants to process or a macro-complex pdb file if the break option is set.
 * -v --verbose: Increase output verbosity, by default is is set to False.
 * -k --subunit_limit: Subunit threshold if the protein can theoretically be limitless, by default it is set to False.
@@ -150,8 +166,8 @@ of easy use and for the user to get a grasp of all the functionalities available
  *python3 macrocomplex_builder-py -i interaction_3kuy -st*
 
  This command allows the user to pass the stoichiometry he desires to the model. To do so the program will first detect all the non redundant chains and then return to the user one by one these chains. The user will then have 2 options: i) set a number, which will correspond to the number of chains of that type he wishes the final model to have and ii) press enter, which will be as if no stoichiometry is set for that chain, the program will try to fit as many as it can in the final structure.
-
-3. Get interactions
+ 
+ 3. Get interactions
 
  *python3 macrocomplex_builder.py -i interactions_3kuy -br all*
 

@@ -42,10 +42,7 @@ def modeller_funcs(pdb_file, options):
     # Select all atoms:
     atmsel = selection(mdl)
 
-    # Generate the restraints:
-    # mdl.restraints.make(atmsel, restraint_type='improper', spline_on_site=False)
-    # mdl.restraints.write(file=dir + '/' + code + '.rsr')
-
+    # Calculate initial energy and energy profile for the built structure
     mpdf_ini = atmsel.energy()
     z_score_ini = mdl.assess_normalized_dope()
     mdl_ep_ini = atmsel.get_dope_profile()
@@ -75,14 +72,18 @@ def modeller_funcs(pdb_file, options):
                     actions=[actions.trace(5, trcfil)])
 
         mpdf = atmsel.energy()
+        # Calculate the normalized Z-score for the model after optimization
         z_score = mdl.assess_normalized_dope()
         print("\nModel energy")
         print("The final energy of " + code + " is: " + str(mpdf[0]))
         print("\nZ-score")
         print("The final z-score of " + code + " is: " + str(z_score))
 
+        # Getting the energy profile of our optimized model
         mdl_ep_fin = atmsel.get_dope_profile()
-        mdl_ep_fin_smoothed = mdl_ep_fin.get_smoothed()
+
+        # Smooth the energy profile by applying a smoothing window of 50
+        mdl_ep_fin_smoothed = mdl_ep_fin.get_smoothed(window=50)
         energy_profile_txt_path_opt = dir + '/' + code + '_optimized_DOPE_EnergyProfile.txt'
         mdl_ep_fin_smoothed.write_to_file(energy_profile_txt_path_opt)
         mdl.write(file=dir + '/' + code + '_optimized.pdb')

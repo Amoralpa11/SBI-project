@@ -391,9 +391,11 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
                 copy_number = int(copy_number)
                 stoichiometry_dict[chain] = copy_number
             chain_counter += 1
-
-    for chain in chains_str_dict:
+    if options.subunit_n:
         options.subunit_n -= 1
+    elif options.subunit_n == 0:
+        exit(0)
+    for chain in chains_str_dict:
         if options.verbose:
             print("\nStarting new Branch: %s" % ".".join([str(x) for x in branch_id]))
         # initialize an empty structure

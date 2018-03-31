@@ -97,7 +97,7 @@ def interaction_finder(structure, ref_chain_id, complex_id, node, options):
     for atom in [atom for atom in ref_chain.get_atoms() if
                  atom.get_id() == 'CA' or atom.get_id() == 'P']:  # For every alpha carbon in chain
         for atom2 in ns.search(atom.get_coord(), 8, level='A'):
-            if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 armstrongs or less from atom
+            if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 angstroms or less from atom
                 chain2 = atom2.get_parent().get_parent()  # Getting to which chain it belongs
                 if chain2 != ref_chain and chain2 not in neighbor_chains and chain2.get_id() != node.get_chain():
                     neighbor_chains.append(chain2)  # If it is not in the same chain and it is not already a
@@ -170,8 +170,8 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
     chain_str2 = copy.deepcopy(i)
 
     trim_to_superimpose(node_chain_copy, chain_str2)
-    atoms_chain1 = [atom for atom in list(node_chain_copy.get_atoms()) if atom.get_id() == 'CA']
-    atoms_chain2 = [atom for atom in list(chain_str2.get_atoms()) if atom.get_id() == 'CA']
+    atoms_chain1 = [atom for atom in list(node_chain_copy.get_atoms()) if atom.get_id() == 'CA' or atom.get_id() == 'P']
+    atoms_chain2 = [atom for atom in list(chain_str2.get_atoms()) if atom.get_id() == 'CA' or atom.get_id() == 'P']
     sup = Superimposer()
 
     sup.set_atoms(atoms_chain1, atoms_chain2)
@@ -203,9 +203,21 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
 
 def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict,
                      directory, options):
+    """
+    This is a recursive function which tries to add new chains until it is impossible to add any other due to clashes or
+    to the specifications set by the user.
+    :param base_struct: structure on to which we want to add new chains.
+    :param complex_id: complex id of the base structure.
+    :param complex_id_dict: dictionary of all the complex id set so far.
+    :param similar_seq: dictionary relating sequences that are similar.
+    :param chains_str_dict: dictionary with unique chains with chain name as key and str in the value
+    :param stoichiometry_dict: XXXXXXX
+    :param directory: name of the directory where the interactions files are.
+    :param options: parameters passed by the user using the command line.
+    :return: base structure updated with the new chain if it can add it.
+    """
     global branch_id
 
-    # TODO subunit limit
     if options.subunit_n:
         if options.subunit_n > 0:
             options.subunit_n -= 1
@@ -240,11 +252,8 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                          interaction[1] is None]:
 
             branch_id[-1] += 1
-
-            print("\nStarting new Branch: %s" % ".".join([str(x) for x in branch_id]))
-
-            if nodes.get_chain() == 17:
-                print('stop')
+            if options.verbose:
+                print("\nStarting new Branch: %s" % ".".join([str(x) for x in branch_id]))
 
             for node in complex_id.get_nodes():
                 if options.verbose:
@@ -262,7 +271,6 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             if similar_seq[interact[0]] == similar_seq[interact[1]]:
                 if not options.st or (similar_seq[interact[0]] not in stoichiometry_dict or stoichiometry_dict[
                     similar_seq[interact[0]]]):
-                    # TODO len de complex id
                     chain_str2_copy = copy_chain(interact[0], len(complex_id.get_nodes()))
                     modified_str = superimpose_fun(base_struct, interact, copied_current_node, chain_str2_copy,
                                                    complex_id_copy, similar_seq, True, options)
@@ -329,6 +337,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             structure_optimization(file_name)
 
         if not options.intensive and verify:
+            global start_time
             exit(0)
 
     branch_id.pop()
@@ -341,11 +350,9 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
     This function rebuilds a complex with the interactions we obtained from the pdb files.
     :param str_dict: dictionary with all the interactions we want to build the complex with.
     :param id_dict: dictionary with all the chains with their specific key.
-    :return: returns a XXXXXXX with the macrocomplex built and... the middle steps??
+    :return: returns the built macro-complex/es
     """
-
     global branch_id
-
     # # returns a set with all the chains passed by the user
     # chains = set([item for sublist in [x for x in str_dict] for item in sublist])
 
@@ -407,9 +414,9 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
 
 def reverse_dictionary(dictionary):
     """
-    Takes a dictionary, returns a dictionary with values as keys and arrays of keys as values
-    :param dictionary:
-    :return dictionary:
+    Takes a dictionary, returns a dictionary with values as keys and arrays of keys as values.
+    :param dictionary: dictionary we want to reverse.
+    :return dictionary: dictionary with values as keys and keys as values.
     """
 
     reverse_dict = {}
@@ -419,4 +426,3 @@ def reverse_dictionary(dictionary):
         reverse_dict[value].add(key.get_id())
 
     return reverse_dict
-

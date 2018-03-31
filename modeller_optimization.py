@@ -42,25 +42,24 @@ def structure_optimization(pdb_file):
     atmsel = selection(mdl)
 
     # Generate the restraints:
-    mdl.restraints.make(atmsel, restraint_type='stereo', spline_on_site=False)
-    mdl.restraints.write(file=dir + '/' + code + '.rsr')
+    # mdl.restraints.make(atmsel, restraint_type='improper', spline_on_site=False)
+    # mdl.restraints.write(file=dir + '/' + code + '.rsr')
 
     mpdf = atmsel.energy()
     print("The energy of " + code + " is: " + str(mpdf[0]))
 
     # Create optimizer objects and set defaults for all further optimizations
     cg = conjugate_gradients(output='REPORT')
-    md = molecular_dynamics(output='REPORT')
+    # md = molecular_dynamics(output='REPORT')
 
     # Open a file to get basic stats on each optimization
-    trcfil = open(dir + '/optimization_stats_' + code + '_D00000001.txt', 'w')
+    trcfil = open(dir + '/optimization_stats_' + code + '.txt', 'w')
 
     # Run CG on the all-atom selection; write stats every 5 steps
     cg.optimize(atmsel, max_iterations=20, actions=actions.trace(5, trcfil))
-    # Run MD; write out a PDB structure (called '1fas.D9999xxxx.pdb') every
-    # 10 steps during the run, and write stats every 10 steps
-    md.optimize(atmsel, temperature=300, max_iterations=50,
-                actions=[actions.trace(10, trcfil)])
+    # Run MD; write stats every 10 steps
+    # md.optimize(atmsel, temperature=300, max_iterations=50,
+    #             actions=[actions.trace(10, trcfil)])
     # Finish off with some more CG, and write stats every 5 steps
     cg.optimize(atmsel, max_iterations=20,
                 actions=[actions.trace(5, trcfil)])

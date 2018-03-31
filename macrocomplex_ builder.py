@@ -144,7 +144,7 @@ def copy_chain(chain, id):
     :return: copy of the passed chain
     """
 
-    new_chain = copy.deepcopy(chain)
+    new_chain = chain.copy()
     new_chain.id = id
     return new_chain
 
@@ -165,9 +165,9 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
     if options.verbose:
         print('\nSuperimposing %s over chain %s' %(str2, node.get_chain()))
     chain1 = node.get_chain()
-    str2_copy = copy.deepcopy(str2)
-    node_chain_copy = copy.deepcopy(str1[0][chain1])
-    chain_str2 = copy.deepcopy(i)
+    str2_copy = [x.copy() for x in str2]
+    node_chain_copy = str1[0][chain1].copy()
+    chain_str2 = i.copy()
 
     trim_to_superimpose(node_chain_copy, chain_str2)
     atoms_chain1 = [atom for atom in list(node_chain_copy.get_atoms()) if atom.get_id() == 'CA']

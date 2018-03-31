@@ -194,7 +194,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
         complex_id.add_node(other_chain2, node, str2)
         str1[0].add(other_chain2)
 
-        # interaction_finder(str1, other_chain2.get_id(), complex_id,node)
+        interaction_finder(str1, other_chain2.get_id(), complex_id,node)
 
         return True
     else:

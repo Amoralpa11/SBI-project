@@ -3,7 +3,7 @@ from Complex_breaker import *
 from Complex_id import *
 from ResidueDepth_copy import *
 from Complex_breaker import trim_to_superimpose
-from modeller_optimization import structure_optimization
+from modeller_optimization import modeller_funcs
 import argparse
 
 branch_id = [1]
@@ -223,8 +223,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             options.subunit_n -= 1
         else:
             file_name = write_to_pdb(base_struct, directory)
-            if options.optimize:
-                structure_optimization(file_name)
+            modeller_funcs(file_name, options)
     branch_id.append(0)
 
     for node in complex_id.get_nodes():
@@ -332,12 +331,9 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         if None not in nodes.interaction_dict.values():
             verify = True
             file_name = write_to_pdb(base_struct, directory)
-
-        if options.optimize and verify:
-            structure_optimization(file_name)
+            modeller_funcs(file_name, options)
 
         if not options.intensive and verify:
-            global start_time
             exit(0)
 
     branch_id.pop()

@@ -2,6 +2,7 @@ from modeller import *
 from modeller.scripts import complete_pdb
 from modeller.optimizers import conjugate_gradients, molecular_dynamics, actions
 from Bio.PDB import PDBIO
+from plotting import energy_profile_plot
 
 
 def write_to_pdb(structure):
@@ -17,7 +18,7 @@ def write_to_pdb(structure):
     io.save(code + '.pdb')
 
 
-def structure_optimization(pdb_file):
+def modeller_funcs(pdb_file, options):
     """
     This functions optimizes a protein structure saved in a pdb file.
     It optimizes the stereochemistry of the given model including non-bonded contacts.
@@ -36,7 +37,7 @@ def structure_optimization(pdb_file):
     dir, code = path.split('/')
 
     mdl = complete_pdb(env, pdb_file)
-    mdl.write(file=code + '.ini')
+    # mdl.write(file=code + '.ini')
 
     # Select all atoms:
     atmsel = selection(mdl)
@@ -45,30 +46,44 @@ def structure_optimization(pdb_file):
     # mdl.restraints.make(atmsel, restraint_type='improper', spline_on_site=False)
     # mdl.restraints.write(file=dir + '/' + code + '.rsr')
 
-    mpdf = atmsel.energy()
-    print("The energy of " + code + " is: " + str(mpdf[0]))
+    mpdf_ini = atmsel.energy()
+    z_score_ini = mdl.assess_normalized_dope()
+    mdl_ep_ini = atmsel.get_dope_profile()
+    mdl_ep_ini_smoothed = mdl_ep_ini.get_smoothed()
+    energy_profile_txt_path = dir + '/' + code + '_DOPE_EnergyProfile.txt'
+    mdl_ep_ini_smoothed.write_to_file(energy_profile_txt_path)
+    print("\nModel energy")
+    print("The unoptimized model energy of " + code + " is: " + str(mpdf_ini[0]))
+    print("\nZ-score")
+    print("The unoptimized Z-score of " + code + " is: " + str(z_score_ini))
 
-    # Create optimizer objects and set defaults for all further optimizations
-    cg = conjugate_gradients(output='REPORT')
-    # md = molecular_dynamics(output='REPORT')
+    if options is None:
+        energy_profile_plot(options, dir, code, energy_profile_txt_path)
 
-    # Open a file to get basic stats on each optimization
-    trcfil = open(dir + '/optimization_stats_' + code + '.txt', 'w')
+    else:
+        # Create optimizer objects and set defaults for all further optimizations
+        cg = conjugate_gradients(output='NO_REPORT')
 
-    # Run CG on the all-atom selection; write stats every 5 steps
-    cg.optimize(atmsel, max_iterations=20, actions=actions.trace(5, trcfil))
-    # Run MD; write stats every 10 steps
-    # md.optimize(atmsel, temperature=300, max_iterations=50,
-    #             actions=[actions.trace(10, trcfil)])
-    # Finish off with some more CG, and write stats every 5 steps
-    cg.optimize(atmsel, max_iterations=20,
-                actions=[actions.trace(5, trcfil)])
+        # Open a file to get basic stats on each optimization
+        trcfil = open(dir + '/optimization_stats_' + code + '.txt', 'w')
 
-    mpdf = atmsel.energy()
-    print("The energy of " + code + " is: " + str(mpdf[0]))
+        # Run CG on the all-atom selection; write stats every 5 steps
+        cg.optimize(atmsel, max_iterations=20, actions=actions.trace(5, trcfil))
 
-    mdl.write(file=dir + '/' + code + '_optimized' + '.' + 'pdb')
+        # Finish off with some more CG, and write stats every 5 steps
+        cg.optimize(atmsel, max_iterations=20,
+                    actions=[actions.trace(5, trcfil)])
 
+        mpdf = atmsel.energy()
+        z_score = mdl.assess_normalized_dope()
+        print("\nModel energy")
+        print("The final energy of " + code + " is: " + str(mpdf[0]))
+        print("\nZ-score")
+        print("The final z-score of " + code + " is: " + str(z_score))
 
-if __name__ == "__main__":
-    structure_optimization("5vox.pdb")
+        mdl_ep_fin = atmsel.get_dope_profile()
+        mdl_ep_fin_smoothed = mdl_ep_fin.get_smoothed()
+        energy_profile_txt_path_opt = dir + '/' + code + '_optimized_DOPE_EnergyProfile.txt'
+        mdl_ep_fin_smoothed.write_to_file(energy_profile_txt_path_opt)
+        mdl.write(file=dir + '/' + code + '_optimized.pdb')
+        energy_profile_plot(options, dir, code, energy_profile_txt_path, energy_profile_txt_path_opt)

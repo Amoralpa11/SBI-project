@@ -629,7 +629,6 @@ def get_interaction_pairs_from_input(directory):
 
     return [interaction_dict,id_dict,similar_sequences, seq_dict]
 
-
 if __name__ == '__main__':
     get_all_interaction_pairs('5vox.pdb')
 

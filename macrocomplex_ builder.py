@@ -73,12 +73,12 @@ def get_clash_chains(structure, chain, prev_chain):
                 atom_produces_clash = True
                 break
         if atom_produces_clash:
-            clash_counter += 1
-            if clash_counter > 5:
-                if options.verbose:
-                    print('More than 5 clashes found')
-                return True
-
+            # clash_counter += 1
+            # if clash_counter > 5:
+            #     if options.verbose:
+            #         print('More than 5 clashes found')
+            #     return True
+            return True
     return False
 
 
@@ -194,7 +194,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
         complex_id.add_node(other_chain2, node, str2)
         str1[0].add(other_chain2)
 
-        interaction_finder(str1, other_chain2.get_id(), complex_id,node)
+        # interaction_finder(str1, other_chain2.get_id(), complex_id,node)
 
         return True
     else:
@@ -325,6 +325,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             structure_optimization(file_name)
 
         if not options.intensive and verify:
+            print('El complejo ha tardado en montarse %s' % (time.strftime('%H:%M:%S', time.gmtime(time.time() - startTime))))
             exit(0)
 
     branch_id.pop()
@@ -376,7 +377,9 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
             name_str = ', '.join(reverse_similar_seq[chain])
             print('\tNames: %s\n\tSequence:\n\t%s' % (name_str, seq_dict[chain]))
             copy_number = input('\tIntroduce number of copies:')
-            if copy_number and copy_number != 'q':
+            if copy_number:
+                if copy_number == 'q':
+                    break
                 copy_number = int(copy_number)
                 stoichiometry_dict[chain] = copy_number
             chain_counter += 1
@@ -416,7 +419,11 @@ def reverse_dictionary(dictionary):
 
     return reverse_dict
 
+
+
 if __name__ == "__main__":
+
+    import time
 
     parser = argparse.ArgumentParser(
         description="This program receives fasta files and returns an ordered list by sequence length of "
@@ -475,7 +482,9 @@ if __name__ == "__main__":
         interaction_dict = result[0]
         similar_sequences = result[2]
         seq_dict = result[3]
+        startTime = time.time()
         macrocomplex_builder(id_dict, similar_sequences, interaction_dict, seq_dict, options.infile)
+
 
     elif options.break_complex == "all":
         get_all_interaction_pairs(options.infile)

@@ -628,11 +628,3 @@ def get_interaction_pairs_from_input(directory):
     # TODO: Eliminar cadenas no utilizadas de similar sequences
 
     return [interaction_dict,id_dict,similar_sequences, seq_dict]
-
-
-if __name__ == '__main__':
-<<<<<<< HEAD
-    get_interaction_pairs('3kuy.pdb')
-=======
-    get_all_interaction_pairs('5vox.pdb')
->>>>>>> d772f2176088c489b140d30af2e35d91551ff2b9

@@ -3,7 +3,7 @@ from Complex_breaker import *
 from Complex_id import *
 from ResidueDepth_copy import *
 from Complex_breaker import trim_to_superimpose
-from modeller_optimization import structure_optimization
+from modeller_optimization import modeller_funcs
 import argparse
 
 branch_id = [1]
@@ -186,6 +186,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
         other_chain2_original = str2[1]
 
     sup.apply(other_chain2)
+    # Todo:aplicar rotación solo a una
 
     if not get_clash_chains(str1, other_chain2,chain1): ## returns T if there is a clash and F if there isn't.
 
@@ -194,7 +195,8 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer):
         complex_id.add_node(other_chain2, node, str2)
         str1[0].add(other_chain2)
 
-        # interaction_finder(str1, other_chain2.get_id(), complex_id,node)
+        if options.intensive:
+            interaction_finder(str1, other_chain2.get_id(), complex_id,node)
 
         return True
     else:
@@ -215,6 +217,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             file_name = write_to_pdb(base_struct, directory)
             if options.optimize:
                 structure_optimization(file_name)
+
     branch_id.append(0)
 
     for node in complex_id.get_nodes():

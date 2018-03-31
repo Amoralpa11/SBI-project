@@ -122,6 +122,7 @@ def get_sequence_from_chain(chain):
 
 
 def trim_to_superimpose(chain1, chain2):
+    # Todo: mirar que pasa si consideras una similaridad del 100% para que sean similar seqs
     """
     Takes two chains and removes the residues that do not have a match in the sequence alignment.
     :param chain1: first chain.

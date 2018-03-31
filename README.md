@@ -21,7 +21,7 @@ A python package for protein complex modeling from protein pairwise interactions
 		- [Command line arguments:](#command-line-arguments)
 	- [Requirements](#requirements)
 	- [Analysis](#analysis)
-		- [[1gzx - Hemoglobin](https://www.rcsb.org/structure/1gzx)](#1gzx-hemoglobinhttpswwwrcsborgstructure1gzx)
+		- [1gzx - Hemoglobin](#1gzx-hemoglobinhttpswwwrcsborgstructure1gzx)
 		- [[3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy)](#3kuy-nucleosomehttpswwwrcsborgstructure3kuy)
 		- [[1g65 - proteasome](https://www.rcsb.org/structure/1g65)](#1g65-proteasomehttpswwwrcsborgstructure1g65)
 		- [[5vox - Yeast V-ATPase](https://www.rcsb.org/structure/5vox)](#5vox-yeast-v-atpasehttpswwwrcsborgstructure5vox)
@@ -101,9 +101,10 @@ Lastly, we optimize the model using **modeler conjugate gradient**. This functio
 tweaks the side chains so as to minimize the overall energy of the macro-complex.
 
 #### Evaluation
-*Do we have to evaluate the energy of the model??*
-In order to validate the model, we should analyze using a prose like software to
-assess the energy of the interacting surfaces that were not in the starting set.
+
+In order to validate the model, we build the z-score energy profile using modeller's
+get_dope_profile() method/attribute and then using a window of 50 residues to
+smooth it. This energy profile graph is printed out for the user.
 
 
 #### Output
@@ -129,7 +130,7 @@ of easy use and for the user to get a grasp of all the functionalities available
 ### Command line arguments:
 * -i --input: Input a directory containing only the pdb files with the interactions the user wants to process or a macro-complex pdb file if the break option is set.
 * -v --verbose: Increase output verbosity, by default is is set to False.
-* -k --subunit_limit: Subunit threshold if the protein can theoretically be limitless, by default it is set to False.
+* -k --subunit_limit: Subunit threshold. To use if the protein can theoretically be limitless since if set value but the complex requires more than k subunits to be completed it will halt and stop building it at that point even if it hasn't reached the end. By default it is set to False.
 * -opt -- optimization: Indicate if you want to optimize the model, by default it is True.
 * -int --intensive: Indicate if you want to find all possible structures or just the first one found, by default it will return the first one found, on the other hand, if it is intensive the programm will attempt to find all the possible structures.
 * -br --break: Indicate if you want to return all the pairwise interactions or just one of each type. If you pass 'all' the program will output all the pairwise interactions found and if you pass 'unique' it will only return one interaction of each type.
@@ -138,7 +139,7 @@ of easy use and for the user to get a grasp of all the functionalities available
 1. Default settings
 
  *python3 macrocomplex_builder.py -i interactions_3kuy*
- * interactions_3kuy is the path to the directory containing all the interaction pdb files that are to be used in the construction of the macro-complex
+ * interactions_3kuy is the path to the directory containing all the interaction pdb files that are to be used in the construction of the macro-complex.
 
 2.  Assembly specifications
 
@@ -146,7 +147,7 @@ of easy use and for the user to get a grasp of all the functionalities available
 
  This command is the same as before but this time specifying you want to perform an intensive search and to optimize models obtained.
  * -opt: specification for the final model to be optimized.
- * -intensive: specification for the program to return all the possible structures found.
+ * -int: specification for the program to return all the possible structures found.
 
  *python3 macrocomplex_builder.py -i interactions_1TUB -k 100*
 

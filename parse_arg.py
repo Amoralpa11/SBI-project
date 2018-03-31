@@ -13,6 +13,7 @@ if __name__ == "__main__":
     parser.add_argument('-k', '--subunit_limit',
                         dest="subunit_n",
                         action="store",
+                        type=int,
                         help="number of subunits to form the macro-complex in case it is theoretically endless.")
 
     parser.add_argument('-v', "--verbose",

@@ -218,12 +218,14 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
     """
     global branch_id
 
-    if options.subunit_n:
+    if options.subunit_n or options.subunit_n == 0:
         if options.subunit_n > 0:
             options.subunit_n -= 1
         else:
             file_name = write_to_pdb(base_struct, directory)
             modeller_funcs(file_name, options)
+            if options.subunit_n == 0:
+                exit(0)
     branch_id.append(0)
 
     for node in complex_id.get_nodes():
@@ -332,6 +334,8 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             verify = True
             file_name = write_to_pdb(base_struct, directory)
             modeller_funcs(file_name, options)
+            if options.subunit_n == 0:
+                exit(0)
 
         if not options.intensive and verify:
             exit(0)
@@ -389,6 +393,7 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
             chain_counter += 1
 
     for chain in chains_str_dict:
+        options.subunit_n -= 1
         if options.verbose:
             print("\nStarting new Branch: %s" % ".".join([str(x) for x in branch_id]))
         # initialize an empty structure

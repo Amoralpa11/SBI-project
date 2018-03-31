@@ -627,4 +627,4 @@ def get_interaction_pairs_from_input(directory):
 
     # TODO: Eliminar cadenas no utilizadas de similar sequences
 
-    return [interaction_dict,id_dict,similar_sequences, seq_dict]
+    return [interaction_dict, id_dict, similar_sequences, seq_dict]

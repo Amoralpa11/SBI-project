@@ -317,15 +317,16 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                             break
                         else:
                             nodes.add_interaction("full", interact)
-
+    verify = False
     for nodes in complex_id.get_nodes():
-        verify = False
         if None not in nodes.interaction_dict.values():
             verify = True
-            file_name = write_to_pdb(base_struct, directory)
+
+    if verify:
+        file_name = write_to_pdb(base_struct, directory)
 
         if options.optimize and verify:
-            structure_optimization(file_name)
+            modeller_funcs(file_name)
 
         if not options.intensive and verify:
             print('El complejo ha tardado en montarse %s' % (time.strftime('%H:%M:%S', time.gmtime(time.time() - startTime))))

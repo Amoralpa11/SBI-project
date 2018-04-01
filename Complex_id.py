@@ -49,7 +49,7 @@ class Node(object):
         if cycles > 0:
             for interaction in self.interaction_dict:
                 next_node = self.interaction_dict[tuple(interaction)]
-                if next_node not in [prev_node,None,'clash']: # for all the interactions stablished
+                if next_node not in [prev_node,None,'clash','full']: # for all the interactions stablished
                     deep_interactions_dict[tuple(interaction)] = self.interaction_dict[tuple(interaction)].get_deep_interactions(cycles-1,self)  # We create the key for the dictionary and start a recursive funcitión calling again get_deep_interactions with the other chain involved in the interaction, with a cycle less and the current node as previous node
 
             if len(deep_interactions_dict) > 0:

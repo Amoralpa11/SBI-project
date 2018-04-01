@@ -21,16 +21,11 @@ A python package for protein complex modeling from protein pairwise interactions
 		- [Command line arguments:](#command-line-arguments)
 	- [Requirements](#requirements)
 	- [Analysis](#analysis)
-		- [[1gzx - Hemoglobin](https://www.rcsb.org/structure/1gzx)](#1gzx-hemoglobinhttpswwwrcsborgstructure1gzx)
-<<<<<<< HEAD
-        - [1gzx - Hemoglobin](#1gzx---hemoglobin)
-=======
-		- [1gzx - Hemoglobin](#[3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy))
->>>>>>> 1e183f12f3012bff885b734ccbea28c507daf1de
-		- [[3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy)](#3kuy-nucleosomehttpswwwrcsborgstructure3kuy)
-		- [[1g65 - proteasome](https://www.rcsb.org/structure/1g65)](#1g65-proteasomehttpswwwrcsborgstructure1g65)
-		- [[5vox - Yeast V-ATPase](https://www.rcsb.org/structure/5vox)](#5vox-yeast-v-atpasehttpswwwrcsborgstructure5vox)
-		- [[5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA](https://www.rcsb.org/structure/5oom)](#5oom-native-assembly-intermediate-of-the-human-mitochondrial-ribosome-with-unfolded-interfacial-rrnahttpswwwrcsborgstructure5oom)
+		- [1gzx - Hemoglobin](#1gzx-hemoglobin)
+		- [3kuy - Nucleosome](#3kuy-nucleosome)
+		- [1g65 - proteasome](#1g65-proteasome)
+		- [5vox - Yeast V-ATPase](#5vox-yeast-v-atpase)
+		- [5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA](#5oom-native-assembly-intermediate-of-the-human-mitochondrial-ribosome-with-unfolded-interfacial-rrna)
 		- [Limitations](#limitations)
 	- [Acknowledgement](#acknowledgement)
 
@@ -190,13 +185,13 @@ In order to run this package with all its functionalities the user must have sev
 
 In the following section we are going to discuss some examples of inputs-outputs
 and how it worked for each one.
-### [1gzx - Hemoglobin](https://www.rcsb.org/structure/1gzx)
+### 1gzx - Hemoglobin
 
-This is an example of complex formed by 2 different chains that form 3 types of
+[1gzx](https://www.rcsb.org/structure/1gzx) is an example of a complex formed by 2 different chains that form 3 types of
 interactions.This program is able to properly fully reconstruct this complex with
 the interactions given as we can see in the images below. Our program, thus, has
 no problem dealing with this type of interactions. We can see there are no how there
-are minimal to no differences between the superimposed original 1gzx and the ones
+are minimal to no differences between the superimposed original [1gzx](https://www.rcsb.org/structure/1gzx) and the ones
 the program has built.
 
 
@@ -204,11 +199,11 @@ the program has built.
 | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*|
 
-### [3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy)
+### 3kuy - Nucleosome
 
 This is an example of complex formed by 10 different chains, 8 protein and 2 DNA.
-In the following images we can see the original 3kuy, the 3kuy we built superimposed
-the real 3kuy and the optimized 3kuy with, again, the original 3kuy superimposed.
+In the following images we can see the original [3kuy](https://www.rcsb.org/structure/3kuy), the [3kuy](https://www.rcsb.org/structure/3kuy) we built superimposed
+the real [3kuy](https://www.rcsb.org/structure/3kuy) and the optimized [3kuy](https://www.rcsb.org/structure/3kuy) with, again, the original [3kuy](https://www.rcsb.org/structure/3kuy) superimposed.
 No flaws are seen in the built complexes, therefore, we can say that the
 program can work with DNA as well as with protein chains with relatively simple
 structures.
@@ -217,20 +212,20 @@ structures.
 | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*|
 
-### [1g65 - proteasome](https://www.rcsb.org/structure/1g65)
+### 1g65 - proteasome
 
-When we run a more complex model, 30 protein chains, the program can still rebuild
+When we run a more complex model as [1g65](https://www.rcsb.org/structure/1g65) built out of 30 protein chains, the program can still rebuild
 it. Due to eliminating redundancy we can see that some chains are slightly shifted
 with respect to the original molecule but the complex is till built without missing
-any chain
+any chain.
 
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1g65_built_optimized.png" width="200" height="200"> |
 | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*|
 
-### [5vox - Yeast V-ATPase](https://www.rcsb.org/structure/5vox)
+### 5vox - Yeast V-ATPase
 
-When we run a more complex model with a particular chain composition, knowing the
+When we run a more complex model with a particular chain composition, [5vox](https://www.rcsb.org/structure/5vox), knowing the
 chain stoichiometry is necessary. If the stoichiometry is not set it will fit all
 the chains it can in the model even if the original model doesn't have them. If it
 is set then it will respect the number of chains but it won't necessarily respect
@@ -241,9 +236,9 @@ chain/chain compound, for example then it will place it in the first place it ca
 | :---: | :---: | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*| *Built-Not Opt-St* | *Built-Opt-St* |
 
-### [5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA](https://www.rcsb.org/structure/5oom)
+### 5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA
 
-5omm is another example of this programs robustness. As we can see in the images
+[5omm](https://www.rcsb.org/structure/5oom) is another example of this programs robustness. As we can see in the images
 below the program was able to reconstruct this complex compounded of 53 chains. It
 did not place 2 small lateral alpha-helix probably because it didn't have the
 interaction file since these helices in the pdb files are made out of "unkown"
@@ -266,5 +261,5 @@ The main limitations of this program are the following:
 * We would have liked to give the user a little more control over the parameters used to define clashes and interactions allowing him to pass a file with the specifications of the parameters. For example, if he wanted to use CA or CB to measure distances, minimum distance to consider a clash/interaction, etc...
 
 ## Acknowledgement
-All the protein visualization was done using [Chimera.](https://www.cgl.ucsf.edu/chimera/)
-All the code of this project was programmed in [Python 3.6.3.](https://www.python.org/downloads/release/python-363/)
+All the protein visualization was done using [Chimera](https://www.cgl.ucsf.edu/chimera/).
+All the code of this project was programmed using [Python 3.6.3](https://www.python.org/downloads/release/python-363/).

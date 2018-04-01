@@ -67,11 +67,11 @@ virtually endless.
 
 In an input, the same chain or very similar chains may be labelled in a non-consistent way. Because of this, one of the firsts operations performed is the classification of the chains based on their amino-acid sequence. Proteins with a percentage of similarity higher than 95% will be considered the same chain. 
 
-####Classifying the interactions
+#### Classifying the interactions
 
 At this point, we can know which types of chain are interacting in every input file. We would like to eliminate repeated interactions to reduce the ways we can add chains to the building complex. To do so, we compare pairs of interacting chains and remove from the input pairs of chains that when superimposed to another pair get an RMSD under a certain threshold. 
 
-####  Macro-complex assembly
+#### Macro-complex assembly
 
 Once we have processed and classified all the pairwise interactions from the input set
 we start constructing the macro-complex using superimposition.
@@ -102,7 +102,7 @@ up/down the tree, therefore, minimizing the memory usage of the computer.
 Lastly, we optimize the model using **modeler conjugate gradient**. This function
 tweaks the side chains so as to minimize the overall energy of the macro-complex.
 
-####Macro-complex comparison
+#### Macro-complex comparison
 
 If the intensive option is chosen, the algorithm checks if we have already got the current structure. Instead of comparing the structures directly, we compare instances of a class we have created to hold the information regarding the chains and their conectivity in the structure. 
 
@@ -188,9 +188,9 @@ In the package there is only one script thought to be executed directly from com
 
  This command, as the previous one, returns the interactions forming the complex but in this case without any redundancies. It will return a directory with non-redundant interactions.
 
-##Theoretical Background
+## Theoretical Background
 
-###Protein folding
+### Protein folding
 
 One asumtion that we do is that proteins with similar sequences will have a similar fold.
 
@@ -198,7 +198,7 @@ The folding of a protein in an aqueous solution is a spontaneous process that ta
 
 _In vivo_ there are a lot of other parameters that affect the protein folding, like chaperones, salt concentration, etc. Nevertheless, two proteins with the same or very similar sequence will generally have the same folding.
 
-###Superimposition
+### Superimposition
 The superimposition is the main process that allows us to build the complex.
 It is a process that given two groups of coordinates calculates the linear map
 that minimices de distances between the points of the two groups. When applied to proteins those points are the atoms forming the backbone of the protein. 

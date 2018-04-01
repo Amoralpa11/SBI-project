@@ -21,11 +21,11 @@ A python package for protein complex modeling from protein pairwise interactions
 		- [Command line arguments:](#command-line-arguments)
 	- [Requirements](#requirements)
 	- [Analysis](#analysis)
-		- [[1gzx - Hemoglobin](https://www.rcsb.org/structure/1gzx)](#1gzx-hemoglobinhttpswwwrcsborgstructure1gzx)
-		- [[3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy)](#3kuy-nucleosomehttpswwwrcsborgstructure3kuy)
-		- [[1g65 - proteasome](https://www.rcsb.org/structure/1g65)](#1g65-proteasomehttpswwwrcsborgstructure1g65)
-		- [[5vox - Yeast V-ATPase](https://www.rcsb.org/structure/5vox)](#5vox-yeast-v-atpasehttpswwwrcsborgstructure5vox)
-		- [[5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA](https://www.rcsb.org/structure/5oom)](#5oom-native-assembly-intermediate-of-the-human-mitochondrial-ribosome-with-unfolded-interfacial-rrnahttpswwwrcsborgstructure5oom)
+		- [[1gzx - Hemoglobin](#1gzx-hemoglobinhpswwwrcsborgstructure1gzx)]
+		- [[3kuy - Nucleosome](#3kuy-nucleosomehttpswwwrcsborgstructure3kuy)]
+		- [[1g65 - proteasome](#1g65-proteasomehttpswwwrcsborgstructure1g65)]
+		- [[5vox - Yeast V-ATPase](#5vox-yeast-v-atpasehttpswwwrcsborgstructure5vox)]
+		- [[5oom - native assembly intermediate of the human mitochondrial ribosome with unfolded interfacial rRNA](#5oom-native-assembly-intermediate-of-the-human-mitochondrial-ribosome-with-unfolded-interfacial-rrnahttpswwwrcsborgstructure5oom)]
 		- [Limitations](#limitations)
 	- [Acknowledgement](#acknowledgement)
 

@@ -5,6 +5,6 @@ setup(name='pmcb',
       description='Protein Macro-Complex Builder',
       author='Marc Elosua Bayés, Adrián Morales Pastor',
       author_email='elosua.marc@gmail.com, drnmoralespastor@gmail.com',
-      py_modules=["Complex_breaker", "Complex_id", "macrocomplex_builder", 'modeller_optimization',
-                  'pdb_files_comparison'],
-      scripts=['build_compolex.py'])
+      py_modules=["modules/Complex_breaker", "modules/Complex_id", "modules/macrocomplex_builder", 'modules/modeller_optimization',
+                  'modules/pdb_files_comparison'],
+      scripts=['build_complex.py'])

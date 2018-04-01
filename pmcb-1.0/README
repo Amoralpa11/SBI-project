@@ -6,6 +6,7 @@ A python package for protein complex modeling from protein pairwise interactions
 ## *Table of Contents*:
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
+- [Installation](#installation)
 - [SBI-project](#sbi-project)
 	- [*Table of Contents*:](#table-of-contents)
 	- [Objective](#objective)
@@ -30,6 +31,16 @@ A python package for protein complex modeling from protein pairwise interactions
 	- [Acknowledgement](#acknowledgement)
 
 <!-- /TOC -->
+## Installation
+
+To install this package you must unzip this folder:
+
+tar -xvzf pmcb-XXXX.tar.gzsudo 
+
+And the run the next command:
+
+sudo python setup.py install
+
 
 ## Objective
 
@@ -130,11 +141,7 @@ of the pairwise interactions.
 
 #### Complementary software
 
-This package includes complementary functions which can be set by the user.
-* Allows the user to pass PDB interaction files of more than 2 proteins.
-* Allows the user to pass a full protein complex to be broken into pairwise interaction PDB files.
-* Allows the user to pass the stoichiometry so as to specify the components of the macro-complex.
-* Allows the user to pass a number of subunits he wants the model to have in case the macro-complex is theoretically infinite.
+This package includes other functionalities apart from the reconstruction of a complex. It also allows the user to get the interactions from PDB file containing a macro-complex being able to specify if he or she wants all the interactions or just one of each type, therefore, eliminating redundancy. 
 
 ## Tutorial
 
@@ -199,6 +206,7 @@ The folding of a protein in an aqueous solution is a spontaneous process that ta
 _In vivo_ there are a lot of other parameters that affect the protein folding, like chaperones, salt concentration, etc. Nevertheless, two proteins with the same or very similar sequence will generally have the same folding.
 
 ### Superimposition
+
 The superimposition is the main process that allows us to build the complex.
 It is a process that given two groups of coordinates calculates the linear map
 that minimices de distances between the points of the two groups. When applied to proteins those points are the atoms forming the backbone of the protein. 

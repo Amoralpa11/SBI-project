@@ -1,7 +1,6 @@
 from Bio.PDB import *
 from Complex_breaker import *
 from Complex_id import *
-from ResidueDepth_copy import *
 from Complex_breaker import trim_to_superimpose
 from modeller_optimization import modeller_funcs
 

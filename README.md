@@ -65,11 +65,11 @@ virtually endless.
 
 #### Classifying the chains
 
-Because chains may not be labeled in a consistent way one of the firsts steps in
-the process is labeling all the chains that we can find in the input.
-Registering how they are called in their PDB files if they are the first of their type
-or changing the labels in a consistent way. At this point, we are able to identify
-the interactions each protein establishes.
+In an input, the same chain or very similar chains may be labelled in a non-consistent way. Because of this, one of the firsts operations performed is the classification of the chains based on their amino-acid sequence. Proteins with a percentage of similarity higher than 95% will be considered the same chain. 
+
+####Classifying the interactions
+
+At this point, we can know which types of chain are interacting in every input file. We would like to eliminate repeated interactions to reduce the ways we can add chains to the building complex. To do so, we compare pairs of interacting chains and remove from the input pairs of chains that when superimposed to another pair get an RMSD under a certain threshold. 
 
 ####  Macro-complex assembly
 
@@ -85,12 +85,14 @@ input and recursively add chains on top of them. Each node of the recursive tree
 identifier indicating the interactions occurring at that stage, this identifier is saved
 for further usage. This identifier enables us to assess if a macro-complex at a specific
 node has already been processed in a previous node and, therefore,
-stop that branch.
+stop that branch. 
 
 Before we add a new chain to the macro-complex we check that it is not clashing with
-the other chains already in the structure. Furthermore, once we add it we also register
+the other chains already in the structure. The criteria we use to find clashes is that at least one alpha carbon should be at less than 1.2 Angstroms from any atom from another chain. 
+
+Furthermore, once we add it we also register
 the interactions this new chain has with the surrounding ones so as to not attempt to
-superimpose that interaction in nodes to come thus, reducing processing demand.
+superimpose that interaction in nodes to come thus, reducing processing demand. To find those interactions we check if at least 8 alpha carbons are at less than 8 Angstroms from another alpha carbon from another chain. This ensures that two identical structures will have the same identifier, allowing us to compare them properly and avoiding doing the same process twice. Nevertheless, this process is only done if the option intensive is chosen, because is the only scenario where we compare complex identifiers. 
 
 Once the recursive function has finished we are able to build the macro-complex/es
 obtained from the identifiers at the final nodes of the recursive tree. This enables
@@ -99,6 +101,18 @@ up/down the tree, therefore, minimizing the memory usage of the computer.
 
 Lastly, we optimize the model using **modeler conjugate gradient**. This function
 tweaks the side chains so as to minimize the overall energy of the macro-complex.
+
+####Macro-complex comparison
+
+If the intensive option is chosen, the algorithm checks if we have already got the current structure. Instead of comparing the structures directly, we compare instances of a class we have created to hold the information regarding the chains and their conectivity in the structure. 
+
+This class is a graph with as many nodes as chains the structure have. Each node points to other nodes representing the chains with which it is interacting. The pointers a node uses to relate to other nodes are the kinds of interactions that a protein can stablish. 
+
+The comparison is done in three parts. The first two parts are to check if the identifies have the same number of chains and that they have the same number of each type. The third part checks if the connectivity of those chains is the same. The problem is that two different structure can have the same 'first level' interactions. 
+
+![complex comparison\label{complex_comparison}](Complex_comparison.png)
+
+To be able to diferenciate structures of these characteristics we use the deepness of the comparison. In the figure \ref{complex_comparison}, the two strucures have the same first level conectivity, but if we check a second level connectivity we see that in the second structure there is one green circle interacting directly with the pentagon and that is two chains apart from the square. There isn't any chain with this second-level connectivity patern so we can say that they are different structures. The proper connectivity deepness to be used depends on the sctructures to compare, the deeper the more reliable is the comparison. By default 4 levels of conectivity are checked
 
 #### Evaluation
 
@@ -134,7 +148,11 @@ of easy use and for the user to get a grasp of all the functionalities available
 * -opt -- optimization: Indicate if you want to optimize the model, by default it is True.
 * -int --intensive: Indicate if you want to find all possible structures or just the first one found, by default it will return the first one found, on the other hand, if it is intensive the programm will attempt to find all the possible structures.
 * -br --break: Indicate if you want to return all the pairwise interactions or just one of each type. If you pass 'all' the program will output all the pairwise interactions found and if you pass 'unique' it will only return one interaction of each type.
-* -st --stoichiometry: Parameter defining the stoichiometry of the complex, the program will assume the different interaction pdb files passed are the interactions forming the macro-complex and will attempt to build the complex using each interaction passed once.
+* -st --stoichiometry: If this parameter is provided the program will tell the user how many different chains have been found in the input. Then, one chain at a time it will ask the user to set its stoichiometry. The user will be prompt, having three options:
+    * Introduce the absolute frequency of the chain in the final output
+    * Pressing return to skip the current chain
+    * Introduce 'q' to end the dialog and start the reconstruction process
+
 
 1. Default settings
 
@@ -168,6 +186,28 @@ of easy use and for the user to get a grasp of all the functionalities available
 
  This command, as the previous one, returns the interactions forming the complex but in this case without any redundancies. It will return a directory with non-redundant interactions.
 
+##Theoretical Background
+
+###Protein folding
+
+One asumtion that we do is that proteins with similar sequences will have a similar fold.
+
+The folding of a protein in an aqueous solution is a spontaneous process that takes places because of the reduction in the system energy that it implies. The folding is driven by the chemical nature of the residuals of the protein. Hydrophobic residuals tend to be away from the protein surface where they interact with themselves. On the other hand, hydrophilic residues are placed on the surface of the protein. The electric charge of the side chains also affects the way the protein folds. Residues with the same charge are pulled apart while the ones with opposite charge attract to each other. 
+
+_In vivo_ there are a lot of other parameters that affect the protein folding, like chaperones, salt concentration, etc. Nevertheless, two proteins with the same or very similar sequence will generally have the same folding.
+
+###Superimposition
+The superimposition is the main process that allows us to build the complex.
+It is a process that given two groups of coordinates calculates the linear map
+that minimices de distances between the points of the two groups. When applied to proteins those points are the atoms forming the backbone of the protein. 
+
+The more similar are the relative positions of these two groups of atoms the lower will be the minimal distance or Root-Mean-Square deviation (RMSD). It is calculated adding the distance between each atom and the nearest atom from the other chain. 
+
+$$RMSD(v,w) = \sqrt{\frac{\sum_{i=1}^n((v_{ix}-w_{ix})^2+(v_{iy}-w_{iy})^2+(v_{iz}-w_{iz})^2)}{n}}$$
+
+Where v and w are two proteins and $v_{ix}$ is the component x of the ith atom of the protein v. 
+
+
 ## Requirements
 
 In order to run this package with all its functionalities the user must have several programs:
@@ -185,6 +225,7 @@ In order to run this package with all its functionalities the user must have sev
 
 In the following section we are going to discuss some examples of inputs-outputs
 and how it worked for each one.
+
 ### 1gzx - Hemoglobin
 
 [1gzx](https://www.rcsb.org/structure/1gzx) is an example of a complex formed by 2 different chains that form 3 types of
@@ -193,7 +234,6 @@ the interactions given as we can see in the images below. Our program, thus, has
 no problem dealing with this type of interactions. We can see there are no how there
 are minimal to no differences between the superimposed original [1gzx](https://www.rcsb.org/structure/1gzx) and the ones
 the program has built.
-
 
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimized.png" width="200" height="200"> |
 | :---: | :---: | :---: |
@@ -256,7 +296,7 @@ The main limitations of this program are the following:
 
 * When performing the reduction of repeated interactions in the input by similarity we set certain thresholds of similarity. These thresholds can lead to consider subunits formed by the same chains and that have the same interaction but that are slightly rotated, so as to fit in a barrel for example, to be deprecated. In these cases we only gather one of these interactions and ultimately when building the complex, barrel in this case, the last subunit may not be added due to clashes derived from an accumulation of little rotation mistakes in the rest of subunits forming the barrel.
 
-* With the recursive approach the amount of processing time when many chains with many interactions are passed and an intensive search is specified can be very large. In these cases we recommend to use the option -simp of the program which returns the first structure found, therefore, reducing processing time but with the inconvenient that the structure returned may not be the desired by the user.
+* With the recursive approach the amount of processing time when many chains with many interactions are passed and an intensive search is specified can be very large. This is because the program tries to introduce the chains in all possible orders in order to get every posible structures from the input. Despite two identical structures can't be generated, an structure with complex interactions can generate a many versions of the complex. 
 
 * We would have liked to give the user a little more control over the parameters used to define clashes and interactions allowing him to pass a file with the specifications of the parameters. For example, if he wanted to use CA or CB to measure distances, minimum distance to consider a clash/interaction, etc...
 

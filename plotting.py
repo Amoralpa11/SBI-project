@@ -19,7 +19,7 @@ def energy_profile_plot(options, dir, code, data_unopt, data_opt=None):
 
     plt.title(code + ' energy profile')
     plt.xlabel('Residue')
-    plt.ylabel('Z-score')
+    plt.ylabel('Dope energy')
     plt.axhline(linewidth=1, linestyle=':', color='r')
 
     # plt.show()

@@ -231,9 +231,9 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
     # Iterate for each chain the macro-complex for
     if options.verbose:
         for node in complex_id.get_nodes():
-                print('%s: %s' % (node.get_chain(), node))
+            print('%s: %s' % (node.get_chain(), node))
             for interaction, value in node.get_interaction_dict().items():
-                    print("%s: %s " % (interaction, value))
+                print("%s: %s " % (interaction, value))
 
     # Compare if we have already obtained this complex id
     for other_CI in [ident for ident in complex_id_dict[len(complex_id.get_nodes())]]:

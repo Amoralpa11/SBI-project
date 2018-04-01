@@ -22,11 +22,6 @@ A python package for protein complex modeling from protein pairwise interactions
 	- [Requirements](#requirements)
 	- [Analysis](#analysis)
 		- [[1gzx - Hemoglobin](https://www.rcsb.org/structure/1gzx)](#1gzx-hemoglobinhttpswwwrcsborgstructure1gzx)
-<<<<<<< HEAD
-        - [1gzx - Hemoglobin](#1gzx---hemoglobin)
-=======
-		- [1gzx - Hemoglobin](#[3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy))
->>>>>>> 1e183f12f3012bff885b734ccbea28c507daf1de
 		- [[3kuy - Nucleosome](https://www.rcsb.org/structure/3kuy)](#3kuy-nucleosomehttpswwwrcsborgstructure3kuy)
 		- [[1g65 - proteasome](https://www.rcsb.org/structure/1g65)](#1g65-proteasomehttpswwwrcsborgstructure1g65)
 		- [[5vox - Yeast V-ATPase](https://www.rcsb.org/structure/5vox)](#5vox-yeast-v-atpasehttpswwwrcsborgstructure5vox)
@@ -70,11 +65,11 @@ virtually endless.
 
 #### Classifying the chains
 
-Because chains may not be labeled in a consistent way one of the firsts steps in
-the process is labeling all the chains that we can find in the input.
-Registering how they are called in their PDB files if they are the first of their type
-or changing the labels in a consistent way. At this point, we are able to identify
-the interactions each protein establishes.
+In an input, the same chain or very similar chains may be labelled in a non-consistent way. Because of this, one of the firsts operations performed is the classification of the chains based on their amino-acid sequence. Proteins with a percentage of similarity higher than 95% will be considered the same chain. 
+
+####Classifying the interactions
+
+At this point, we can know which types of chain are interacting in every input file. We would like to eliminate repeated interactions to reduce the ways we can add chains to the building complex. To do so, we compare pairs of interacting chains and remove from the input pairs of chains that when superimposed to another pair get an RMSD under a certain threshold. 
 
 ####  Macro-complex assembly
 
@@ -90,12 +85,14 @@ input and recursively add chains on top of them. Each node of the recursive tree
 identifier indicating the interactions occurring at that stage, this identifier is saved
 for further usage. This identifier enables us to assess if a macro-complex at a specific
 node has already been processed in a previous node and, therefore,
-stop that branch.
+stop that branch. 
 
 Before we add a new chain to the macro-complex we check that it is not clashing with
-the other chains already in the structure. Furthermore, once we add it we also register
+the other chains already in the structure. The criteria we use to find clashes is that at least one alpha carbon should be at less than 1.2 Angstroms from any atom from another chain. 
+
+Furthermore, once we add it we also register
 the interactions this new chain has with the surrounding ones so as to not attempt to
-superimpose that interaction in nodes to come thus, reducing processing demand.
+superimpose that interaction in nodes to come thus, reducing processing demand. To find those interactions we check if at least 8 alpha carbons are at less than 8 Angstroms from another alpha carbon from another chain. This ensures that two identical structures will have the same identifier, allowing us to compare them properly and avoiding doing the same process twice. Nevertheless, this process is only done if the option intensive is chosen, because is the only scenario where we compare complex identifiers. 
 
 Once the recursive function has finished we are able to build the macro-complex/es
 obtained from the identifiers at the final nodes of the recursive tree. This enables
@@ -190,6 +187,7 @@ In order to run this package with all its functionalities the user must have sev
 
 In the following section we are going to discuss some examples of inputs-outputs
 and how it worked for each one.
+
 ### [1gzx - Hemoglobin](https://www.rcsb.org/structure/1gzx)
 
 This is an example of complex formed by 2 different chains that form 3 types of
@@ -198,7 +196,6 @@ the interactions given as we can see in the images below. Our program, thus, has
 no problem dealing with this type of interactions. We can see there are no how there
 are minimal to no differences between the superimposed original 1gzx and the ones
 the program has built.
-
 
 | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_original.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built.png" width="200" height="200"> | <img src="https://github.com/Amoralpa11/SBI-project/blob/complex_breaker/img/1gzx_built_optimized.png" width="200" height="200"> |
 | :---: | :---: | :---: |
@@ -261,7 +258,7 @@ The main limitations of this program are the following:
 
 * When performing the reduction of repeated interactions in the input by similarity we set certain thresholds of similarity. These thresholds can lead to consider subunits formed by the same chains and that have the same interaction but that are slightly rotated, so as to fit in a barrel for example, to be deprecated. In these cases we only gather one of these interactions and ultimately when building the complex, barrel in this case, the last subunit may not be added due to clashes derived from an accumulation of little rotation mistakes in the rest of subunits forming the barrel.
 
-* With the recursive approach the amount of processing time when many chains with many interactions are passed and an intensive search is specified can be very large. In these cases we recommend to use the option -simp of the program which returns the first structure found, therefore, reducing processing time but with the inconvenient that the structure returned may not be the desired by the user.
+* With the recursive approach the amount of processing time when many chains with many interactions are passed and an intensive search is specified can be very large. This is because the program tries to introduce the chains in all possible orders in order to get every posible structures from the input. Despite two identical structures can't be generated, an structure with complex interactions can generate a many versions of the complex. 
 
 * We would have liked to give the user a little more control over the parameters used to define clashes and interactions allowing him to pass a file with the specifications of the parameters. For example, if he wanted to use CA or CB to measure distances, minimum distance to consider a clash/interaction, etc...
 

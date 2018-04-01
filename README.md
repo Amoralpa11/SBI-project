@@ -102,7 +102,17 @@ up/down the tree, therefore, minimizing the memory usage of the computer.
 Lastly, we optimize the model using **modeler conjugate gradient**. This function
 tweaks the side chains so as to minimize the overall energy of the macro-complex.
 
-####Macro-complex
+####Macro-complex comparison
+
+If the intensive option is chosen, the algorithm checks if we have already got the current structure. Instead of comparing the structures directly, we compare instances of a class we have created to hold the information regarding the chains and their conectivity in the structure. 
+
+This class is a graph with as many nodes as chains the structure have. Each node points to other nodes representing the chains with which it is interacting. The pointers a node uses to relate to other nodes are the kinds of interactions that a protein can stablish. 
+
+The comparison is done in three parts. The first two parts are to check if the identifies have the same number of chains and that they have the same number of each type. The third part checks if the connectivity of those chains is the same. The problem is that two different structure can have the same 'first level' interactions. 
+
+![complex comparison\label{complex_comparison}](Complex_comparison.png)
+
+To be able to diferenciate structures of these characteristics we use the deepness of the comparison. In the figure \ref{complex_comparison}, the two strucures have the same first level conectivity, but if we check a second level connectivity we see that in the second structure there is one green circle interacting directly with the pentagon and that is two chains apart from the square. There isn't any chain with this second-level connectivity patern so we can say that they are different structures. The proper connectivity deepness to be used depends on the sctructures to compare, the deeper the more reliable is the comparison. By default 4 levels of conectivity are checked
 
 #### Evaluation
 
@@ -138,7 +148,11 @@ of easy use and for the user to get a grasp of all the functionalities available
 * -opt -- optimization: Indicate if you want to optimize the model, by default it is True.
 * -int --intensive: Indicate if you want to find all possible structures or just the first one found, by default it will return the first one found, on the other hand, if it is intensive the programm will attempt to find all the possible structures.
 * -br --break: Indicate if you want to return all the pairwise interactions or just one of each type. If you pass 'all' the program will output all the pairwise interactions found and if you pass 'unique' it will only return one interaction of each type.
-* -st --stoichiometry: Parameter defining the stoichiometry of the complex, the program will assume the different interaction pdb files passed are the interactions forming the macro-complex and will attempt to build the complex using each interaction passed once.
+* -st --stoichiometry: If this parameter is provided the program will tell the user how many different chains have been found in the input. Then, one chain at a time it will ask the user to set its stoichiometry. The user will be prompt, having three options:
+    * Introduce the absolute frequency of the chain in the final output
+    * Pressing return to skip the current chain
+    * Introduce 'q' to end the dialog and start the reconstruction process
+
 
 1. Default settings
 
@@ -171,6 +185,28 @@ of easy use and for the user to get a grasp of all the functionalities available
  *python3 macrocomplex_builder.py -i interactions_3kuy -br unique*
 
  This command, as the previous one, returns the interactions forming the complex but in this case without any redundancies. It will return a directory with non-redundant interactions.
+
+##Theoretical Background
+
+###Protein folding
+
+One asumtion that we do is that proteins with similar sequences will have a similar fold.
+
+The folding of a protein in an aqueous solution is a spontaneous process that takes places because of the reduction in the system energy that it implies. The folding is driven by the chemical nature of the residuals of the protein. Hydrophobic residuals tend to be away from the protein surface where they interact with themselves. On the other hand, hydrophilic residues are placed on the surface of the protein. The electric charge of the side chains also affects the way the protein folds. Residues with the same charge are pulled apart while the ones with opposite charge attract to each other. 
+
+_In vivo_ there are a lot of other parameters that affect the protein folding, like chaperones, salt concentration, etc. Nevertheless, two proteins with the same or very similar sequence will generally have the same folding.
+
+###Superimposition
+The superimposition is the main process that allows us to build the complex.
+It is a process that given two groups of coordinates calculates the linear map
+that minimices de distances between the points of the two groups. When applied to proteins those points are the atoms forming the backbone of the protein. 
+
+The more similar are the relative positions of these two groups of atoms the lower will be the minimal distance or Root-Mean-Square deviation (RMSD). It is calculated adding the distance between each atom and the nearest atom from the other chain. 
+
+$$RMSD(v,w) = \sqrt{\frac{\sum_{i=1}^n((v_{ix}-w_{ix})^2+(v_{iy}-w_{iy})^2+(v_{iz}-w_{iz})^2)}{n}}$$
+
+Where v and w are two proteins and $v_{ix}$ is the component x of the ith atom of the protein v. 
+
 
 ## Requirements
 

@@ -237,10 +237,6 @@ no problem dealing with this type of interactions. We can see there are no how t
 are minimal to no differences between the superimposed original [1gzx](https://www.rcsb.org/structure/1gzx) and the ones
 the program has built.
 
-| ![](images/1gzx_original.png){ width=200 } | ![](images/1gzx_built.png){ width=200 } | ![](images/1gzx_built_optimized.png){ width=200 }|
-| :---: | :---: | :---: |
-| *Original* | *Built-No Optimization* | *Optimization*|
-
 | <img src="images/1gzx_original.png" width="200" height="200"> | <img src="images/1gzx_built.png" width="200" height="200"> | <img src="images/1gzx_built_optimized.png" width="200" height="200"> |
 | :---: | :---: | :---: |
 | *Original* | *Built-No Optimization* | *Optimization*|

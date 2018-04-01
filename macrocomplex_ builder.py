@@ -216,7 +216,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         else:
             file_name = write_to_pdb(base_struct, directory)
             if options.optimize:
-                structure_optimization(file_name)
+                modeller_funcs(file_name)
 
     branch_id.append(0)
 

@@ -61,22 +61,12 @@ def get_clash_chains(structure, chain, prev_chain, options):
     for atom1 in chain_atoms:
         atom_produces_clash = False
         for atom in ns.search(atom1.get_coord(), 1.2, 'A'):
-            print('%s(%s)-%s(%s)' % (
-            atom1.get_id(), atom1.get_parent().get_id(), atom.get_id(), atom1.get_parent().get_id()))
+            print('%s(%s)-%s(%s)' % (atom1.get_id(), atom1.get_parent().get_id(), atom.get_id(), atom1.get_parent().get_id()))
             # if chain != atom1.get_parent().get_parent():
             clashing_chain = atom.get_parent().get_parent().get_id()
             if clashing_chain != prev_chain:
-                # if first_clash:
-                #     first_clash = False
-                #     rd = ResidueDepth(chain,4)
-                # ca_dep = rd[(chain.get_id(),atom1.get_parent().get_id())][1]
-                atom_produces_clash = True
-                break
-        if atom_produces_clash:
-            clash_counter += 1
-            if clash_counter < 5:
                 if options.verbose:
-                    print('More than 5 clashes found')
+                    print('clash found')
                 return True
 
     return False
@@ -94,8 +84,7 @@ def interaction_finder(structure, ref_chain_id, complex_id, node, options):
     neighbor_chains = []
     ns = NeighborSearch(list(structure.get_atoms()))
     ref_chain = structure[0][ref_chain_id]
-    for atom in [atom for atom in ref_chain.get_atoms() if
-                 atom.get_id() == 'CA' or atom.get_id() == 'P']:  # For every alpha carbon in chain
+    for atom in [atom for atom in ref_chain.get_atoms() if atom.get_id() == 'CA' or atom.get_id() == 'P']:  # For every alpha carbon in chain
         for atom2 in ns.search(atom.get_coord(), 8, level='A'):
             if atom2.get_id() == 'CA' or atom2.get_id() == 'P':  # for every alpha carbon at 8 angstroms or less from atom
                 chain2 = atom2.get_parent().get_parent()  # Getting to which chain it belongs
@@ -145,7 +134,7 @@ def copy_chain(chain, id):
     :return: copy of the passed chain
     """
 
-    new_chain = copy.deepcopy(chain)
+    new_chain = chain.copy()
     new_chain.id = id
     return new_chain
 
@@ -165,9 +154,9 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
     if options.verbose:
         print('\nSuperimposing %s over chain %s' % (str2, node.get_chain()))
     chain1 = node.get_chain()
-    str2_copy = copy.deepcopy(str2)
-    node_chain_copy = copy.deepcopy(str1[0][chain1])
-    chain_str2 = copy.deepcopy(i)
+    str2_copy = [x.copy() for x in str2]
+    node_chain_copy = str1[0][chain1].copy()
+    chain_str2 = i.copy()
 
     trim_to_superimpose(node_chain_copy, chain_str2)
     atoms_chain1 = [atom for atom in list(node_chain_copy.get_atoms()) if atom.get_id() == 'CA' or atom.get_id() == 'P']
@@ -192,7 +181,8 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
         complex_id.add_node(other_chain2, node, str2)
         str1[0].add(other_chain2)
 
-        interaction_finder(str1, other_chain2.get_id(), complex_id, node, options)
+        if options.intensive:
+            interaction_finder(str1, other_chain2.get_id(), complex_id, node, options)
 
         return True
     else:

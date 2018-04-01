@@ -50,13 +50,6 @@ interactions.
 
 ## Theoretical background
 
-* Superimposition
-
-* Clashes specifications
-
-* Interaction specifications
-
-
 ## Input
 
 The input is a set of PDB files holding pairs of proteins interacting. This
@@ -99,11 +92,17 @@ node has already been processed in a previous node and, therefore,
 stop that branch. 
 
 Before we add a new chain to the macro-complex we check that it is not clashing with
-the other chains already in the structure. The criteria we use to find clashes is that at least one alpha carbon should be at less than 1.2 Angstroms from any atom from another chain. 
+the other chains already in the structure. The criteria we use to find clashes is that 
+at least one alpha carbon should be at less than 1.2 Angstroms from any atom from another chain. 
 
 Furthermore, once we add it we also register
 the interactions this new chain has with the surrounding ones so as to not attempt to
-superimpose that interaction in nodes to come thus, reducing processing demand. To find those interactions we check if at least 8 alpha carbons are at less than 8 Angstroms from another alpha carbon from another chain. This ensures that two identical structures will have the same identifier, allowing us to compare them properly and avoiding doing the same process twice. Nevertheless, this process is only done if the option intensive is chosen, because is the only scenario where we compare complex identifiers. 
+superimpose that interaction in nodes to come thus, reducing processing demand. To find 
+those interactions we check if at least 8 alpha carbons are at less than 8 Angstroms 
+from another alpha carbon from another chain. This ensures that two identical structures
+will have the same identifier, allowing us to compare them properly and avoiding doing 
+the same process twice. Nevertheless, this process is only done if the option intensive 
+is chosen, because is the only scenario where we compare complex identifiers. 
 
 Once the recursive function has finished we are able to build the macro-complex/es
 obtained from the identifiers at the final nodes of the recursive tree. This enables
@@ -115,15 +114,30 @@ tweaks the side chains so as to minimize the overall energy of the macro-complex
 
 #### Macro-complex comparison
 
-If the intensive option is chosen, the algorithm checks if we have already got the current structure. Instead of comparing the structures directly, we compare instances of a class we have created to hold the information regarding the chains and their conectivity in the structure. 
+If the intensive option is chosen, the algorithm checks if we have already got the 
+current structure.Instead of comparing the structures directly, we compare instances 
+of a class we have created to hold the information regarding the chains and their conectivity 
+in the structure. 
 
-This class is a graph with as many nodes as chains the structure have. Each node points to other nodes representing the chains with which it is interacting. The pointers a node uses to relate to other nodes are the kinds of interactions that a protein can stablish. 
+This class is a graph with as many nodes as chains the structure have. Each node points 
+to other nodes representing the chains with which it is interacting. The pointers a 
+node uses to relate to other nodes are the kinds of interactions that a protein can stablish. 
 
-The comparison is done in three parts. The first two parts are to check if the identifies have the same number of chains and that they have the same number of each type. The third part checks if the connectivity of those chains is the same. The problem is that two different structure can have the same 'first level' interactions. 
+The comparison is done in three parts. The first two parts are to check if the identifies 
+have the same number of chains and that they have the same number of each type. The third 
+part checks if the connectivity of those chains is the same. The problem is that two different
+structure can have the same 'first level' interactions. 
 
 ![complex comparison\label{complex_comparison}](images/Complex_comparison.png)
 
-To be able to diferenciate structures of these characteristics we use the deepness of the comparison. In the figure \ref{complex_comparison}, the two strucures have the same first level conectivity, but if we check a second level connectivity we see that in the second structure there is one green circle interacting directly with the pentagon and that is two chains apart from the square. There isn't any chain with this second-level connectivity patern so we can say that they are different structures. The proper connectivity deepness to be used depends on the sctructures to compare, the deeper the more reliable is the comparison. By default 4 levels of conectivity are checked
+To be able to diferenciate structures of these characteristics we use the deepness of the
+comparison. In the figure \ref{complex_comparison}, the two strucures have the same first
+level conectivity, but if we check a second level connectivity we see that in the second
+structure there is one green circle interacting directly with the pentagon and that is two
+chains apart from the square. There isn't any chain with this second-level connectivity
+patern so we can say that they are different structures. The proper connectivity deepness
+to be used depends on the sctructures to compare, the deeper the more reliable is the
+comparison. By default 4 levels of conectivity are checked
 
 #### Evaluation
 

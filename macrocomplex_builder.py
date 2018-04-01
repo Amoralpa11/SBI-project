@@ -169,13 +169,16 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
     node_chain_copy = copy.deepcopy(str1[0][chain1])
     chain_str2 = copy.deepcopy(i)
 
+    # Trim the chains so that they have the same number of atoms to superimpose
     trim_to_superimpose(node_chain_copy, chain_str2)
     atoms_chain1 = [atom for atom in list(node_chain_copy.get_atoms()) if atom.get_id() == 'CA' or atom.get_id() == 'P']
     atoms_chain2 = [atom for atom in list(chain_str2.get_atoms()) if atom.get_id() == 'CA' or atom.get_id() == 'P']
     sup = Superimposer()
 
+    # Superimpose the chains
     sup.set_atoms(atoms_chain1, atoms_chain2)
 
+    # Select the chains that haven't been superimposed
     if not homodimer:
         other_chain2 = [x for x in str2_copy if x.get_id() != chain_str2.get_id()][0]
         other_chain2_original = [x for x in str2 if x.get_id() != chain_str2.get_id()][0]
@@ -183,15 +186,19 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
         other_chain2 = str2_copy[1]
         other_chain2_original = str2[1]
 
+    # Apply the rotation matrix to the chain we want to add to the complex
     sup.apply(other_chain2)
 
-    if not get_clash_chains(str1, other_chain2, chain1, options):  ## returns T if there is a clash and F if there isn't.
+    # Assess if there is a clash between the chain we want to add and the others
+    if not get_clash_chains(str1, other_chain2, chain1, options):
 
+        # add the chain to the macrocomplex
         other_chain2.id = len(complex_id.get_nodes()) + 1
         similar_seq[other_chain2] = similar_seq[other_chain2_original]
         complex_id.add_node(other_chain2, node, str2)
         str1[0].add(other_chain2)
 
+        # Find interactions fulfilled when we added the new chain
         interaction_finder(str1, other_chain2.get_id(), complex_id, node, options)
 
         return True
@@ -218,6 +225,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
     """
     global branch_id
 
+    # Assess if the subunit limit has been reached and act accordingly
     if options.subunit_n or options.subunit_n == 0:
         if options.subunit_n > 0:
             options.subunit_n -= 1
@@ -228,13 +236,14 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                 exit(0)
     branch_id.append(0)
 
-    for node in complex_id.get_nodes():
-        if options.verbose:
-            print('%s: %s' % (node.get_chain(), node))
-        for interaction, value in node.get_interaction_dict().items():
-            if options.verbose:
-                print("%s: %s " % (interaction, value))
+    # Iterate for each chain the macrocomplex for
+    if options.verbose:
+        for node in complex_id.get_nodes():
+                print('%s: %s' % (node.get_chain(), node))
+            for interaction, value in node.get_interaction_dict().items():
+                    print("%s: %s " % (interaction, value))
 
+    # Compare if we have already obtained this complex id
     for other_CI in [ident for ident in complex_id_dict[len(complex_id.get_nodes())]]:
 
         if complex_id.compare_with(other_CI, 4):

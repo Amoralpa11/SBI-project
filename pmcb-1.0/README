@@ -50,13 +50,6 @@ interactions.
 
 ## Theoretical background
 
-* Superimposition
-
-* Clashes specifications
-
-* Interaction specifications
-
-
 ## Input
 
 The input is a set of PDB files holding pairs of proteins interacting. This
@@ -123,7 +116,14 @@ The comparison is done in three parts. The first two parts are to check if the i
 
 ![complex comparison\label{complex_comparison}](images/Complex_comparison.png)
 
-To be able to diferenciate structures of these characteristics we use the deepness of the comparison. In the figure \ref{complex_comparison}, the two strucures have the same first level conectivity, but if we check a second level connectivity we see that in the second structure there is one green circle interacting directly with the pentagon and that is two chains apart from the square. There isn't any chain with this second-level connectivity patern so we can say that they are different structures. The proper connectivity deepness to be used depends on the sctructures to compare, the deeper the more reliable is the comparison. By default 4 levels of conectivity are checked
+To be able to diferenciate structures of these characteristics we use the deepness of the
+comparison. In the figure \ref{complex_comparison}, the two strucures have the same first
+level conectivity, but if we check a second level connectivity we see that in the second
+structure there is one green circle interacting directly with the pentagon and that is two
+chains apart from the square. There isn't any chain with this second-level connectivity
+patern so we can say that they are different structures. The proper connectivity deepness
+to be used depends on the sctructures to compare, the deeper the more reliable is the
+comparison. By default 4 levels of conectivity are checked
 
 #### Evaluation
 

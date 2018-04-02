@@ -1,4 +1,6 @@
-from macrocomplex_builder import *
+#! python
+
+from pmcb.macrocomplex_builder import *
 import argparse
 
 if __name__ == "__main__":

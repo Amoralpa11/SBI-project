@@ -1,8 +1,8 @@
 from Bio.PDB import *
-from Complex_breaker import *
-from Complex_id import *
-from Complex_breaker import trim_to_superimpose
-from modeller_optimization import modeller_funcs
+from pmcb.Complex_breaker import *
+from pmcb.Complex_id import *
+from pmcb.Complex_breaker import trim_to_superimpose
+from pmcb.modeller_optimization import modeller_funcs
 
 branch_id = [1]
 pdb_counter = 1

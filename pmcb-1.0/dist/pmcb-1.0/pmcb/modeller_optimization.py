@@ -2,7 +2,7 @@ from modeller import *
 from modeller.scripts import complete_pdb
 from modeller.optimizers import conjugate_gradients, molecular_dynamics, actions
 from Bio.PDB import PDBIO
-from plotting import energy_profile_plot
+from pmcb.plotting import energy_profile_plot
 
 
 def write_to_pdb(structure):

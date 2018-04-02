@@ -9,7 +9,7 @@ from Bio.PDB import Select
 from Bio import pairwise2
 import re
 import os
-from pdb_files_comparison import str_comparison_superimpose
+from pmcb.pdb_files_comparison import str_comparison_superimpose
 import copy
 
 """In this file there are the functions that will take part in the processing of the user input. That implies 

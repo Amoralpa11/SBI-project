@@ -1,9 +1,9 @@
 #! python
 
 from pmcb.macrocomplex_builder import *
-import argparse
+import 
 
-if __name__ == "__main__":
+def main():
 
     parser = argparse.ArgumentParser(
         description="This program receives fasta files and returns an ordered list by sequence length of "
@@ -70,4 +70,8 @@ if __name__ == "__main__":
     else:
         raise WrongArgumentBreak('%s is not an accepted argument for -br, please pass "all" or "unique" if you are '
                                  'passing the -br argument' % options.break_complex)
+
+if __name__ == "__main__":
+
+
 

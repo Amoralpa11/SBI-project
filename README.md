@@ -1,4 +1,3 @@
-``````
 # SBI-project
 
 A python package for protein complex modeling from protein pairwise interactions.

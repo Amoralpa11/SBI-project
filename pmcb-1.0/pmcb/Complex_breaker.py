@@ -286,7 +286,7 @@ def get_neighbor_chains(structure, options):
                             neighbor_dict[chain2] = 0
                         neighbor_dict[chain2] += 1
 
-        if options.verbose
+        if options.verbose:
             print('\n%s' % chain)
             for close_chain, contacts in neighbor_dict.items():
                 print('%s: %s' % (close_chain, contacts))
@@ -410,7 +410,7 @@ def clean_heteroatoms(interaction_dict):
                 chain.detach_child(residue.get_id())
 
 
-def clean_interaction_dict(interaction_dict, similar_sequences):
+def clean_interaction_dict(interaction_dict, similar_sequences, options):
     """
     Takes an dictionary with tuples of 2 strings and a list of lists of chains and a dictionary with chains as
     keys and similar chains as values and removes chain pairs interacting in a similar way from the interaction_dict.
@@ -426,7 +426,7 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
         list_to_remove = []  # to avoid modifying a list while looping through it we store here the elements we want
         #  to remove and do it at the end
 
-        in options.verbose:
+        if options.verbose:
             print('\n')
             print(pair)
         interaction_list1 = copy.copy(interaction_dict[pair])
@@ -562,7 +562,7 @@ def get_id_dict(structure_list):
     return id_dict
 
 
-def get_interaction_pairs_from_input(directory):
+def get_interaction_pairs_from_input(options):
     """
     Takes the path of a directory and returns a list holding the interaction dictionary
     of the pdbs in this directory, a similar chains dictionary and a dictionary that
@@ -572,7 +572,7 @@ def get_interaction_pairs_from_input(directory):
     of the pdbs in this directory, a similar chains dictionary and a dictionary that
     relates every chain with its id
     """
-
+    directory = options.infile
     files_list = get_pdb_from_directory(directory)
     structure_list = []
 
@@ -608,7 +608,7 @@ def get_interaction_pairs_from_input(directory):
 
         interaction_dict[nr_interaction].append(chains)
 
-    clean_interaction_dict(interaction_dict, similar_sequences)
+    clean_interaction_dict(interaction_dict, similar_sequences, options)
 
     if options.verbose:
         print('\n')

@@ -8,6 +8,7 @@ def energy_profile_plot(options, path, data_unopt, data_opt=None):
     :param data_opt: data from the optimized structure
     :return: graph of the energy profiles.
     """
+    code = path.split('/')[-1]
     plt.clf()
     data = pd.read_csv(data_unopt, sep="\s+", header=None)
     line_norm, = plt.plot(data[0], data[1], linewidth=1, label='Not Optimized')

@@ -38,7 +38,7 @@ def write_to_pdb(structure, directory):
 
     io = PDBIO()
     io.set_structure(final_structure)
-    file_name = 'result_' + directory + '/' + structure.id + str(pdb_counter) + '.pdb'
+    file_name = directory + '/' + structure.id + str(pdb_counter) + '.pdb'
     io.save(file_name)
     pdb_counter += 1
     return file_name
@@ -60,7 +60,8 @@ def get_clash_chains(structure, chain, prev_chain, options):
     # Check if there are clashes between the selected atoms.
     for atom1 in chain_atoms:
         for atom in ns.search(atom1.get_coord(), 1.2, 'A'):
-            print('%s(%s)-%s(%s)' % (atom1.get_id(), atom1.get_parent().get_id(), atom.get_id(), atom1.get_parent().get_id()))
+            if options.verbose:
+                print('%s(%s)-%s(%s)' % (atom1.get_id(), atom1.get_parent().get_id(), atom.get_id(), atom1.get_parent().get_id()))
             clashing_chain = atom.get_parent().get_parent().get_id()
             if clashing_chain != prev_chain:
                 if options.verbose:
@@ -258,15 +259,13 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             if options.verbose:
                 print("\nStarting new Branch: %s" % ".".join([str(x) for x in branch_id]))
 
-            for node in complex_id.get_nodes():
-                if options.verbose:
+                for node in complex_id.get_nodes():
                     print('%s: %s' % (node.get_chain(), node))
-                for interaction, value in node.get_interaction_dict().items():
-                    if options.verbose:
+                    for interaction, value in node.get_interaction_dict().items():
                         print("%s: %s " % (interaction, value))
-            print('\n')
-            print(list(base_struct.get_chains()))
-            print('\n')
+                print('\n')
+                print(list(base_struct.get_chains()))
+                print('\n')
 
             complex_id_copy = complex_id.copy()
             copied_current_node = complex_id_copy[nodes.get_chain()]
@@ -375,11 +374,11 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, optio
     # initialize a complex id dictionary
     complex_id_dict = {}
 
-    if not os.path.exists('result_' + directory):
-        os.makedirs('result_' + directory)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     else:
-        for the_file in os.listdir('result_' + directory):
-            file_path = os.path.join('result_' + directory, the_file)
+        for the_file in os.listdir(directory):
+            file_path = os.path.join(directory, the_file)
             if os.path.isfile(file_path):
                 os.unlink(file_path)
     stoichiometry_dict = {}

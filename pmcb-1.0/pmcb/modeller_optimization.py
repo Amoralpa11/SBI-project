@@ -46,7 +46,7 @@ def modeller_funcs(pdb_file, options):
     mpdf_ini = atmsel.energy()
     z_score_ini = mdl.assess_normalized_dope()
     mdl_ep_ini = atmsel.get_dope_profile()
-    mdl_ep_ini_smoothed = mdl_ep_ini.get_smoothed()
+    mdl_ep_ini_smoothed = mdl_ep_ini.get_smoothed(window=50)
     energy_profile_txt_path = dir + '/' + code + '_DOPE_EnergyProfile.txt'
     mdl_ep_ini_smoothed.write_to_file(energy_profile_txt_path)
     print("\nModel energy")
@@ -54,7 +54,7 @@ def modeller_funcs(pdb_file, options):
     print("\nZ-score")
     print("The unoptimized Z-score of " + code + " is: " + str(z_score_ini))
 
-    if options.optimization is None:
+    if options.optimize is None:
         energy_profile_plot(options, path, energy_profile_txt_path)
 
     else:

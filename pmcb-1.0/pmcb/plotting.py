@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def energy_profile_plot(options, dir, code, data_unopt, data_opt=None):
+def energy_profile_plot(options, path, data_unopt, data_opt=None):
     """
     This function recieves 1 or 2 datasets and draws the energy profiles.
     :param data_unopt: data of the not optimized structure.
@@ -23,6 +23,6 @@ def energy_profile_plot(options, dir, code, data_unopt, data_opt=None):
     plt.axhline(linewidth=1, linestyle=':', color='r')
 
     # plt.show()
-    plt.savefig(dir + '/' + code + '_EnergyProfile_plot.tiff', dpi=300)
+    plt.savefig(path + '_EnergyProfile_plot.tiff', dpi=300)
 
     return

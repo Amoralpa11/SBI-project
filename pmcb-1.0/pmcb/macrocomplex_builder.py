@@ -200,7 +200,7 @@ def superimpose_fun(str1, str2, node, i, complex_id, similar_seq, homodimer, opt
 #########
 
 def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict,
-                     directory, options):
+                     options):
     """
     This is a recursive function which tries to add new chains until it is impossible to add any other due to clashes or
     to the specifications set by the user.
@@ -221,7 +221,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         if options.subunit_n > 0:
             options.subunit_n -= 1
         else:
-            file_name = write_to_pdb(base_struct, directory)
+            file_name = write_to_pdb(base_struct, options.dir)
             modeller_funcs(file_name, options)
             if options.subunit_n == 0:
                 exit(0)
@@ -294,7 +294,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
 
                         # Recursively recall the function for the new node created
                         update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq, chains_str_dict,
-                                         stoichiometry_dict, directory, options)
+                                         stoichiometry_dict, options)
                         if options.verbose:
                             print('Popping')
                         if options.subunit_n:
@@ -326,7 +326,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
                                     complex_id_dict[len(complex_id_copy.get_nodes())] = []
 
                                 update_structure(base_struct, complex_id_copy, complex_id_dict, similar_seq,
-                                                 chains_str_dict, stoichiometry_dict, directory, options)
+                                                 chains_str_dict, stoichiometry_dict, options)
                                 if options.verbose:
                                     print('Popping')
                                 if options.subunit_n:
@@ -341,7 +341,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         verify = False
         if None not in nodes.interaction_dict.values():
             verify = True
-            file_name = write_to_pdb(base_struct, directory)
+            file_name = write_to_pdb(base_struct, options.dir)
             modeller_funcs(file_name, options)
             if options.subunit_n == 0:
                 exit(0)
@@ -354,7 +354,7 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         print('\nReturning to branch %s' % ".".join([str(x) for x in branch_id[:-1]]))
 
 
-def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, directory, options):
+def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, options):
     """
     This function rebuilds a complex with the interactions we obtained from the pdb files.
     :param str_dict: dictionary with all the interactions we want to build the complex with.
@@ -362,6 +362,7 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
     :return: returns the built macro-complex/es
     """
     global branch_id
+    directory = options.dir
     # # returns a set with all the chains passed by the user
     # chains = set([item for sublist in [x for x in str_dict] for item in sublist])
 
@@ -427,7 +428,7 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, direc
         complex_id = ComplexId(interaction_dict, id_dict, similar_seq, base_struct)
         complex_id_dict[len(complex_id.get_nodes())] = []
         update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chains_str_dict, stoichiometry_dict,
-                         directory, options)
+                         options)
         branch_id[-1] += 1
 
 

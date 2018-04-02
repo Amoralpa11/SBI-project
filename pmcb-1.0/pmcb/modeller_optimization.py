@@ -55,7 +55,7 @@ def modeller_funcs(pdb_file, options):
     print("The unoptimized Z-score of " + code + " is: " + str(z_score_ini))
 
     if options.optimization is None:
-        energy_profile_plot(options, dir, code, energy_profile_txt_path)
+        energy_profile_plot(options, path, energy_profile_txt_path)
 
     else:
         # Create optimizer objects and set defaults for all further optimizations
@@ -84,7 +84,7 @@ def modeller_funcs(pdb_file, options):
 
         # Smooth the energy profile by applying a smoothing window of 50
         mdl_ep_fin_smoothed = mdl_ep_fin.get_smoothed(window=50)
-        energy_profile_txt_path_opt = dir + '/' + code + '_optimized_DOPE_EnergyProfile.txt'
+        energy_profile_txt_path_opt = path + '_optimized_DOPE_EnergyProfile.txt'
         mdl_ep_fin_smoothed.write_to_file(energy_profile_txt_path_opt)
-        mdl.write(file=dir + '/' + code + '_optimized.pdb')
-        energy_profile_plot(options, dir, code, energy_profile_txt_path, energy_profile_txt_path_opt)
+        mdl.write(file=path + '_optimized.pdb')
+        energy_profile_plot(options, path, energy_profile_txt_path, energy_profile_txt_path_opt)

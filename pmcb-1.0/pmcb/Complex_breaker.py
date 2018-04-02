@@ -261,7 +261,7 @@ def get_seq_dict(chain_list):
     return seq_dict
 
 
-def get_neighbor_chains(structure):
+def get_neighbor_chains(structure, options):
     """
     Takes an structure and returns a dictionary with chains as keys and a list of chains as values holding the
     chains with alpha carbons at less than 8 amstrongs from an alpha carbon of the key chain
@@ -286,11 +286,12 @@ def get_neighbor_chains(structure):
                             neighbor_dict[chain2] = 0
                         neighbor_dict[chain2] += 1
 
-        print('\n%s' % chain)
-        for close_chain, contacts in neighbor_dict.items():
-            print('%s: %s' % (close_chain, contacts))
-            if contacts > 8:
-                neighbor_chains[chain].add(close_chain)
+        if options.verbose:
+            print('\n%s' % chain)
+            for close_chain, contacts in neighbor_dict.items():
+                print('%s: %s' % (close_chain, contacts))
+                if contacts > 8:
+                    neighbor_chains[chain].add(close_chain)
     return neighbor_chains
 
 
@@ -362,14 +363,15 @@ def get_interaction_pairs(pdb_filename):
 
     clean_interaction_dict(interaction_dict, similar_sequences)
 
-    counter = 0
-    print('\n')
-    for pair in interaction_dict:
-        print(pair)
-        for int in interaction_dict[pair]:
-            print("\t%s" % int)
-            counter += 1
-    print(counter)
+    if options.verbose:
+        counter = 0
+        print('\n')
+        for pair in interaction_dict:
+            print(pair)
+            for int in interaction_dict[pair]:
+                print("\t%s" % int)
+                counter += 1
+        print(counter)
 
     if not os.path.exists(structure_id):
         os.makedirs(structure_id)
@@ -401,14 +403,14 @@ def clean_heteroatoms(interaction_dict):
         for interaction in interaction_list:
             for chain in interaction:
                 chain_set.add(chain)
-    # Remove heteromatoms
+    # Remove hetero atoms
     for chain in chain_set:
         for residue in chain.get_residues():
             if residue.get_id()[0] != ' ':
                 chain.detach_child(residue.get_id())
 
 
-def clean_interaction_dict(interaction_dict, similar_sequences):
+def clean_interaction_dict(interaction_dict, similar_sequences, options):
     """
     Takes an dictionary with tuples of 2 strings and a list of lists of chains and a dictionary with chains as
     keys and similar chains as values and removes chain pairs interacting in a similar way from the interaction_dict.
@@ -424,8 +426,9 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
         list_to_remove = []  # to avoid modifying a list while looping through it we store here the elements we want
         #  to remove and do it at the end
 
-        print('\n')
-        print(pair)
+        if options.verbose:
+            print('\n')
+            print(pair)
         interaction_list1 = copy.copy(interaction_dict[pair])
         interaction_list2 = copy.copy(interaction_dict[pair])
         for interaction1 in interaction_list1:
@@ -436,7 +439,8 @@ def clean_interaction_dict(interaction_dict, similar_sequences):
 
                 if interaction2 in list_to_remove:
                     continue
-                print('\t%s' % interaction2)
+                if options.verbose:
+                    print('\t%s' % interaction2)
 
                 comparison_result = compare_interactions(interaction1, interaction2, similar_sequences)
                 if len(comparison_result) == 1:
@@ -558,7 +562,7 @@ def get_id_dict(structure_list):
     return id_dict
 
 
-def get_interaction_pairs_from_input(directory):
+def get_interaction_pairs_from_input(options):
     """
     Takes the path of a directory and returns a list holding the interaction dictionary
     of the pdbs in this directory, a similar chains dictionary and a dictionary that
@@ -568,7 +572,7 @@ def get_interaction_pairs_from_input(directory):
     of the pdbs in this directory, a similar chains dictionary and a dictionary that
     relates every chain with its id
     """
-
+    directory = options.infile
     files_list = get_pdb_from_directory(directory)
     structure_list = []
 
@@ -604,17 +608,17 @@ def get_interaction_pairs_from_input(directory):
 
         interaction_dict[nr_interaction].append(chains)
 
-    clean_interaction_dict(interaction_dict, similar_sequences)
+    clean_interaction_dict(interaction_dict, similar_sequences, options)
 
-    print('\n')
-
-    counter = 0
-    for pair in interaction_dict:
-        print(pair)
-        for int in interaction_dict[pair]:
-            print("\t%s" % int)
-            counter += 1
-    print(counter)
+    if options.verbose:
+        print('\n')
+        counter = 0
+        for pair in interaction_dict:
+            print(pair)
+            for int in interaction_dict[pair]:
+                print("\t%s" % int)
+                counter += 1
+        print(counter)
 
     # TODO: Eliminar cadenas no utilizadas de similar sequences
 

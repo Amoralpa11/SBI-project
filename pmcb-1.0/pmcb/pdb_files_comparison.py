@@ -105,7 +105,6 @@ def str_comparison_superimpose(str1, str2):
             if str1[0].get_id() == str1[1].get_id():
                 result.append(False)
             else:
-                print('\t%s' % mean_distances)
                 return [False]
 
     return result

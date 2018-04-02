@@ -38,12 +38,9 @@ def write_to_pdb(structure, directory):
 
     io = PDBIO()
     io.set_structure(final_structure)
-<<<<<<< HEAD
-    
-    file_name = 'result_' + directory + '/' + structure.id + str(pdb_counter) + '.pdb'
-=======
+
     file_name = directory + '/' + structure.id + str(pdb_counter) + '.pdb'
->>>>>>> 3d41f24ab1ae958a265b3d15e3a826989b3aa28f
+
     io.save(file_name)
     pdb_counter += 1
     return file_name

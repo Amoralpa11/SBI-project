@@ -46,8 +46,15 @@ def main():
                         help='Indicate if you want to obtain all the pairwise interactions, "all", or just one of '
                              'each type, "unique". '
                         )
+
     parser.add_argument('-dir', '--directory',
                         dest="dir",
+                        action='store',
+                        help='Indicate a name to create a directory where the outputs will be written'
+                        )
+
+    parser.add_argument('-ep', '--energy_profile',
+                        dest="ep",
                         action='store',
                         help='Indicate a name to create a directory where the outputs will be written'
                         )
@@ -75,7 +82,6 @@ def main():
         similar_sequences = result[2]
         seq_dict = result[3]
         macrocomplex_builder(id_dict, similar_sequences, interaction_dict, seq_dict, options)
-
 
     elif options.break_complex == "all":
         get_all_interaction_pairs(options)

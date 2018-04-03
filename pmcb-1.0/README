@@ -149,7 +149,8 @@ In the package there is only one script thought to be executed directly from com
 * -dir --directory: Directory to which we want to output the data, it has to be new or it will rewrite the previous one.
 * -v --verbose: Increase output verbosity, by default is is set to False.
 * -k --subunit_limit: Subunit threshold. To use if the protein can theoretically be limitless since if set value but the complex requires more than k subunits to be completed it will halt and stop building it at that point even if it hasn't reached the end. By default it is set to False.
-* -opt -- optimization: Indicate if you want to optimize the model, by default it is True.
+* -opt --optimization: Indicate if you want to optimize the model, by default it is True.
+* -ep --energy_profile: Indicate if you want the program to return the energy profile graph.
 * -int --intensive: Indicate if you want to find all possible structures or just the first one found, by default it will return the first one found, on the other hand, if it is intensive the programm will attempt to find all the possible structures.
 * -br --break: Indicate if you want to return all the pairwise interactions or just one of each type. If you pass 'all' the program will output all the pairwise interactions found and if you pass 'unique' it will only return one interaction of each type.
 * -st --stoichiometry: If this parameter is provided the program will tell the user how many different chains have been found in the input. Then, one chain at a time it will ask the user to set its stoichiometry. The user will be prompt, having three options:
@@ -165,11 +166,12 @@ In the package there is only one script thought to be executed directly from com
 
 2.  Assembly specifications
 
- *python3 macrocomplex_builder.py -i interactions_3kuy -dir 3kuy -opt -int*
+ *python3 macrocomplex_builder.py -i interactions_3kuy -dir 3kuy -opt -ep -int*
 
  This command is the same as before but this time specifying you want to perform an intensive search and to optimize models obtained.
  * -opt: specification for the final model to be optimized.
  * -int: specification for the program to return all the possible structures found.
+ * -ep: specification for the program to return the energy profile graph.
 
  *python3 macrocomplex_builder.py -i interactions_1TUB -dir 1TUB -k 100*
 

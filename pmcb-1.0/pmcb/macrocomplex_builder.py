@@ -225,7 +225,8 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
             options.subunit_n -= 1
         else:
             file_name = write_to_pdb(base_struct, options.dir)
-            modeller_funcs(file_name, options)
+            if options.ep:
+                modeller_funcs(file_name, options)
             if options.subunit_n == 0:
                 exit(0)
     branch_id.append(0)
@@ -343,7 +344,8 @@ def update_structure(base_struct, complex_id, complex_id_dict, similar_seq, chai
         if None not in nodes.interaction_dict.values():
             verify = True
             file_name = write_to_pdb(base_struct, options.dir)
-            modeller_funcs(file_name, options)
+            if options.ep:
+                modeller_funcs(file_name, options)
             if options.subunit_n == 0:
                 exit(0)
 

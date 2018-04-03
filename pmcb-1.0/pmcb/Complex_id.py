@@ -1,3 +1,4 @@
+
 class Node(object):
 
     """This class is the main component of the ComplexId class. It represents a single chain in the structure and

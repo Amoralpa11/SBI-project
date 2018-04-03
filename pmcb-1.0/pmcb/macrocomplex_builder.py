@@ -1,8 +1,8 @@
 from Bio.PDB import *
-from Complex_breaker import *
-from Complex_id import *
-from Complex_breaker import trim_to_superimpose
-from modeller_optimization import modeller_funcs
+from pmcb.Complex_breaker import *
+from pmcb.Complex_id import *
+from pmcb.Complex_breaker import trim_to_superimpose
+from pmcb.modeller_optimization import modeller_funcs
 
 branch_id = [1]
 pdb_counter = 1
@@ -38,7 +38,9 @@ def write_to_pdb(structure, directory):
 
     io = PDBIO()
     io.set_structure(final_structure)
+
     file_name = directory + '/' + structure.id + str(pdb_counter) + '.pdb'
+
     io.save(file_name)
     pdb_counter += 1
     return file_name
@@ -397,7 +399,9 @@ def macrocomplex_builder(id_dict, similar_seq, interaction_dict, seq_dict, optio
             name_str = ', '.join(reverse_similar_seq[chain])
             print('\tNames: %s\n\tSequence:\n\t%s' % (name_str, seq_dict[chain]))
             copy_number = input('\tIntroduce number of copies:')
-            if copy_number and copy_number != 'q':
+            if copy_number:
+                if copy_number == 'q':
+                    break
                 copy_number = int(copy_number)
                 stoichiometry_dict[chain] = copy_number
             chain_counter += 1

@@ -1,4 +1,4 @@
-Metadata-Version: 1.1
+Metadata-Version: 1.0
 Name: pmcb
 Version: 1.0
 Summary: Protein Macro-Complex Builder
@@ -8,10 +8,3 @@ Author-email: elosua.marc@gmail.com, drnmoralespastor@gmail.com
 License: UNKNOWN
 Description: UNKNOWN
 Platform: UNKNOWN
-Requires: Bio
-Requires: re
-Requires: os
-Requires: copy
-Requires: modeller
-Requires: matplotlib
-Requires: pandas

@@ -272,6 +272,7 @@ def get_neighbor_chains(structure, options):
     neighbor_chains = {}
     ns = NeighborSearch(list(structure.get_atoms()))
     for chain in structure.get_chains():
+        chains = list(structure.get_chains())
         neighbor_chains[chain] = set([])
 
         neighbor_dict = {}
@@ -326,7 +327,7 @@ def get_similar_sequences(chain_list, seq_dict):
     return similar_sequences
 
 
-def get_interaction_pairs(pdb_filename):
+def get_interaction_pairs(options, pdb_filename):
     """
     This function Takes a pdb file path and generates a folder with pdb files holding the unique pairwise
     interactions in the first pdb
@@ -341,7 +342,7 @@ def get_interaction_pairs(pdb_filename):
     filename = pdb_filename
     structure = parser.get_structure(structure_id, filename)
 
-    neighbor_chains = get_neighbor_chains(structure)
+    neighbor_chains = get_neighbor_chains(structure, options)
 
     seq_dict = get_seq_dict(structure.get_chains())
 
@@ -465,7 +466,7 @@ def clean_interaction_dict(interaction_dict, similar_sequences, options):
     clean_heteroatoms(interaction_dict)
 
 
-def get_all_interaction_pairs(pdb_filename, print_files=True):
+def get_all_interaction_pairs(options, pdb_filename, print_files=True):
     """
     Takes a pdb file path and generates a folder with all the pairs of interacting chains without checking if
     there is redundant content. This simulates the user input
@@ -482,7 +483,7 @@ def get_all_interaction_pairs(pdb_filename, print_files=True):
     filename = pdb_filename
     structure = parser.get_structure(structure_id, filename)
 
-    neighbor_chains = get_neighbor_chains(structure)
+    neighbor_chains = get_neighbor_chains(structure, options)
 
     # Create a new directory with the interaction pdb files
     if print_files:
@@ -584,7 +585,7 @@ def get_interaction_pairs_from_input(options):
         if len(list(structure.get_chains())) == 2:
             structure_list.append(structure)
         else:
-            structure_list += get_all_interaction_pairs(file, False)[0]
+            structure_list += get_all_interaction_pairs(options, file, False)[0]
 
     id_dict = get_id_dict(structure_list)
 
@@ -623,6 +624,3 @@ def get_interaction_pairs_from_input(options):
     # TODO: Eliminar cadenas no utilizadas de similar sequences
 
     return [interaction_dict, id_dict, similar_sequences, seq_dict]
-
-if __name__ == '__main__':
-    get_all_interaction_pairs('5vox.pdb')

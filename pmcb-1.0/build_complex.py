@@ -60,7 +60,7 @@ if __name__ == "__main__":
     if options.infile is None:
         raise MyException("Input directory is a required argument.")
 
-    if options.dir is None:
+    if options.dir is None and options.break_complex is None:
         raise MyException("New output directory is a required argument.")
 
     if options.break_complex not in [None, 'all', 'unique']:

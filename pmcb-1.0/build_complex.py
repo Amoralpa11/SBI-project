@@ -56,7 +56,7 @@ def main():
     parser.add_argument('-ep', '--energy_profile',
                         dest="ep",
                         action='store_true',
-                        help='Indicate a name to create a directory where the outputs will be written'
+                        help='Specify if you want to get the energy profile of the complex.'
                         )
 
     options = parser.parse_args()

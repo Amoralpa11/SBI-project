@@ -33,14 +33,9 @@ A python package for protein complex modeling from protein pairwise interactions
 <!-- /TOC -->
 ## Installation
 
-To install this package you must unzip this folder:
-
-tar -xvzf pmcb-XXXX.tar.gzsudo
-
 And the run the next command:
 
-sudo python setup.py install
-
+sudo pip3 install pmcb-XXXX.tar.gz
 
 ## Objective
 

@@ -3,6 +3,7 @@
 from pmcb.macrocomplex_builder import *
 import argparse
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="This program receives fasta files and returns an ordered list by sequence length of "

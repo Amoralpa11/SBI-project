@@ -13,5 +13,5 @@ setup(name='pmcb',
       author='Marc Elosua Bayés, Adrián Morales Pastor',
       author_email='elosua.marc@gmail.com, drnmoralespastor@gmail.com',
       packages=find_packages(),
-      entry_points={'console_scripts': ['build_complex=build_complex:main']},
+      entry_points={'console_scripts': ['build_complex = build_complex:main']},
       install_requires=['biopython', 'matplotlib', 'pandas'])

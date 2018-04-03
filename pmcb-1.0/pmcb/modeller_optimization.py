@@ -44,7 +44,7 @@ def modeller_funcs(pdb_file, options):
 
     # Calculate initial energy and energy profile for the built structure
     mpdf_ini = atmsel.energy()
-    z_score_ini = mdl.assess_normalized_dope()
+    dope_ini = mdl.assess_normalized_dope()
     mdl_ep_ini = atmsel.get_dope_profile()
     mdl_ep_ini_smoothed = mdl_ep_ini.get_smoothed(window=50)
     energy_profile_txt_path = dir + '/' + code + '_DOPE_EnergyProfile.txt'
@@ -52,7 +52,7 @@ def modeller_funcs(pdb_file, options):
     print("\nModel energy")
     print("The unoptimized model energy of " + code + " is: " + str(mpdf_ini[0]))
     print("\nZ-score")
-    print("The unoptimized Z-score of " + code + " is: " + str(z_score_ini))
+    print("The unoptimized DOPE energy of " + code + " is: " + str(dope_ini))
 
     if not options.optimize :
         energy_profile_plot(options, path, energy_profile_txt_path)
@@ -73,11 +73,11 @@ def modeller_funcs(pdb_file, options):
 
         mpdf = atmsel.energy()
         # Calculate the normalized Z-score for the model after optimization
-        z_score = mdl.assess_normalized_dope()
+        dope = mdl.assess_normalized_dope()
         print("\nModel energy")
         print("The final energy of " + code + " is: " + str(mpdf[0]))
-        print("\nZ-score")
-        print("The final z-score of " + code + " is: " + str(z_score))
+        print("\nDOPE energy")
+        print("The final DOPE energy of " + code + " is: " + str(dope))
 
         # Getting the energy profile of our optimized model
         mdl_ep_fin = atmsel.get_dope_profile()

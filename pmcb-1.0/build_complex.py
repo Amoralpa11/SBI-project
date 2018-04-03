@@ -77,10 +77,10 @@ def main():
         macrocomplex_builder(id_dict, similar_sequences, interaction_dict, seq_dict, options)
 
     elif options.break_complex == "all":
-        get_all_interaction_pairs(options.infile)
+        get_all_interaction_pairs(options)
 
     elif options.break_complex == "unique":
-        get_interaction_pairs(options.infile)
+        get_interaction_pairs(options)
 
 if __name__ == "__main__":
 

@@ -25,5 +25,3 @@ def energy_profile_plot(options, path, data_unopt, data_opt=None):
 
     # plt.show()
     plt.savefig(path + '_EnergyProfile_plot.png', dpi=300)
-
-    return

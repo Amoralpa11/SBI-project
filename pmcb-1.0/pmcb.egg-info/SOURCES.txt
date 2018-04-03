@@ -21,7 +21,6 @@ images/Complex_comparison.png
 pmcb/Complex_breaker.py
 pmcb/Complex_id.py
 pmcb/__init__.py
-pmcb/build_complex.py
 pmcb/macrocomplex_builder.py
 pmcb/modeller_optimization.py
 pmcb/pdb_files_comparison.py

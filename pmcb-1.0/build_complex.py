@@ -76,7 +76,6 @@ def main():
         seq_dict = result[3]
         macrocomplex_builder(id_dict, similar_sequences, interaction_dict, seq_dict, options)
 
-
     elif options.break_complex == "all":
         get_all_interaction_pairs(options.infile)
 

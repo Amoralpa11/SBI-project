@@ -55,7 +55,7 @@ def main():
 
     parser.add_argument('-ep', '--energy_profile',
                         dest="ep",
-                        action='store',
+                        action='store_true',
                         help='Indicate a name to create a directory where the outputs will be written'
                         )
 

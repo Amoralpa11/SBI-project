@@ -24,6 +24,6 @@ def energy_profile_plot(options, path, data_unopt, data_opt=None):
     plt.axhline(linewidth=1, linestyle=':', color='r')
 
     # plt.show()
-    plt.savefig(path + '_EnergyProfile_plot.tiff', dpi=300)
+    plt.savefig(path + '_EnergyProfile_plot.png', dpi=300)
 
     return

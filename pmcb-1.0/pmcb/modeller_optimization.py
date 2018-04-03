@@ -54,7 +54,7 @@ def modeller_funcs(pdb_file, options):
     print("\nZ-score")
     print("The unoptimized Z-score of " + code + " is: " + str(z_score_ini))
 
-    if options.optimize is None:
+    if not options.optimize :
         energy_profile_plot(options, path, energy_profile_txt_path)
 
     else:

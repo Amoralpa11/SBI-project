@@ -69,7 +69,7 @@ def main():
         raise MyException("br if set must be 'all' or 'unique'.")
 
     if not options.break_complex:
-        result = get_interaction_pairs_from_input(options.infile)
+        result = get_interaction_pairs_from_input(options)
         id_dict = result[1]
         interaction_dict = result[0]
         similar_sequences = result[2]

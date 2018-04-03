@@ -327,14 +327,14 @@ def get_similar_sequences(chain_list, seq_dict):
     return similar_sequences
 
 
-def get_interaction_pairs(options, pdb_filename):
+def get_interaction_pairs(options):
     """
     This function Takes a pdb file path and generates a folder with pdb files holding the unique pairwise
     interactions in the first pdb
     :param pdb_filename:
     :return: ...
     """
-
+    pdb_filename = options.infile
     #Loading the pdb files in structure objects
     parser = PDBParser(PERMISSIVE=1)
 
@@ -466,7 +466,7 @@ def clean_interaction_dict(interaction_dict, similar_sequences, options):
     clean_heteroatoms(interaction_dict)
 
 
-def get_all_interaction_pairs(options, pdb_filename, print_files=True):
+def get_all_interaction_pairs(options, print_files=True):
     """
     Takes a pdb file path and generates a folder with all the pairs of interacting chains without checking if
     there is redundant content. This simulates the user input
@@ -475,7 +475,7 @@ def get_all_interaction_pairs(options, pdb_filename, print_files=True):
     :return: a directory with pdb files of the interactions and a list with the first element being the list of all
     interactions, ... to finish this with adri
     """
-
+    pdb_filename = options.infile
     parser = PDBParser(PERMISSIVE=1)
 
     # Load pdb structure to a pdb file

@@ -161,24 +161,24 @@ In the package there is only one script thought to be executed directly from com
 
 1. Default settings
 
- *python3 macrocomplex_builder.py -i interactions_3kuy -dir 3kuy*
+ *build_complex -i interactions_3kuy -dir 3kuy*
  * interactions_3kuy is the path to the directory containing all the interaction pdb files that are to be used in the construction of the macro-complex.
 
 2.  Assembly specifications
 
- *python3 macrocomplex_builder.py -i interactions_3kuy -dir 3kuy -opt -ep -int*
+ *build_complex -i interactions_3kuy -dir 3kuy -opt -ep -int*
 
  This command is the same as before but this time specifying you want to perform an intensive search and to optimize models obtained.
  * -opt: specification for the final model to be optimized.
  * -int: specification for the program to return all the possible structures found.
  * -ep: specification for the program to return the energy profile graph.
 
- *python3 macrocomplex_builder.py -i interactions_1TUB -dir 1TUB -k 100*
+ *build_complex -i interactions_1TUB -dir 1TUB -k 100*
 
  This command in turn specifies the number of subunits the macro-complex has to have. This feature is set for proteins such as tubuline that would otherwise be endless.
  * -k 100: indicates the macro-complex has to have a maximum of 100 subunits.
 
- *python3 macrocomplex_builder-py -i interaction_3kuy -dir 3kuy -st*
+ *build_complex -i interaction_3kuy -dir 3kuy -st*
 
  This command allows the user to pass the stoichiometry he desires to the model. To do so the program will first detect all the non redundant chains and then return to the user one by one these chains. The user will then have 2 options: i) set a number, which will correspond to the number of chains of that type he wishes the final model to have and ii) press enter, which will be as if no stoichiometry is set for that chain, the program will try to fit as many as it can in the final structure.
 

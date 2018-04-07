@@ -184,11 +184,11 @@ In the package there is only one script thought to be executed directly from com
 
 3. Get interactions
 
- *python3 macrocomplex_builder.py -i interactions_3kuy -dir 3kuy -br all*
+ *build_complex -i interactions_3kuy -dir 3kuy -br all*
 
  This command is different form the previous ones. In this case you pass a fully built macro-complex and the output will be a directory with all the pairwise interactions found in the structure.
 
- *python3 macrocomplex_builder.py -i interactions_3kuy -dir 3kuy -br unique*
+ *build_complex -i interactions_3kuy -dir 3kuy -br unique*
 
  This command, as the previous one, returns the interactions forming the complex but in this case without any redundancies. It will return a directory with non-redundant interactions.
 
